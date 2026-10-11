@@ -638,7 +638,7 @@ iconify-icon{display:inline-block;width:1em;height:1em;flex-shrink:0;vertical-al
       </div>
       <div class="st-section">
         <div class="st-label">关于</div>
-        <div class="st-card"><div class="st-item"><div class="left"><iconify-icon icon="lucide:info"></iconify-icon><div><div class="t">TVBox Pro 影视资源中心</div><div class="s">v5.5-pro · 索引设置联动</div></div></div></div></div>
+        <div class="st-card"><div class="st-item"><div class="left"><iconify-icon icon="lucide:info"></iconify-icon><div><div class="t">TVBox Pro 影视资源中心</div><div class="s">v5.6-pro · 联想加速</div></div></div></div></div>
       </div>
       <div style="height:40px"></div>
     </div>
@@ -1083,9 +1083,11 @@ async function fetchSuggest(){
   const input=document.getElementById("searchInput"),kw=input.value.trim();
   if(!kw){hideSuggest();return}
   suggestAborters.forEach(a=>{try{a.abort()}catch(e){}});suggestAborters=[];
-  const targets=enabledSrc();if(!targets.length){hideSuggest();return}
+  let targets=enabledSrc().filter(s=>s.search!==false);   /* 联想只查支持搜索的源，避免被禁搜源拖慢/挤占 */
+  if(!targets.length)targets=enabledSrc();
+  if(!targets.length){hideSuggest();return}
   renderSuggestLoading();
-  const tasks=targets.map(src=>{const ctrl=new AbortController();suggestAborters.push(ctrl);return (async()=>{try{const params={ac:"suggest",wd:kw,limit:10};const res=await fetch(buildUrl(src,params),{signal:ctrl.signal,headers:{"User-Agent":"Mozilla/5.0"}});if(!res.ok)return[];const data=await res.json();if(data&&Array.isArray(data.list)){return data.list.map(it=>({name:it.vod_name||it.name||"",src:src.name})).filter(x=>x.name);}return[];}catch(e){return[]}})();});
+  const tasks=targets.map(src=>{const ctrl=new AbortController();suggestAborters.push(ctrl);const to=setTimeout(()=>{try{ctrl.abort()}catch(e){}},2000);return (async()=>{try{const params={ac:"suggest",wd:kw,limit:10};const res=await fetch(buildUrl(src,params),{signal:ctrl.signal,headers:{"User-Agent":"Mozilla/5.0"}});clearTimeout(to);if(!res.ok)return[];const data=await res.json();if(data&&Array.isArray(data.list)){return data.list.map(it=>({name:it.vod_name||it.name||"",src:src.name})).filter(x=>x.name);}return[];}catch(e){clearTimeout(to);return[]}})();});
   const results=await Promise.all(tasks);
   const seen=new Set(),merged=[];
   results.forEach(arr=>{arr.forEach(it=>{const k=it.name.toLowerCase();if(!seen.has(k)){seen.add(k);merged.push(it);}});});

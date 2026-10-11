@@ -2,6 +2,14 @@
 
 本项目遵循 [语义化版本](https://semver.org/lang/zh-CN/) 与 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/) 规范。
 
+## [1.7.2] - 2026-10-11
+
+### 修复
+
+- **Pro 版**：修复搜索联想总是晚于搜索结果出现的问题 —— 联想现**只查询支持搜索的源**（此前会对禁搜的仅列表源也发联想请求，既无效又挤占连接），并加 2 秒超时，联想更快返回。
+
+[1.7.2]: https://github.com/silverbullet-liang/tvbox-center/releases/tag/v1.7.2
+
 ## [1.7.1] - 2026-10-11
 
 ### 变更
