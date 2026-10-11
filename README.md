@@ -262,6 +262,7 @@ const TVBoxSDK = require('./dist/tvbox-sdk.js');
 ```
 tvbox-center/
 ├── index.html           Pro 版（全功能，默认入口）
+├── promo.html           宣传页（单文件落地页）
 ├── dist/                通用 CDN 资源（组件库 tvbox-center.js + 接口 SDK tvbox-sdk.js）
 ├── mini.html            Mini 版（轻量）
 ├── LICENSE              AGPL-3.0 全文
