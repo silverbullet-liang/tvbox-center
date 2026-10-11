@@ -590,6 +590,7 @@ iconify-icon{display:inline-block;width:1em;height:1em;flex-shrink:0;vertical-al
             <div class="left"><iconify-icon icon="lucide:database"></iconify-icon><div><div class="t">开启全库检索</div><div class="s">用本地索引匹配，覆盖更多片源</div></div></div>
             <div class="sw" id="swFullIndex"><div class="sw-track"></div><div class="sw-thumb"></div></div>
           </div>
+          <div id="idxBody" style="display:none">
           <div class="st-item" style="flex-direction:column;align-items:stretch;gap:10px">
             <div class="left" style="gap:14px"><iconify-icon icon="lucide:layers" style="font-size:22px;color:var(--on-sf-v)"></iconify-icon><div><div class="t">每源页数</div><div class="s" id="idxPagesHint">100 页</div></div></div>
             <div class="limit-options" id="idxPagesOptions">
@@ -614,6 +615,7 @@ iconify-icon{display:inline-block;width:1em;height:1em;flex-shrink:0;vertical-al
               <div class="idx-tip" id="idxTip"></div>
             </div>
           </div>
+          </div>
         </div>
       </div>
       <div class="st-section">
@@ -636,7 +638,7 @@ iconify-icon{display:inline-block;width:1em;height:1em;flex-shrink:0;vertical-al
       </div>
       <div class="st-section">
         <div class="st-label">关于</div>
-        <div class="st-card"><div class="st-item"><div class="left"><iconify-icon icon="lucide:info"></iconify-icon><div><div class="t">TVBox Pro 影视资源中心</div><div class="s">v5.4-pro · 列表源搜索修复</div></div></div></div></div>
+        <div class="st-card"><div class="st-item"><div class="left"><iconify-icon icon="lucide:info"></iconify-icon><div><div class="t">TVBox Pro 影视资源中心</div><div class="s">v5.5-pro · 索引设置联动</div></div></div></div></div>
       </div>
       <div style="height:40px"></div>
     </div>
@@ -1200,7 +1202,7 @@ async function idxPutAll(rows){if(!rows.length)return;const db=await idxOpen();r
 async function idxSearch(kw,limit){const kwl=String(kw).toLowerCase();const db=await idxOpen();return new Promise((res,rej)=>{const out=[],lim=limit||300,t=db.transaction(IDX_TABLE,"readonly"),st=t.objectStore(IDX_TABLE),cur=st.openCursor();cur.onsuccess=e=>{const c=e.target.result;if(!c||out.length>=lim){res(out);return;}if((c.value.name_lower||"").indexOf(kwl)>=0)out.push(c.value);c.continue();};cur.onerror=()=>rej(cur.error);});}
 function idxProgress(o){const wrap=document.getElementById("idxProgressWrap"),fill=document.getElementById("idxFill"),tip=document.getElementById("idxTip");if(!wrap)return;if(o.show===false){wrap.style.display="none";return;}wrap.style.display="block";if(typeof o.pct==="number")fill.style.width=Math.max(0,Math.min(100,o.pct))+"%";if(o.msg)tip.innerHTML=o.msg;}
 function refreshIdxHint(){const h=document.getElementById("idxHint");if(!h)return;const c=safeGet("tvbox_idx_count","0");h.innerHTML=fullIndexOn?(c!=="0"?`已启用 · 本地索引 <span class="hl">${c}</span> 条`:"已启用 · 尚未建立索引，请点下方构建"):"未启用（开启后用本地索引检索）";}
-function setSwIdx(){setSw(document.getElementById("swFullIndex"),fullIndexOn);const sw=document.getElementById("swFullIndex");if(sw)sw.onclick=()=>{fullIndexOn=!fullIndexOn;safeSet("tvbox_full_index",fullIndexOn?"1":"0");renderSettings();toast(fullIndexOn?"已开启全库检索":"已关闭全库检索");};const ph=document.getElementById("idxPagesHint");if(ph)ph.textContent=idxPages+" 页";const pbox=document.getElementById("idxPagesOptions");if(pbox)pbox.querySelectorAll(".limit-btn").forEach(b=>{const num=parseInt(b.dataset.num,10);b.classList.toggle("active",num===idxPages);b.onclick=()=>{idxPages=num;idxSaveCfg();renderSettings();};});idxRenderPick();const box=document.getElementById("idxActions");if(box)box.querySelectorAll(".limit-btn").forEach(btn=>{btn.onclick=()=>{if(btn.dataset.act==="build")buildFullIndex();else if(btn.dataset.act==="clear")clearIndex();};});idxUpdateProgress();refreshIdxHint();}
+function setSwIdx(){setSw(document.getElementById("swFullIndex"),fullIndexOn);const _ib=document.getElementById("idxBody");if(_ib)_ib.style.display=fullIndexOn?"":"none";const sw=document.getElementById("swFullIndex");if(sw)sw.onclick=()=>{fullIndexOn=!fullIndexOn;safeSet("tvbox_full_index",fullIndexOn?"1":"0");renderSettings();toast(fullIndexOn?"已开启全库检索":"已关闭全库检索");};const ph=document.getElementById("idxPagesHint");if(ph)ph.textContent=idxPages+" 页";const pbox=document.getElementById("idxPagesOptions");if(pbox)pbox.querySelectorAll(".limit-btn").forEach(b=>{const num=parseInt(b.dataset.num,10);b.classList.toggle("active",num===idxPages);b.onclick=()=>{idxPages=num;idxSaveCfg();renderSettings();};});idxRenderPick();const box=document.getElementById("idxActions");if(box)box.querySelectorAll(".limit-btn").forEach(btn=>{btn.onclick=()=>{if(btn.dataset.act==="build")buildFullIndex();else if(btn.dataset.act==="clear")clearIndex();};});idxUpdateProgress();refreshIdxHint();}
 async function buildFullIndex(){if(idxBuilding){toast("索引构建中，请稍候");return;}const pick=idxPickedSources();if(!pick.length){toast("请先选择参与索引的源");return;}idxBuilding=true;let total=parseInt(safeGet("tvbox_idx_count","0"),10)||0;const addUp=x=>{total+=x;safeSet("tvbox_idx_count",String(total));};try{toast("开始构建索引…（并发下载 · 断点续传）");idxProgress({show:true,pct:idxUpdateProgress().pct,msg:`共 ${pick.length} 个源 · 每源 ${idxPages} 页 · 正在并发下载…`});const jobs=pick.map(src=>(async()=>{const start=(idxProg[src.key]||0)+1;for(let p=start;p<=idxPages;p++){if(!idxBuilding)break;let r;try{r=await apiList(src,p,"");}catch(e){r={ok:false};}if(!r.ok||!r.list||!r.list.length){idxProg[src.key]=idxPages;idxSaveProg();break;}const rows=r.list.map(it=>({pk:src.key+":"+(it.vod_id||""),source_key:src.key,source_name:src.name,api:src.api,vod_id:it.vod_id,vod_name:it.vod_name||"",name_lower:(it.vod_name||"").toLowerCase(),vod_pic:it.vod_pic||"",vod_remarks:it.vod_remarks||""}));await idxPutAll(rows);addUp(rows.length);idxProg[src.key]=p;idxSaveProg();idxProgress({show:true,pct:idxUpdateProgress().pct,msg:`正在下载「${esc(src.name)}」第 ${p}/${idxPages} 页 · 已入库 <span class="hl">${total}</span> 条`});}})().catch(()=>{}));await Promise.all(jobs);idxReady=true;idxProgress({show:true,pct:100,msg:`索引完成，共 <span class="hl">${total}</span> 条，已缓存到 IndexedDB。`});toast("索引完成："+total+" 条");}catch(e){idxProgress({show:true,msg:"索引构建失败："+(e&&e.message||e)});toast("索引构建失败");}finally{idxBuilding=false;refreshIdxHint();}}
 async function clearIndex(){try{await idxClear();}catch(e){}idxReady=false;idxProg={};idxSaveProg();safeSet("tvbox_idx_count","0");idxProgress({show:false});toast("已清除索引");refreshIdxHint();}
 function idxLoadCfg(){idxPages=parseInt(safeGet("tvbox_idx_pages","100"),10)||100;try{idxPick=JSON.parse(safeGet("tvbox_idx_pick","null"));}catch(e){idxPick=null;}try{idxProg=JSON.parse(safeGet("tvbox_idx_prog","{}"))||{};}catch(e){idxProg={};}}
