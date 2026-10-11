@@ -2,6 +2,19 @@
 
 本项目遵循 [语义化版本](https://semver.org/lang/zh-CN/) 与 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/) 规范。
 
+## [1.3.0] - 2026-10-11
+
+### 新增
+
+- **Pro 版**：内置采集源由 2 个扩展至 **11 个**（量子、暴风、小桔子、豆瓣、猫台、NXFLV、豆瓣影视、黑料、黑木耳、茅台等），显著提升多源搜索的资源覆盖面。
+
+### 变更
+
+- 组件库 `dist/tvbox-center.js` 同步更新内置源。
+- **Pro 版**：内部标识更新为 `v4.6-pro`。
+
+[1.3.0]: https://github.com/silverbullet-liang/tvbox-center/releases/tag/v1.3.0
+
 ## [1.2.0] - 2026-10-11
 
 ### 新增
