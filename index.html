@@ -636,7 +636,7 @@ iconify-icon{display:inline-block;width:1em;height:1em;flex-shrink:0;vertical-al
       </div>
       <div class="st-section">
         <div class="st-label">关于</div>
-        <div class="st-card"><div class="st-item"><div class="left"><iconify-icon icon="lucide:info"></iconify-icon><div><div class="t">TVBox Pro 影视资源中心</div><div class="s">v5.3-pro · 索引只收列表源</div></div></div></div></div>
+        <div class="st-card"><div class="st-item"><div class="left"><iconify-icon icon="lucide:info"></iconify-icon><div><div class="t">TVBox Pro 影视资源中心</div><div class="s">v5.4-pro · 列表源搜索修复</div></div></div></div></div>
       </div>
       <div style="height:40px"></div>
     </div>
@@ -875,6 +875,7 @@ let histLimit=HIST_LIMIT_DEFAULT;
 let playerSettings={...DEFAULT_PLAYER_SETTINGS};
 let positionCache={};
 let searchQuery="",searchFilter="all",searchItems=[],searchPage=1,searchLoading=false,searchHasMore=true,searchDebounce=null;
+let slowPage=1;
 let fullIndexOn=false,idxReady=false,idxBuilding=false;let idxPages=100,idxPick=null,idxProg={};const INDEX_MAX_PAGES=100;
 let suggestTimer=null,suggestAborters=[],suggestIndex=-1,suggestItems=[];
 let playerItem=null,playerSources={},playerSrc="",playerEp=0,hlsInst=null,isPlaying=false,isFs=false,isMini=false,vidSpeed=1;
@@ -933,10 +934,10 @@ async function apiList(src,page,wd,t){
   const ctrl=new AbortController(),to=setTimeout(()=>ctrl.abort(),12000);
   try{const res=await fetch(buildUrl(src,params),{signal:ctrl.signal,headers:{"User-Agent":"Mozilla/5.0"}});clearTimeout(to);if(!res.ok)return{ok:false,list:[]};const data=await res.json();if(data&&Array.isArray(data.list))return{ok:true,list:data.list.map(it=>({...it,_source:src.name,_sourceKey:src.key,_api:src.api})),total:data.total||data.list.length,pagecount:data.pagecount||1};return{ok:false,list:[]};}catch(e){clearTimeout(to);return{ok:false,list:[]}}
 }
-async function localSearch(src,wd,maxPages){
+async function localSearch(src,wd,fromPage,count){
   const kw=String(wd).toLowerCase(),seen={},out=[];
-  const pages=maxPages||10;
-  for(let p=1;p<=pages;p++){
+  const start=fromPage||1,cnt=count||10;
+  for(let p=start;p<start+cnt;p++){
     const r=await apiList(src,p,"");
     if(!r.ok||!r.list||!r.list.length)break;
     r.list.forEach(it=>{const nm=(it.vod_name||"").toLowerCase();if(nm.indexOf(kw)>=0){const k=(it.vod_id||"")+"|"+src.key;if(!seen[k]){seen[k]=1;out.push(it)}}});
@@ -1119,40 +1120,46 @@ function rebuildFilters(){
 async function doSearch(reset){
   if(!searchQuery)return;
   const grid=document.getElementById("searchGrid"),loading=document.getElementById("searchLoading"),empty=document.getElementById("searchEmpty");
-  if(reset){searchPage=1;searchItems=[];searchHasMore=true;grid.innerHTML="";}
+  if(reset){searchPage=1;slowPage=1;searchItems=[];searchHasMore=true;grid.innerHTML="";}
   let targets=enabledSrc();if(searchFilter!=="all")targets=targets.filter(s=>s.key===searchFilter);
   if(!targets.length){empty.style.display="flex";empty.querySelector(".t1").textContent="没有启用的数据源";empty.querySelector(".t2").textContent="请先在设置中启用至少一个数据源";return}
   const kw=searchQuery;
   const fast=targets.filter(s=>s.search!==false);   /* 服务端搜索 */
-  const slow=targets.filter(s=>s.search===false);   /* 仅列表，需本地匹配 */
+  const slow=targets.filter(s=>s.search===false);   /* 仅列表 */
   const useIdx=fullIndexOn&&idxReady;               /* 本地全库索引 */
+  const pass=it=>searchFilter==="all"||it._sourceKey===searchFilter;
   const keyOf=it=>it.vod_id+"|"+it._sourceKey;
   const rowOf=r=>({vod_id:r.vod_id,vod_name:r.vod_name,vod_pic:r.vod_pic,vod_remarks:r.vod_remarks,_source:r.source_name,_sourceKey:r.source_key,_api:r.api});
   const addItems=items=>{let a=0;items.forEach(it=>{const k=keyOf(it);if(!searchItems.some(x=>keyOf(x)===k)){searchItems.push(it);a++}});return a};
   const paint=()=>{searchItems.forEach(it=>{if(!grid.querySelector(`[data-key="${esc(keyOf(it))}"]`)){const card=createCard(it,"lg");card.dataset.key=keyOf(it);grid.appendChild(card)}})};
   let pending=0,cleared=false;
-  const refreshEmpty=()=>{if(searchItems.length===0){empty.style.display="flex";if(pending>0){empty.querySelector(".t1").textContent="正在检索更多片源…";empty.querySelector(".t2").textContent="已启用源仍在后台匹配，请稍候"}else{empty.querySelector(".t1").textContent="未找到相关结果";empty.querySelector(".t2").textContent=`关键词「${kw}」在所有源中均未匹配`}}else empty.style.display="none"};
   const clearOnce=()=>{if(!cleared){grid.innerHTML="";cleared=true;}};
+  const refreshEmpty=()=>{if(searchItems.length===0){empty.style.display="flex";if(pending>0){empty.querySelector(".t1").textContent="正在检索更多片源…";empty.querySelector(".t2").textContent="已启用源仍在后台匹配，请稍候"}else{empty.querySelector(".t1").textContent="未找到相关结果";empty.querySelector(".t2").textContent=`关键词「${kw}」在所有源中均未匹配`}}else empty.style.display="none"};
   searchLoading=true;loading.style.display="flex";empty.style.display="none";
-  if(reset)grid.appendChild(skel(6,"lg"));
-  /* 阶段 1：本地全库索引（最快，全库模糊匹配） */
-  if(useIdx){try{const rows=await idxSearch(kw,300);const items=rows.map(rowOf);if(items.length){clearOnce();addItems(items);await batchFetchDetails(items.slice(0,80),3);paint();}}catch(e){}}
-  /* 阶段 2：服务端可搜源（全库检索，即时） */
-  const results=await Promise.all(fast.map(s=>apiList(s,searchPage,kw,"")));
-  clearOnce();
-  let first=[];
-  results.forEach(r=>{if(r.ok&&r.list){addItems(r.list);first=first.concat(r.list)}});
-  if(first.length>0){toast("正在获取封面...");await batchFetchDetails(first,3);}
-  paint();
-  searchHasMore=fast.length>0&&first.length>0;searchLoading=false;
-  /* 阶段 3：仅列表源后台匹配（未启用全库时）——保持加载动画，不提前显示"未找到" */
-  if(reset&&!useIdx&&slow.length){
-    pending=slow.length;loading.style.display="flex";refreshEmpty();
-    slow.forEach(src=>{localSearch(src,kw).then(async items=>{const added=items.length?addItems(items):0;if(added>0&&searchQuery===kw){await batchFetchDetails(items,3);paint();toast(`「${src.name}」补充 ${added} 条`);}}).catch(()=>{}).then(()=>{pending--;if(pending<=0)loading.style.display="none";refreshEmpty();});});
+  if(reset){
+    grid.appendChild(skel(6,"lg"));
+    /* 1) 仅列表源：优先本地索引（若已开启且就绪，按筛选过滤） */
+    if(useIdx&&slow.length){try{const rows=await idxSearch(kw,500);const items=rows.map(rowOf).filter(pass);if(items.length){clearOnce();addItems(items);await batchFetchDetails(items.slice(0,80),3);paint();}}catch(e){}}
+    /* 2) 服务端可搜源（即时、全库） */
+    const results=await Promise.all(fast.map(s=>apiList(s,searchPage,kw,"")));
+    clearOnce();
+    let first=[];results.forEach(r=>{if(r.ok&&r.list){addItems(r.list);first=first.concat(r.list)}});
+    if(first.length>0){toast("正在获取封面...");await batchFetchDetails(first,3);}
+    paint();
+    /* 3) 未启用全库时：仅列表源先在线抓前 10 页（后台，保持加载动画） */
+    if(!useIdx&&slow.length){pending=slow.length;loading.style.display="flex";refreshEmpty();slow.forEach(src=>{localSearch(src,kw,1,10).then(async items=>{const a=items.length?addItems(items):0;if(a>0){await batchFetchDetails(items,3);paint();toast(`「${src.name}」补充 ${a} 条`);}}).catch(()=>{}).then(()=>{pending--;if(pending<=0)loading.style.display="none";refreshEmpty();});});searchHasMore=true;}
+    else{loading.style.display="none";searchHasMore=fast.length>0&&first.length>0;}
   }else{
-    loading.style.display="none";
+    /* 滚动到底：可搜源翻页；仅列表源从在线列表续抓下一批 10 页（去重） */
+    searchPage++;
+    const results=await Promise.all(fast.map(s=>apiList(s,searchPage,kw,"")));
+    let more=false,first=[];
+    results.forEach(r=>{if(r.ok&&r.list){const a=addItems(r.list);if(a>0){first=first.concat(r.list);more=true}}});
+    if(first.length>0){await batchFetchDetails(first,3);paint();}
+    if(slow.length){const from=slowPage;slowPage+=10;const res2=await Promise.all(slow.map(src=>localSearch(src,kw,from,10)));let added=[];res2.forEach(items=>{const a=items.length?addItems(items):0;if(a>0)added=added.concat(items)});if(added.length){await batchFetchDetails(added,3);paint();more=true;}}
+    loading.style.display="none";searchHasMore=more;
   }
-  refreshEmpty();
+  searchLoading=false;refreshEmpty();
 }
 function setSw(el,on){if(!el)return;el.classList.toggle("on",!!on);}
 function renderSettings(){
@@ -1576,7 +1583,7 @@ function switchPage(page){
 document.querySelectorAll(".nav-item").forEach(item=>{item.addEventListener("click",()=>switchPage(item.dataset.page))});
 document.getElementById("btnFavTop").addEventListener("click",()=>{switchPage("home");setTimeout(()=>{const fs=document.getElementById("favHomeSection");if(fs&&fs.style.display!=="none")fs.scrollIntoView({behavior:"smooth"});},100);});
 const contentArea=document.getElementById("contentArea");
-contentArea.addEventListener("scroll",()=>{if(currentPage==="search"&&contentArea.scrollTop+contentArea.clientHeight>=contentArea.scrollHeight-300&&!searchLoading&&searchHasMore&&searchQuery){searchPage++;doSearch(false)}});
+contentArea.addEventListener("scroll",()=>{if(currentPage==="search"&&contentArea.scrollTop+contentArea.clientHeight>=contentArea.scrollHeight-300&&!searchLoading&&searchHasMore&&searchQuery){doSearch(false)}});
 loadStorage();applyTheme(currentTheme);initSearch();initMiniDrag();renderHome();updSrcCount();setupCast();idxInit();
 if(window.matchMedia){window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{applyTheme(currentTheme);});}
 </script>
