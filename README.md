@@ -265,6 +265,7 @@ tvbox-center/
 ├── promo.html           宣传页（单文件落地页）
 ├── dist/                通用 CDN 资源（组件库 tvbox-center.js + 接口 SDK tvbox-sdk.js）
 ├── mini.html            Mini 版（轻量）
+├── favicon.png          网站图标（favicon）
 ├── LICENSE              AGPL-3.0 全文
 ├── README.md            中文说明
 ├── README.en.md         英文说明
