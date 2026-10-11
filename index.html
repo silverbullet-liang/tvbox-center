@@ -597,7 +597,7 @@ iconify-icon{display:inline-block;width:1em;height:1em;flex-shrink:0;vertical-al
       </div>
       <div class="st-section">
         <div class="st-label">关于</div>
-        <div class="st-card"><div class="st-item"><div class="left"><iconify-icon icon="lucide:info"></iconify-icon><div><div class="t">TVBox Pro 影视资源中心</div><div class="s">v4.7-pro · 源清理</div></div></div></div></div>
+        <div class="st-card"><div class="st-item"><div class="left"><iconify-icon icon="lucide:info"></iconify-icon><div><div class="t">TVBox Pro 影视资源中心</div><div class="s">v4.8-pro · 搜索源修复</div></div></div></div></div>
       </div>
       <div style="height:40px"></div>
     </div>
@@ -800,7 +800,7 @@ iconify-icon{display:inline-block;width:1em;height:1em;flex-shrink:0;vertical-al
     <div class="modal-card">
       <div class="modal-title">使用提示</div>
       <div class="modal-body">
-        <p>本版本内置 <span class="highlight">量子</span>、<span class="highlight">暴风</span> 等 <span class="highlight">6 个</span>采集源，无需代理，多源并行搜索。</p>
+        <p>本版本内置 <span class="highlight">量子资源</span> 与 <span class="highlight">暴风资源</span> 两个采集源，均支持关键词搜索，无需代理。</p>
         <p>首页展示历史记录与收藏，播放器内可点 <span class="highlight">⚙️</span> 打开播放设置。</p>
         <p>播放器支持<span class="highlight">投屏</span>，按 Remote Playback → Presentation → Google Cast → AirPlay 顺序自动降级。</p>
         <p>横屏状态下，长按屏幕左半或右半边 0.5 秒可触发 2 倍速加速。</p>
@@ -815,12 +815,8 @@ iconify-icon{display:inline-block;width:1em;height:1em;flex-shrink:0;vertical-al
 
 <script>
 const DEFAULT_SOURCES = [
-  { key:"lzi",    name:"量子资源", api:"https://cj.lziapi.com/api.php/provide/vod/",    type:1, enabled:true, noProxy:true },
-  { key:"bfzy",   name:"暴风资源", api:"https://bfzyapi.com/api.php/provide/vod/",       type:1, enabled:true, noProxy:true },
-  { key:"dbzy5",  name:"豆瓣资源", api:"https://caiji.dbzy5.com/api.php/provide/vod/",   type:1, enabled:true, noProxy:true },
-  { key:"maotai", name:"猫台资源", api:"https://caiji.maotaizy.cc/api.php/provide/vod/", type:1, enabled:true, noProxy:true },
-  { key:"dbzytv", name:"豆瓣影视", api:"https://dbzy.tv/api.php/provide/vod/",           type:1, enabled:true, noProxy:true },
-  { key:"mtzy",   name:"茅台资源", api:"https://mtzy5.com/api.php/provide/vod/",         type:1, enabled:true, noProxy:true }
+  { key:"lzi",  name:"量子资源", api:"https://cj.lziapi.com/api.php/provide/vod/", type:1, enabled:true, noProxy:true },
+  { key:"bfzy", name:"暴风资源", api:"https://bfzyapi.com/api.php/provide/vod/",   type:1, enabled:true, noProxy:true }
 ];
 const THEMES={
   purple:{light:{p:"#6750A4",onP:"#fff",pC:"#EADDFF",onPC:"#21005D",s:"#625B71",onS:"#fff",sC:"#E8DEF8",onSC:"#1D192B",t:"#7D5260",tC:"#FFD8E4"},dark:{p:"#D0BCFF",onP:"#381E72",pC:"#4F378B",onPC:"#EADDFF",s:"#CCC2DC",onS:"#332D41",sC:"#4A4458",onSC:"#E8DEF8",t:"#EFB8C8",tC:"#633B48"}},

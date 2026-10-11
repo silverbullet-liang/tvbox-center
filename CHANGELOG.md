@@ -2,6 +2,16 @@
 
 本项目遵循 [语义化版本](https://semver.org/lang/zh-CN/) 与 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/) 规范。
 
+## [1.3.2] - 2026-10-11
+
+### 修复
+
+- 移除 4 个**禁止关键词搜索**的采集源：其接口返回 `code 1002 / Current API forbids keyword search`，搜索场景始终无结果（非跨域或参数问题，无法旁路）。
+- Pro 版内置源据此调整为 2 个（量子资源、暴风资源），二者均支持关键词搜索。
+- 组件库 `dist/tvbox-center.js` 同步更新；Pro 版内部标识更新为 `v4.8-pro`。
+
+[1.3.2]: https://github.com/silverbullet-liang/tvbox-center/releases/tag/v1.3.2
+
 ## [1.3.1] - 2026-10-11
 
 ### 变更
