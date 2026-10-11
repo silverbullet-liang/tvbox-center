@@ -597,7 +597,7 @@ iconify-icon{display:inline-block;width:1em;height:1em;flex-shrink:0;vertical-al
       </div>
       <div class="st-section">
         <div class="st-label">关于</div>
-        <div class="st-card"><div class="st-item"><div class="left"><iconify-icon icon="lucide:info"></iconify-icon><div><div class="t">TVBox Pro 影视资源中心</div><div class="s">v4.8-pro · 搜索源修复</div></div></div></div></div>
+        <div class="st-card"><div class="st-item"><div class="left"><iconify-icon icon="lucide:info"></iconify-icon><div><div class="t">TVBox Pro 影视资源中心</div><div class="s">v5.0-pro · 双模搜索</div></div></div></div></div>
       </div>
       <div style="height:40px"></div>
     </div>
@@ -800,7 +800,7 @@ iconify-icon{display:inline-block;width:1em;height:1em;flex-shrink:0;vertical-al
     <div class="modal-card">
       <div class="modal-title">使用提示</div>
       <div class="modal-body">
-        <p>本版本内置 <span class="highlight">量子资源</span> 与 <span class="highlight">暴风资源</span> 两个采集源，均支持关键词搜索，无需代理。</p>
+        <p>本版本内置 <span class="highlight">6 个</span>采集源：<span class="highlight">量子</span>、<span class="highlight">暴风</span> 支持直接搜索，结果即时返回；其余源会在后台按标题匹配并逐步补充。</p>
         <p>首页展示历史记录与收藏，播放器内可点 <span class="highlight">⚙️</span> 打开播放设置。</p>
         <p>播放器支持<span class="highlight">投屏</span>，按 Remote Playback → Presentation → Google Cast → AirPlay 顺序自动降级。</p>
         <p>横屏状态下，长按屏幕左半或右半边 0.5 秒可触发 2 倍速加速。</p>
@@ -815,8 +815,12 @@ iconify-icon{display:inline-block;width:1em;height:1em;flex-shrink:0;vertical-al
 
 <script>
 const DEFAULT_SOURCES = [
-  { key:"lzi",  name:"量子资源", api:"https://cj.lziapi.com/api.php/provide/vod/", type:1, enabled:true, noProxy:true },
-  { key:"bfzy", name:"暴风资源", api:"https://bfzyapi.com/api.php/provide/vod/",   type:1, enabled:true, noProxy:true }
+  { key:"lzi",    name:"量子资源", api:"https://cj.lziapi.com/api.php/provide/vod/",    type:1, enabled:true, noProxy:true, search:true  },
+  { key:"bfzy",   name:"暴风资源", api:"https://bfzyapi.com/api.php/provide/vod/",       type:1, enabled:true, noProxy:true, search:true  },
+  { key:"dbzy5",  name:"豆瓣资源", api:"https://caiji.dbzy5.com/api.php/provide/vod/",   type:1, enabled:true, noProxy:true, search:false },
+  { key:"maotai", name:"猫台资源", api:"https://caiji.maotaizy.cc/api.php/provide/vod/", type:1, enabled:true, noProxy:true, search:false },
+  { key:"dbzytv", name:"豆瓣影视", api:"https://dbzy.tv/api.php/provide/vod/",           type:1, enabled:true, noProxy:true, search:false },
+  { key:"mtzy",   name:"茅台资源", api:"https://mtzy5.com/api.php/provide/vod/",         type:1, enabled:true, noProxy:true, search:false }
 ];
 const THEMES={
   purple:{light:{p:"#6750A4",onP:"#fff",pC:"#EADDFF",onPC:"#21005D",s:"#625B71",onS:"#fff",sC:"#E8DEF8",onSC:"#1D192B",t:"#7D5260",tC:"#FFD8E4"},dark:{p:"#D0BCFF",onP:"#381E72",pC:"#4F378B",onPC:"#EADDFF",s:"#CCC2DC",onS:"#332D41",sC:"#4A4458",onSC:"#E8DEF8",t:"#EFB8C8",tC:"#633B48"}},
@@ -887,6 +891,14 @@ async function apiList(src,page,wd,t){
   const params={ac:"list",pg:page};if(wd)params.wd=wd;if(t)params.t=t;
   const ctrl=new AbortController(),to=setTimeout(()=>ctrl.abort(),12000);
   try{const res=await fetch(buildUrl(src,params),{signal:ctrl.signal,headers:{"User-Agent":"Mozilla/5.0"}});clearTimeout(to);if(!res.ok)return{ok:false,list:[]};const data=await res.json();if(data&&Array.isArray(data.list))return{ok:true,list:data.list.map(it=>({...it,_source:src.name,_sourceKey:src.key,_api:src.api})),total:data.total||data.list.length,pagecount:data.pagecount||1};return{ok:false,list:[]};}catch(e){clearTimeout(to);return{ok:false,list:[]}}
+}
+async function localSearch(src,wd,maxPages){
+  const kw=String(wd).toLowerCase(),seen={},out=[];
+  const pages=maxPages||8,reqs=[];
+  for(let p=1;p<=pages;p++)reqs.push(apiList(src,p,""));
+  const rs=await Promise.all(reqs);
+  rs.forEach(r=>{if(r.ok&&r.list)r.list.forEach(it=>{const nm=(it.vod_name||"").toLowerCase();if(nm.indexOf(kw)>=0){const k=(it.vod_id||"")+"|"+src.key;if(!seen[k]){seen[k]=1;out.push(it)}}})});
+  return out;
 }
 async function apiDetail(src,id){
   const params={ac:"detail",ids:id},ctrl=new AbortController(),to=setTimeout(()=>ctrl.abort(),12000);
@@ -1062,21 +1074,35 @@ function rebuildFilters(){
   filters.querySelectorAll(".chip").forEach(chip=>{chip.addEventListener("click",()=>{filters.querySelectorAll(".chip").forEach(c=>c.classList.remove("active"));chip.classList.add("active");searchFilter=chip.dataset.source;if(searchQuery)doSearch(true)})});
 }
 async function doSearch(reset){
-  if(searchLoading||!searchQuery)return;
+  if(!searchQuery)return;
   const grid=document.getElementById("searchGrid"),loading=document.getElementById("searchLoading"),empty=document.getElementById("searchEmpty");
   if(reset){searchPage=1;searchItems=[];searchHasMore=true;grid.innerHTML="";}
   let targets=enabledSrc();if(searchFilter!=="all")targets=targets.filter(s=>s.key===searchFilter);
   if(!targets.length){empty.style.display="flex";empty.querySelector(".t1").textContent="没有启用的数据源";empty.querySelector(".t2").textContent="请先在设置中启用至少一个数据源";return}
+  const kw=searchQuery;
+  const fast=targets.filter(s=>s.search!==false);   /* 服务端搜索 */
+  const slow=targets.filter(s=>s.search===false);   /* 仅列表，客户端标题匹配 */
+  const keyOf=it=>it.vod_id+"|"+it._sourceKey;
+  const addItems=items=>{let a=0;items.forEach(it=>{const k=keyOf(it);if(!searchItems.some(x=>keyOf(x)===k)){searchItems.push(it);a++}});return a};
+  const paint=()=>{searchItems.forEach(it=>{if(!grid.querySelector(`[data-key="${esc(keyOf(it))}"]`)){const card=createCard(it,"lg");card.dataset.key=keyOf(it);grid.appendChild(card)}})};
+  const refreshEmpty=()=>{if(searchItems.length===0){empty.style.display="flex";empty.querySelector(".t1").textContent="未找到相关结果";empty.querySelector(".t2").textContent=`关键词「${kw}」在所有源中均未匹配`}else empty.style.display="none"};
   searchLoading=true;loading.style.display="flex";empty.style.display="none";
   if(reset)grid.appendChild(skel(6,"lg"));
-  const results=await Promise.all(targets.map(s=>apiList(s,searchPage,searchQuery,"")));
+  /* 第一步：先出支持搜索的源（快） */
+  const results=await Promise.all(fast.map(s=>apiList(s,searchPage,kw,"")));
   if(reset)grid.innerHTML="";
-  let allItems=[];
-  results.forEach(r=>{if(r.ok&&r.list){r.list.forEach(it=>{const k=it.vod_id+"|"+it._sourceKey;if(!searchItems.some(x=>x.vod_id+"|"+x._sourceKey===k)){searchItems.push(it);allItems.push(it)}})}});
-  if(allItems.length>0){toast("正在获取封面...");await batchFetchDetails(allItems,3);}
-  searchItems.forEach(it=>{if(!grid.querySelector(`[data-key="${esc(it.vod_id)}|${esc(it._sourceKey)}"]`)){const card=createCard(it,"lg");card.dataset.key=it.vod_id+"|"+it._sourceKey;grid.appendChild(card);}});
-  searchHasMore=allItems.length>0;searchLoading=false;loading.style.display="none";
-  if(searchItems.length===0){empty.style.display="flex";empty.querySelector(".t1").textContent="未找到相关结果";empty.querySelector(".t2").textContent=`关键词「${searchQuery}」在所有源中均未匹配`;}else empty.style.display="none";
+  let first=[];
+  results.forEach(r=>{if(r.ok&&r.list){addItems(r.list);first=first.concat(r.list)}});
+  if(first.length>0){toast("正在获取封面...");await batchFetchDetails(first,3);}
+  paint();
+  searchHasMore=fast.length>0&&first.length>0;searchLoading=false;loading.style.display="none";
+  refreshEmpty();
+  /* 第二步：仅列表的源后台加载（拉列表 + 标题模糊匹配），命中后追加 */
+  if(reset)slow.forEach(src=>{localSearch(src,kw).then(async items=>{
+    if(searchQuery!==kw||!items.length)return;
+    const added=addItems(items);
+    if(added>0){await batchFetchDetails(items,3);paint();refreshEmpty();toast(`「${src.name}」补充 ${added} 条`);}
+  }).catch(()=>{})});
 }
 function setSw(el,on){if(!el)return;el.classList.toggle("on",!!on);}
 function renderSettings(){
