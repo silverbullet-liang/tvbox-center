@@ -126,11 +126,143 @@ const DEFAULT_SOURCES = [
 
 ---
 
+## 组件库 tvbox-center.js（含 Pro 全部功能）
+
+`dist/tvbox-center.js` 由 Pro 版重构而来，是**自包含组件库**：包含 Pro 的全部功能——多源搜索、HLS 播放器、投屏（Chromecast / AirPlay）、选集与线路切换、倍速、画质画幅、主题换肤、历史、收藏、设置、键盘快捷键等。样式已作用域限定在容器内，不会污染宿主页面。引入后调用 `TVBox.mount(target, options)` 即可在任意页面挂载完整影视中心。
+
+### 标准 CDN 引入
+
+```html
+<!-- jsDelivr · 锁定版本（生产环境推荐） -->
+<script src="https://cdn.jsdelivr.net/gh/silverbullet-liang/tvbox-center@v1.2.0/dist/tvbox-center.min.js"></script>
+
+<!-- jsDelivr · 跟随 main（始终最新） -->
+<script src="https://cdn.jsdelivr.net/gh/silverbullet-liang/tvbox-center@main/dist/tvbox-center.min.js"></script>
+
+<!-- raw 直链（GitHub 直出，无 CDN 缓存） -->
+<script src="https://raw.githubusercontent.com/silverbullet-liang/tvbox-center/main/dist/tvbox-center.min.js"></script>
+```
+
+### 挂载用法
+
+```html
+<div id="tvbox-app" style="height:100vh"></div>
+<script src="https://cdn.jsdelivr.net/gh/silverbullet-liang/tvbox-center@main/dist/tvbox-center.min.js"></script>
+<script>
+  const app = TVBox.mount('#tvbox-app', {
+    // 可选：覆盖内置数据源
+    sources: [
+      { key: 'lzi',  name: '量子资源', api: 'https://example.com/api.php/provide/vod/' },
+      { key: 'bfzy', name: '暴风资源', api: 'https://example.com2/api.php/provide/vod/' }
+    ],
+    // 可选：默认主题 purple | yellow | green | blue
+    theme: 'purple'
+  });
+
+  // TVBox.unmount();  // 卸载
+</script>
+```
+
+> - 容器需要有高度（例如 `height:100vh`）；全屏播放器会覆盖整个视口。
+> - 组件会自动按需加载 hls.js、Iconify 图标、MiSans 字体与 Cast SDK。
+> - 同一页面建议只挂载一个实例。
+
+### 直接下载
+
+- [tvbox-center.js](dist/tvbox-center.js) — 源码版（约 132 KB）
+- [tvbox-center.min.js](dist/tvbox-center.min.js) — 压缩版（约 127 KB，jsDelivr 会再 gzip）
+
+---
+
+## 接口 SDK tvbox-sdk.js
+
+`dist/tvbox-sdk.js` 是从本项目提取的**纯前端、零依赖**采集接口 SDK，封装苹果 CMS（MacCMS v10）标准 JSON 接口，可在任意网页或 Node 项目中复用。
+
+### 通过 CDN 引入
+
+```html
+<!-- jsDelivr（推荐，真正的 CDN，带缓存加速） -->
+<script src="https://cdn.jsdelivr.net/gh/silverbullet-liang/tvbox-center@main/dist/tvbox-sdk.min.js"></script>
+
+<!-- 锁定版本（生产环境建议） -->
+<script src="https://cdn.jsdelivr.net/gh/silverbullet-liang/tvbox-center@v1.2.0/dist/tvbox-sdk.min.js"></script>
+
+<!-- raw 直链（GitHub 直出，无 CDN 缓存） -->
+<script src="https://raw.githubusercontent.com/silverbullet-liang/tvbox-center/main/dist/tvbox-sdk.js"></script>
+```
+
+> `raw.githubusercontent.com` 的 `Content-Type` 为 `text/plain`，作为 `<script src>` 引用可用，但没有 CDN 的缓存与加速；生产环境建议用 jsDelivr 或下载到本地。
+
+### 直接下载
+
+- [tvbox-sdk.js](dist/tvbox-sdk.js) — 源码版（约 8 KB）
+- [tvbox-sdk.min.js](dist/tvbox-sdk.min.js) — 压缩版（约 4 KB）
+
+### 基本用法
+
+```html
+<script src="https://cdn.jsdelivr.net/gh/silverbullet-liang/tvbox-center@main/dist/tvbox-sdk.min.js"></script>
+<script>
+  // 1. 创建多源客户端
+  const client = TVBoxSDK.create({
+    timeout: 12000,
+    sources: [
+      { key: 'lzi', name: '量子资源', api: 'https://example.com/api.php/provide/vod/' },
+      { key: 'bfzy', name: '暴风资源', api: 'https://example.com2/api.php/provide/vod/' }
+    ]
+  });
+
+  // 2. 多源并行搜索（结果项附带 _source / _sourceKey / _api）
+  client.search('庆余年').then(list => {
+    list.forEach(it => console.log(it._source, it.vod_name, it.vod_id));
+  });
+
+  // 3. 详情 + 解析线路与剧集
+  client.get('lzi').detail('12345').then(detail => {
+    const lines = TVBoxSDK.parsePlayUrls(detail.vod_play_url, detail.vod_play_from);
+    // lines = { '线路名': [{ name: '第1集', url: 'https://.../index.m3u8' }, ...] }
+    console.log(lines);
+  });
+
+  // 4. 搜索联想
+  client.suggest('庆').then(list => console.log(list));
+</script>
+```
+
+### API 一览
+
+| 方法 | 说明 |
+| --- | --- |
+| `TVBoxSDK.create({ sources, timeout })` | 创建多源客户端 |
+| `client.search(wd, { page })` | 多源并行搜索，结果项附带 `_source` / `_sourceKey` / `_api` |
+| `client.suggest(wd, limit)` | 多源联想 |
+| `client.get(keyOrName)` | 按 key 或名称取单个数据源 |
+| `client.add(src)` | 追加数据源 |
+| `source.list({ page, wd, t })` | 列表 / 搜索，返回 `{ ok, list, total, pagecount }` |
+| `source.detail(vodId)` | 详情，返回对象或 `null` |
+| `source.suggest(wd, limit)` | 联想，返回数组 |
+| `source.url(params)` | 拼装完整请求 URL |
+| `TVBoxSDK.parsePlayUrls(playUrl, playFrom)` | 解析多线路 → `{ 线路名: [{ name, url }] }` |
+| `TVBoxSDK.parseEpisodes(block)` | 解析单块 `名称$地址#...` |
+| `TVBoxSDK.buildUrl(api, params)` | 依据接口地址拼装请求 URL |
+
+### Node / 打包环境
+
+SDK 采用 UMD 封装，可直接 `require`：
+
+```js
+const TVBoxSDK = require('./dist/tvbox-sdk.js');
+// Node 18+ 自带全局 fetch
+```
+
+---
+
 ## 项目结构
 
 ```
 tvbox-center/
 ├── index.html           Pro 版（全功能，默认入口）
+├── dist/                通用 CDN 资源（组件库 tvbox-center.js + 接口 SDK tvbox-sdk.js）
 ├── mini.html            Mini 版（轻量）
 ├── LICENSE              AGPL-3.0 全文
 ├── README.md            中文说明

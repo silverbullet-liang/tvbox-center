@@ -20,6 +20,5 @@ npm-debug.log*
 # 依赖（本项目零依赖，保留以防）
 node_modules/
 
-# 构建产物
-dist/
+# 构建产物（注意：dist/ 是随源码发布的库文件，需纳入版本控制，不在此忽略）
 build/

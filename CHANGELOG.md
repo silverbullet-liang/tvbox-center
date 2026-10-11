@@ -2,6 +2,21 @@
 
 本项目遵循 [语义化版本](https://semver.org/lang/zh-CN/) 与 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/) 规范。
 
+## [1.2.0] - 2026-10-11
+
+### 新增
+
+- 新增**完整组件库** `dist/tvbox-center.js`（含压缩版 `.min.js`）：把 Pro 版全部功能（多源搜索、HLS 播放器、投屏、选集、倍速、画质画幅、换肤、历史、收藏、设置、快捷键等）重构为可嵌入组件，引入后调用 `TVBox.mount(target, options)` 即可在任意页面挂载；样式已作用域隔离，UMD 封装，支持 CDN / `require` / AMD。
+- 新增**采集接口 SDK** `dist/tvbox-sdk.js`（含压缩版 `.min.js`）：轻量封装苹果 CMS（MacCMS v10）标准接口的列表 / 搜索 / 详情 / 联想与播放串解析，供二次开发。
+- README 增加「组件库」「接口 SDK」章节（标准 jsDelivr / raw 链接、挂载与接口用法）。
+
+### 变更
+
+- **Pro 版**：播放器弹窗尺寸改按像素计算，修复横屏下的尺寸偏差。
+- **Pro 版**：内部标识更新为 `v4.5-pro`。
+
+[1.2.0]: https://github.com/silverbullet-liang/tvbox-center/releases/tag/v1.2.0
+
 ## [1.1.0] - 2026-10-11
 
 ### 变更
