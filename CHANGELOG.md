@@ -2,6 +2,16 @@
 
 本项目遵循 [语义化版本](https://semver.org/lang/zh-CN/) 与 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/) 规范。
 
+## [1.3.1] - 2026-10-11
+
+### 变更
+
+- **Pro 版**：移除 3 个含成人内容的采集源与 2 个已失效的采集源，内置源由 11 个调整为 6 个（量子、暴风、豆瓣、猫台、豆瓣影视、茅台），界面更干净合规。
+- 组件库 `dist/tvbox-center.js` 同步更新。
+- **Pro 版**：内部标识更新为 `v4.7-pro`。
+
+[1.3.1]: https://github.com/silverbullet-liang/tvbox-center/releases/tag/v1.3.1
+
 ## [1.3.0] - 2026-10-11
 
 ### 新增
