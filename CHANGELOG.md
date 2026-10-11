@@ -2,6 +2,21 @@
 
 本项目遵循 [语义化版本](https://semver.org/lang/zh-CN/) 与 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/) 规范。
 
+## [1.6.0] - 2026-10-11
+
+### 新增
+
+- **全库索引可配置**：设置页可选择每源抓取页数（10 / 20 / 50 / 100）与参与索引的源（逐源开关）。
+- **并发下载 + 断点续传**：多个源同时下载；每完成一页即写入进度，中断后点「构建 / 继续」即从断点续传，不重头再来。
+- 进度条按「已完成页 / 总页数」实时更新。
+
+### 变更
+
+- **Pro 版**：内部标识更新为 `v5.2-pro`。
+- 组件库 `dist/tvbox-center.js` 同步。
+
+[1.6.0]: https://github.com/silverbullet-liang/tvbox-center/releases/tag/v1.6.0
+
 ## [1.5.1] - 2026-10-11
 
 ### 变更
