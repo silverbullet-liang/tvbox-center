@@ -53,7 +53,58 @@ svg{display:block}
 .nav-links a:hover{background:var(--sf-v);color:var(--on-sf)}
 .nav-links a.gh{display:flex;align-items:center;gap:6px}
 .nav-links a.gh svg{width:18px;height:18px;fill:currentColor}
-@media(max-width:560px){.nav-links a.hide-sm{display:none}}
+body{overflow-x:hidden}
+
+/* ---------- 响应式适配 ---------- */
+@media(max-width:720px){
+  .hero{padding:52px 0 42px}
+  .hero .tag{margin-bottom:16px}
+  .hero .btns{margin-top:26px}
+  .btn{height:48px;padding:0 20px;font-size:15px}
+  section.blk{padding:42px 0}
+  .repo-meta{grid-template-columns:1fr 1fr}
+  .repo-meta .cell{border-right:1px solid var(--sf-v);border-bottom:1px solid var(--sf-v);padding:18px 22px}
+  .repo-meta .cell:nth-child(2n){border-right:none}
+  .repo-meta .cell:nth-last-child(-n+2){border-bottom:none}
+}
+@media(max-width:600px){
+  .nav-links a.hide-sm{display:none}
+  .nav-in{height:58px}
+}
+@media(max-width:520px){
+  .wrap{padding:0 16px}
+  .hero{padding:42px 0 32px}
+  .hero-bg i{display:none}
+  .hero h1{letter-spacing:-.3px}
+  .hero .btns{gap:10px}
+  .hero .btns .btn{flex:1;justify-content:center;min-width:0}
+  .grid{grid-template-columns:1fr}
+  .card{padding:18px}
+  .card .fi{margin-bottom:12px}
+  .step{padding:16px 18px;gap:12px}
+  .step .num{width:28px;height:28px;font-size:14px}
+  .step>div{min-width:0}
+  section.blk{padding:36px 0}
+  .sec-head{margin-bottom:20px}
+  .repo-top{flex-direction:column;align-items:flex-start;gap:14px;padding:22px}
+  .repo-top .name{font-size:16.5px;min-width:0}
+  .repo-top .name span{min-width:0;word-break:break-word}
+  .repo-top .btns{width:100%}
+  .repo-top .btns .btn{width:100%;justify-content:center}
+  .repo-meta{grid-template-columns:1fr}
+  .repo-meta .cell:nth-child(n){border-right:none;border-bottom:1px solid var(--sf-v);padding:16px 20px}
+  .repo-meta .cell:last-child{border-bottom:none}
+  .cdn-row{flex-direction:column;align-items:stretch;gap:5px}
+  .cdn-row .lbl{min-width:0}
+  .cdn-row code{width:100%;min-width:0}
+  .notice{padding:20px}
+  .notice .nhead{gap:10px;margin-bottom:14px}
+  .notice .nhead h2{font-size:18px}
+  .notice .nhead .ic{width:36px;height:36px}
+  .notice p{font-size:14px}
+  pre{font-size:12px;padding:14px}
+  .foot{flex-direction:column;align-items:flex-start;gap:12px}
+}
 
 /* Hero */
 .hero{position:relative;padding:72px 0 56px;overflow:hidden}
