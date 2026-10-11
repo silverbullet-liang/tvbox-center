@@ -225,20 +225,90 @@ iconify-icon{display:inline-block;width:1em;height:1em;flex-shrink:0;vertical-al
 .player-overlay.fs-mode .time-display{font-size:2.4vmin;min-width:14vmin}
 .player-overlay.fs-mode #btnMini{display:none}
 
-.fs-ep-name{position:absolute;left:4vmin;bottom:14vmin;max-width:55%;padding:1.6vmin 3vmin;background:rgba(0,0,0,0.6);color:#fff;font-size:2.6vmin;font-weight:500;border-radius:999px;backdrop-filter:blur(8px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:none;z-index:60;pointer-events:none;opacity:0;transition:opacity .3s}
+/* ============ 集名：跟随 playerOverlay 旋转（视觉左上角） ============ */
+/* playerOverlay 旋转 90° 后：
+   - 原图 right → 视觉 left
+   - 原图 top   → 视觉 top
+   所以用 right:16px; top:16px 会让集名出现在视觉左上角 */
+.fs-ep-name{
+  position:absolute;
+  right:16px;
+  top:16px;
+  max-width:55%;
+  padding:6px 14px;
+  background:rgba(0,0,0,0.6);
+  color:#fff;
+  font-size:14px;
+  font-weight:500;
+  border-radius:20px;
+  backdrop-filter:blur(8px);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  display:none;
+  z-index:60;
+  pointer-events:none;
+  opacity:0;
+  transition:opacity .3s;
+}
 .player-overlay.fs-mode .fs-ep-name{display:block}
 .player-overlay.fs-mode.show-controls .fs-ep-name{opacity:1}
 
-.lp-badge{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0.85);padding:3vmin 6vmin;background:rgba(0,0,0,0.78);color:#fff;font-size:3vmin;font-weight:600;border-radius:16px;backdrop-filter:blur(10px);display:flex;align-items:center;gap:2vmin;opacity:0;pointer-events:none;z-index:356;transition:opacity .2s, transform .2s var(--sp);box-shadow:var(--e3)}
+/* ============ 长按倍速提示：改为 absolute，跟随 playerOverlay 旋转 ============ */
+.lp-badge{
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%) scale(0.85);
+  padding:14px 26px;
+  background:rgba(0,0,0,0.78);
+  color:#fff;
+  font-size:18px;
+  font-weight:600;
+  border-radius:16px;
+  backdrop-filter:blur(10px);
+  display:flex;
+  align-items:center;
+  gap:10px;
+  opacity:0;
+  pointer-events:none;
+  z-index:356;
+  transition:opacity .2s, transform .2s var(--sp);
+  box-shadow:var(--e3);
+}
 .lp-badge.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
-.lp-badge iconify-icon{font-size:4vmin;color:#4ade80}
+.lp-badge iconify-icon{font-size:26px;color:#4ade80}
 .lp-badge .lp-text{letter-spacing:.5px}
+
+/* ============ 播放器内 Toast：跟随 playerOverlay 旋转，视觉顶部居中 ============ */
+.fs-toast{
+  position:absolute;
+  top:16px;
+  left:50%;
+  transform:translateX(-50%) translateY(-20px);
+  background:var(--inv-s);
+  color:var(--inv-on-s);
+  padding:10px 20px;
+  border-radius:8px;
+  font-size:13px;
+  z-index:500;
+  opacity:0;
+  transition:all .3s var(--sp);
+  box-shadow:var(--e2);
+  pointer-events:none;
+  max-width:80%;
+  text-align:center;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.fs-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
 #btnEpisodes{display:none;width:auto;padding:0 2vmin;border-radius:999px}
 #btnEpisodes iconify-icon{font-size:2.4vmin}
 #btnEpisodes span{font-size:1.8vmin;font-weight:600;margin-left:1vmin}
 .player-overlay.fs-mode #btnEpisodes{display:flex;align-items:center;flex:0 0 auto}
 
-/* ===== 选集弹窗 ===== */
 .fs-ep-modal{position:absolute;inset:0;background:rgba(0,0,0,0.85);display:none;flex-direction:column;padding:3vmin;z-index:150;backdrop-filter:blur(6px);pointer-events:auto;overflow:hidden}
 .fs-ep-modal.show{display:flex}
 .fs-ep-header{display:flex;align-items:center;justify-content:space-between;padding-bottom:2vmin;border-bottom:1px solid rgba(255,255,255,0.15);flex-shrink:0}
@@ -255,35 +325,9 @@ iconify-icon{display:inline-block;width:1em;height:1em;flex-shrink:0;vertical-al
 .fs-ep-item:hover{background:rgba(255,255,255,0.2)}
 .fs-ep-item.active{background:var(--p);color:var(--on-p)}
 
-/* ===== 播放器设置弹窗（关键：使用 vmin 自动缩放，避免横屏被截断） ===== */
-.ps-modal{
-  position:absolute;
-  inset:0;
-  background:rgba(0,0,0,0.75);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  padding:3vmin;
-  z-index:160;
-  backdrop-filter:blur(6px);
-  pointer-events:auto;
-  overflow:hidden;
-  box-sizing:border-box;
-}
+.ps-modal{position:absolute;inset:0;background:rgba(0,0,0,0.75);display:none;align-items:center;justify-content:center;padding:3vmin;z-index:160;backdrop-filter:blur(6px);pointer-events:auto;overflow:hidden;box-sizing:border-box}
 .ps-modal.show{display:flex}
-.ps-panel{
-  width:100%;
-  max-width:min(560px, 94vmin);
-  max-height:min(85vh, 92vmin);
-  min-height:0;
-  background:var(--sf);
-  border-radius:min(18px, 3vmin);
-  display:flex;
-  flex-direction:column;
-  overflow:hidden;
-  box-shadow:var(--e3);
-  box-sizing:border-box;
-}
+.ps-panel{width:100%;max-width:min(560px, 94vmin);max-height:min(85vh, 92vmin);min-height:0;background:var(--sf);border-radius:min(18px, 3vmin);display:flex;flex-direction:column;overflow:hidden;box-shadow:var(--e3);box-sizing:border-box}
 .ps-header{display:flex;align-items:center;justify-content:space-between;padding:2.4vmin 3vmin;border-bottom:1px solid var(--ol-v);flex-shrink:0}
 .ps-title{font-size:2.6vmin;font-weight:600;color:var(--on-sf);display:flex;align-items:center;gap:1.4vmin}
 .ps-title iconify-icon{font-size:3.4vmin;color:var(--p)}
@@ -323,7 +367,6 @@ iconify-icon{display:inline-block;width:1em;height:1em;flex-shrink:0;vertical-al
 .ps-choice{padding:1.2vmin 2.6vmin;border-radius:8px;background:var(--sf);border:1.5px solid transparent;color:var(--on-sf-v);font-size:2.1vmin;font-weight:500;cursor:pointer;font-family:inherit;transition:all .15s}
 .ps-choice:hover{border-color:var(--p)}
 .ps-choice.active{background:var(--p);color:var(--on-p);border-color:var(--p);font-weight:600}
-
 .video-wrap.mini{position:fixed;bottom:100px;right:12px;width:200px;aspect-ratio:16/9;border-radius:12px;overflow:hidden;z-index:90;box-shadow:var(--e3);cursor:grab;touch-action:none}
 .video-wrap.mini:active{cursor:grabbing}
 .video-controls{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,0.85));padding:40px 12px 12px;display:flex;flex-direction:column;gap:10px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:5}
@@ -596,7 +639,7 @@ iconify-icon{display:inline-block;width:1em;height:1em;flex-shrink:0;vertical-al
       </div>
       <div class="st-section">
         <div class="st-label">关于</div>
-        <div class="st-card"><div class="st-item"><div class="left"><iconify-icon icon="lucide:info"></iconify-icon><div><div class="t">TVBox Pro 影视资源中心</div><div class="s">v4.3-pro · 弹窗自适应 · 量子 + 暴风</div></div></div></div></div>
+        <div class="st-card"><div class="st-item"><div class="left"><iconify-icon icon="lucide:info"></iconify-icon><div><div class="t">TVBox Pro 影视资源中心</div><div class="s">v4.4-pro · 提示横屏 · 集名置顶</div></div></div></div></div>
       </div>
       <div style="height:40px"></div>
     </div>
@@ -784,16 +827,16 @@ iconify-icon{display:inline-block;width:1em;height:1em;flex-shrink:0;vertical-al
         </div>
       </div>
     </div>
+    <div class="lp-badge" id="lpBadge">
+      <iconify-icon icon="lucide:fast-forward" id="lpBadgeIcon"></iconify-icon>
+      <span class="lp-text" id="lpBadgeText">2x 加速中</span>
+    </div>
+    <div class="fs-toast" id="fsToast"></div>
   </div>
 
   <div class="video-wrap mini" id="miniPlayer" style="display:none"></div>
   <button class="mini-toggle" id="miniToggle"><iconify-icon icon="lucide:expand"></iconify-icon></button>
   <div class="toast" id="toast"></div>
-
-  <div class="lp-badge" id="lpBadge">
-    <iconify-icon icon="lucide:fast-forward" id="lpBadgeIcon"></iconify-icon>
-    <span class="lp-text" id="lpBadgeText">2x 加速中</span>
-  </div>
 
   <div class="modal-overlay" id="welcomeModal">
     <div class="modal-card">
@@ -861,7 +904,15 @@ function savePlayerSettings(){safeSet("tvbox_player_settings",JSON.stringify(pla
 function savePositionCache(){safeSet("tvbox_position_cache",JSON.stringify(positionCache))}
 function enabledSrc(){return sources.filter(s=>s.enabled)}
 function esc(s){if(!s)return"";return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}
-function toast(msg){const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2200)}
+function toast(msg){
+  const useFs = isFs && playerOverlay && playerOverlay.classList.contains("active");
+  const el = useFs ? document.getElementById("fsToast") : document.getElementById("toast");
+  if(!el) return;
+  el.textContent = msg;
+  el.classList.add("show");
+  clearTimeout(el._t);
+  el._t = setTimeout(()=>el.classList.remove("show"), 2200);
+}
 function fmtTime(sec){if(!isFinite(sec))return"00:00";const m=Math.floor(sec/60),s=Math.floor(sec%60);return`${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`}
 function applyTheme(name){
   currentTheme=name||"purple";

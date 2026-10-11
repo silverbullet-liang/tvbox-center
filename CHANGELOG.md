@@ -2,6 +2,17 @@
 
 本项目遵循 [语义化版本](https://semver.org/lang/zh-CN/) 与 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/) 规范。
 
+## [1.1.0] - 2026-10-11
+
+### 变更
+
+- **Pro 版**：全屏播放时，集名改为跟随画面旋转显示在视觉左上角，不再随设备方向错位。
+- **Pro 版**：长按 2x 倍速提示、播放器内的操作提示改为跟随播放器旋转，横竖屏下均位于视觉顶部，避免错位。
+- **Pro 版**：全屏播放时的操作提示改用播放器内 Toast 呈现，不再被页面其它元素遮挡。
+- **Pro 版**：内部标识更新为 `v4.4-pro`。
+
+[1.1.0]: https://github.com/silverbullet-liang/tvbox-center/releases/tag/v1.1.0
+
 ## [1.0.0] - 2026-10-11
 
 首个开源版本，以 `AGPL-3.0-or-later` 许可发布。
