@@ -638,7 +638,7 @@ iconify-icon{display:inline-block;width:1em;height:1em;flex-shrink:0;vertical-al
       </div>
       <div class="st-section">
         <div class="st-label">关于</div>
-        <div class="st-card"><div class="st-item"><div class="left"><iconify-icon icon="lucide:info"></iconify-icon><div><div class="t">TVBox Pro 影视资源中心</div><div class="s">v5.6-pro · 联想加速</div></div></div></div></div>
+        <div class="st-card"><div class="st-item"><div class="left"><iconify-icon icon="lucide:info"></iconify-icon><div><div class="t">TVBox Pro 影视资源中心</div><div class="s">v5.7-pro · 控件隐藏优化</div></div></div></div></div>
       </div>
       <div style="height:40px"></div>
     </div>
@@ -1340,10 +1340,14 @@ function setRatio(ratio){
   document.getElementById("ratioMenu").classList.remove("show");
 }
 const videoControls=document.getElementById("videoControls");
+["mousemove","mousedown","click","touchstart","pointerdown"].forEach(ev=>{videoControls.addEventListener(ev,()=>{showControls();},{passive:true});});
+videoEl.addEventListener("pause",()=>{showControls();});
+videoEl.addEventListener("play",()=>{showControls();});
 function showControls(){
   videoWrap.classList.add("show-controls");playerOverlay.classList.add("show-controls");
-  if(controlsTimer)clearTimeout(controlsTimer);
-  controlsTimer=setTimeout(()=>{videoWrap.classList.remove("show-controls");playerOverlay.classList.remove("show-controls");},3000);
+  if(controlsTimer)clearTimeout(controlsTimer);controlsTimer=null;
+  if(videoEl.paused)return;   /* 暂停时不自动隐藏 */
+  controlsTimer=setTimeout(()=>{videoWrap.classList.remove("show-controls");playerOverlay.classList.remove("show-controls");},2000);
 }
 function toggleControls(){
   if(videoWrap.classList.contains("show-controls")){videoWrap.classList.remove("show-controls");playerOverlay.classList.remove("show-controls");if(controlsTimer)clearTimeout(controlsTimer);}else showControls();

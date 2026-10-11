@@ -2,6 +2,14 @@
 
 本项目遵循 [语义化版本](https://semver.org/lang/zh-CN/) 与 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/) 规范。
 
+## [1.7.3] - 2026-10-11
+
+### 变更
+
+- **Pro 版**：播放控件自动隐藏逻辑优化 —— 暂停时控件**保持显示**（不再自动隐藏）；操作控件时重置计时，**停止操作 2 秒**后才隐藏（原为固定 3 秒）。
+
+[1.7.3]: https://github.com/silverbullet-liang/tvbox-center/releases/tag/v1.7.3
+
 ## [1.7.2] - 2026-10-11
 
 ### 修复
