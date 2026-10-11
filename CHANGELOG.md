@@ -2,6 +2,14 @@
 
 本项目遵循 [语义化版本](https://semver.org/lang/zh-CN/) 与 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/) 规范。
 
+## [1.6.1] - 2026-10-11
+
+### 变更
+
+- **Pro 版**：全库索引排除「支持在线搜索」的源（量子、暴风）——它们本身已是服务端全库检索，无需本地索引；索引仅覆盖「仅列表」源（豆瓣、猫台、豆瓣影视、茅台）。
+
+[1.6.1]: https://github.com/silverbullet-liang/tvbox-center/releases/tag/v1.6.1
+
 ## [1.6.0] - 2026-10-11
 
 ### 新增

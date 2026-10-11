@@ -600,7 +600,7 @@ iconify-icon{display:inline-block;width:1em;height:1em;flex-shrink:0;vertical-al
             </div>
           </div>
           <div class="st-item" style="flex-direction:column;align-items:stretch;gap:6px">
-            <div class="left" style="gap:14px"><iconify-icon icon="lucide:list-checks" style="font-size:22px;color:var(--on-sf-v)"></iconify-icon><div><div class="t">参与索引的源</div><div class="s">关闭的源不参与索引</div></div></div>
+            <div class="left" style="gap:14px"><iconify-icon icon="lucide:list-checks" style="font-size:22px;color:var(--on-sf-v)"></iconify-icon><div><div class="t">参与索引的源</div><div class="s">仅「仅列表」源可索引，支持搜索的源无需索引</div></div></div>
             <div id="idxSourcePick"></div>
           </div>
           <div class="st-item" style="flex-direction:column;align-items:stretch;gap:10px;border-bottom:none">
@@ -636,7 +636,7 @@ iconify-icon{display:inline-block;width:1em;height:1em;flex-shrink:0;vertical-al
       </div>
       <div class="st-section">
         <div class="st-label">关于</div>
-        <div class="st-card"><div class="st-item"><div class="left"><iconify-icon icon="lucide:info"></iconify-icon><div><div class="t">TVBox Pro 影视资源中心</div><div class="s">v5.2-pro · 可配置索引</div></div></div></div></div>
+        <div class="st-card"><div class="st-item"><div class="left"><iconify-icon icon="lucide:info"></iconify-icon><div><div class="t">TVBox Pro 影视资源中心</div><div class="s">v5.3-pro · 索引只收列表源</div></div></div></div></div>
       </div>
       <div style="height:40px"></div>
     </div>
@@ -1199,8 +1199,8 @@ async function clearIndex(){try{await idxClear();}catch(e){}idxReady=false;idxPr
 function idxLoadCfg(){idxPages=parseInt(safeGet("tvbox_idx_pages","100"),10)||100;try{idxPick=JSON.parse(safeGet("tvbox_idx_pick","null"));}catch(e){idxPick=null;}try{idxProg=JSON.parse(safeGet("tvbox_idx_prog","{}"))||{};}catch(e){idxProg={};}}
 function idxSaveCfg(){safeSet("tvbox_idx_pages",String(idxPages));safeSet("tvbox_idx_pick",JSON.stringify(idxPick||[]));}
 function idxSaveProg(){safeSet("tvbox_idx_prog",JSON.stringify(idxProg));}
-function idxPickedSources(){const en=sources.filter(s=>s.enabled);if(!idxPick||!idxPick.length)return en;return en.filter(s=>idxPick.indexOf(s.key)>=0);}
-function idxRenderPick(){const box=document.getElementById("idxSourcePick");if(!box)return;box.innerHTML="";const en=sources.filter(s=>s.enabled);if(!en.length){box.innerHTML=`<div style="font-size:12px;color:var(--on-sf-v)">暂无启用源</div>`;return;}en.forEach(src=>{const on=(!idxPick||!idxPick.length||idxPick.indexOf(src.key)>=0);const row=document.createElement("div");row.className="st-item";row.style.cssText="padding:8px 0;border-bottom:none";row.innerHTML=`<div class="left" style="gap:10px">${iconTag('rss',18)}<div><div class="t" style="font-size:14px">${esc(src.name)}</div></div></div><div class="sw ${on?'on':''}" data-k="${esc(src.key)}"><div class="sw-track"></div><div class="sw-thumb"></div></div>`;box.appendChild(row);});box.querySelectorAll(".sw").forEach(sw=>{sw.onclick=()=>{const k=sw.dataset.k;let arr=(idxPick&&idxPick.length)?idxPick.slice():sources.filter(s=>s.enabled).map(s=>s.key);if(arr.indexOf(k)>=0)arr=arr.filter(x=>x!==k);else arr.push(k);idxPick=arr;idxSaveCfg();sw.classList.toggle("on",arr.indexOf(k)>=0);};});}
+function idxPickedSources(){const en=sources.filter(s=>s.enabled&&s.search===false);if(!idxPick||!idxPick.length)return en;return en.filter(s=>idxPick.indexOf(s.key)>=0);}
+function idxRenderPick(){const box=document.getElementById("idxSourcePick");if(!box)return;box.innerHTML="";const en=sources.filter(s=>s.enabled&&s.search===false);if(!en.length){box.innerHTML=`<div style="font-size:12px;color:var(--on-sf-v)">没有可索引的「仅列表」源</div>`;return;}en.forEach(src=>{const on=(!idxPick||!idxPick.length||idxPick.indexOf(src.key)>=0);const row=document.createElement("div");row.className="st-item";row.style.cssText="padding:8px 0;border-bottom:none";row.innerHTML=`<div class="left" style="gap:10px">${iconTag('rss',18)}<div><div class="t" style="font-size:14px">${esc(src.name)}</div></div></div><div class="sw ${on?'on':''}" data-k="${esc(src.key)}"><div class="sw-track"></div><div class="sw-thumb"></div></div>`;box.appendChild(row);});box.querySelectorAll(".sw").forEach(sw=>{sw.onclick=()=>{const k=sw.dataset.k;let arr=(idxPick&&idxPick.length)?idxPick.slice():sources.filter(s=>s.enabled&&s.search===false).map(s=>s.key);if(arr.indexOf(k)>=0)arr=arr.filter(x=>x!==k);else arr.push(k);idxPick=arr;idxSaveCfg();sw.classList.toggle("on",arr.indexOf(k)>=0);};});}
 function idxUpdateProgress(){const pick=idxPickedSources();const total=pick.length*idxPages;let done=0;pick.forEach(s=>{done+=Math.min(idxProg[s.key]||0,idxPages)});const pct=total?Math.round(done/total*100):0;const el=document.getElementById("idxFill");if(el)el.style.width=pct+"%";return {done:done,total:total,pct:pct};}
 async function idxInit(){idxLoadCfg();try{const c=parseInt(safeGet("tvbox_idx_count","0"),10)||0;if(c>0){const db=await idxOpen();idxReady=await new Promise(res=>{const t=db.transaction(IDX_TABLE,"readonly"),rq=t.objectStore(IDX_TABLE).count();rq.onsuccess=()=>res(rq.result>0);rq.onerror=()=>res(false);});}}catch(e){}refreshIdxHint();}
 function startLoading(){
