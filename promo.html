@@ -102,7 +102,8 @@ body{overflow-x:hidden}
   .notice .nhead h2{font-size:18px}
   .notice .nhead .ic{width:36px;height:36px}
   .notice p{font-size:14px}
-  pre{font-size:12px;padding:14px}
+  pre{font-size:12px;padding:14px;white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere}
+  .cdn-row code,.repo-meta .cell .v{overflow-wrap:anywhere;word-break:break-word}
   .foot{flex-direction:column;align-items:flex-start;gap:12px}
 }
 
@@ -151,13 +152,13 @@ section.blk{padding:52px 0}
 .step .num{flex-shrink:0;width:32px;height:32px;border-radius:50%;background:var(--p);color:var(--on-p);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px}
 .step h4{font-size:16px;font-weight:700;margin-bottom:5px}
 .step p{font-size:14px;color:var(--on-sf-v);margin-bottom:10px}
-pre{background:#1c1b1f;color:#e6e0e9;border-radius:12px;padding:16px 18px;overflow-x:auto;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;line-height:1.7;border:1px solid #2b2930}
+pre{background:#1c1b1f;color:#e6e0e9;border-radius:12px;padding:16px 18px;overflow-x:auto;-webkit-overflow-scrolling:touch;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;line-height:1.7;border:1px solid #2b2930}
 pre .c{color:#8b8693}
-code.inl{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;background:var(--sf-v);color:var(--on-sf);padding:2px 7px;border-radius:6px}
+code.inl{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;background:var(--sf-v);color:var(--on-sf);padding:2px 7px;border-radius:6px;word-break:break-word;overflow-wrap:anywhere}
 .cdn-list{display:grid;gap:10px;margin-top:6px}
 .cdn-row{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
 .cdn-row .lbl{font-size:13px;font-weight:600;color:var(--on-sf-v);min-width:118px}
-.cdn-row code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;background:var(--sf-v);color:var(--on-sf);padding:7px 11px;border-radius:8px;word-break:break-all;flex:1;min-width:200px}
+.cdn-row code{display:block;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;background:var(--sf-v);color:var(--on-sf);padding:7px 11px;border-radius:8px;word-break:break-all;overflow-wrap:anywhere;flex:1;min-width:200px}
 
 /* 仓库 */
 .repo-card{display:grid;grid-template-columns:1fr;gap:0;background:var(--sf-c);border:1px solid var(--sf-v);border-radius:var(--r);overflow:hidden}
@@ -349,9 +350,10 @@ python3 -m http.server 8000
       </div>
       <div class="repo-meta">
         <div class="cell"><div class="k">许可 LICENSE</div><div class="v">AGPL-3.0-or-later</div></div>
-        <div class="cell"><div class="k">最新版本</div><div class="v">v1.2.0</div></div>
+        <div class="cell"><div class="k">最新版本</div><div class="v" id="latestVer">v1.2.1</div></div>
         <div class="cell"><div class="k">内置版本</div><div class="v">Pro (v4.5) / Mini</div></div>
         <div class="cell"><div class="k">开源地址</div><div class="v" style="font-size:13.5px">github.com/silverbullet-liang/tvbox-center</div></div>
+        <div class="cell"><div class="k">GitHub Stars</div><div class="v" id="starCount">-</div></div>
       </div>
       <div style="padding:20px 28px;border-top:1px solid var(--sf-v)">
         <div class="chips">
@@ -395,5 +397,22 @@ python3 -m http.server 8000
   </div>
 </footer>
 
+<script>
+(function () {
+  var API = 'https://api.github.com/repos/silverbullet-liang/tvbox-center';
+  function setText(id, v) { var el = document.getElementById(id); if (el) el.textContent = v; }
+  fetch(API + '/releases/latest').then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
+    if (!d || !d.tag_name) return;
+    setText('latestVer', d.tag_name);
+    var codes = document.querySelectorAll('.cdn-row code, pre');
+    for (var i = 0; i < codes.length; i++) {
+      codes[i].innerHTML = codes[i].innerHTML.replace(/@v\d+\.\d+\.\d+/g, '@' + d.tag_name);
+    }
+  }).catch(function () {});
+  fetch(API).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
+    if (d && typeof d.stargazers_count === 'number') setText('starCount', d.stargazers_count);
+  }).catch(function () {});
+})();
+</script>
 </body>
 </html>
