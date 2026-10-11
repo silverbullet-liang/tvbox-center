@@ -11,205 +11,191 @@
 <title>TVBox 影视资源中心 · 纯前端单文件影视聚合播放器</title>
 <meta name="description" content="TVBox 影视资源中心 —— 纯前端、单文件、零构建的影视聚合播放器。开源（AGPL-3.0）、公开 CDN、多源聚合、播放简洁、无广告。">
 <style>
+/* ========== 设计令牌 ========== */
 :root{
-  --p:#6750A4; --on-p:#fff; --p-c:#EADDFF; --on-p-c:#21005D;
-  --s:#625B71; --s-c:#E8DEF8;
-  --sf:#FEF7FF; --sf-c:#F3EDF7; --sf-v:#E7E0EC; --sf-v2:#ECE6F0;
-  --on-sf:#1D1B20; --on-sf-v:#49454F; --on-sf-v2:#5f5a64;
-  --ol:#79747E; --ol-v:#CAC4D0; --e:#B3261E; --e-c:#F9DEDC; --on-e-c:#410E0B;
-  --e1:0 1px 2px rgba(0,0,0,.30),0 1px 3px 1px rgba(0,0,0,.15);
-  --e2:0 1px 2px rgba(0,0,0,.30),0 2px 6px 2px rgba(0,0,0,.15);
-  --e3:0 4px 8px 3px rgba(0,0,0,.15),0 1px 3px rgba(0,0,0,.30);
-  --r:24px; --r-s:16px; --sp:cubic-bezier(.2,.8,.2,1);
+  /* 左右间距：手机 / 平板 / 桌面 三档，全站统一，杜绝贴边 */
+  --gutter:24px;
+  --gap:clamp(14px,2.4vw,18px);
+  --maxw:1040px;
+  --radius:22px;
+  --radius-s:16px;
+
+  --primary:#6750A4; --on-primary:#ffffff;
+  --primary-c:#EADDFF; --on-primary-c:#21005D;
+  --bg:#FDF8FF; --surface:#F4EEF9; --surface-2:#EBE4F1;
+  --line:#E3DBEA; --fg:#1D1B20; --fg-2:#4C4652; --fg-3:#6F6877;
+  --danger:#B3261E; --danger-c:#FCEEED; --on-danger-c:#3B0906;
+  --shadow:0 2px 6px rgba(60,40,90,.10), 0 1px 2px rgba(60,40,90,.08);
+  --shadow-lg:0 8px 26px rgba(60,40,90,.14);
+  --ease:cubic-bezier(.2,.8,.2,1);
 }
-@media (prefers-color-scheme:dark){
+@media(min-width:640px){ :root{ --gutter:32px; } }
+@media(min-width:960px){ :root{ --gutter:40px; } }
+@media(prefers-color-scheme:dark){
   :root{
-    --p:#D0BCFF; --on-p:#381E72; --p-c:#4F378B; --on-p-c:#EADDFF;
-    --s:#CCC2DC; --s-c:#4A4458;
-    --sf:#141218; --sf-c:#1D1B20; --sf-v:#2B2930; --sf-v2:#322F35;
-    --on-sf:#E6E0E9; --on-sf-v:#CAC4D0; --on-sf-v2:#B8B3BB;
-    --ol:#938F99; --ol-v:#49454F; --e:#F2B8B5; --e-c:#8C1D18; --on-e-c:#F9DEDC;
-    --e1:0 1px 2px rgba(0,0,0,.5),0 1px 3px 1px rgba(0,0,0,.3);
-    --e2:0 1px 2px rgba(0,0,0,.5),0 2px 6px 2px rgba(0,0,0,.3);
-    --e3:0 4px 8px 3px rgba(0,0,0,.3),0 1px 3px rgba(0,0,0,.5);
+    --primary:#D0BCFF; --on-primary:#381E72;
+    --primary-c:#4F378B; --on-primary-c:#EADDFF;
+    --bg:#141118; --surface:#1E1A24; --surface-2:#27222E;
+    --line:#332D3C; --fg:#EBE5F0; --fg-2:#C9C2D4; --fg-3:#9E97AA;
+    --danger:#F2B8B5; --danger-c:#3B1714; --on-danger-c:#FBDDDA;
+    --shadow:0 2px 6px rgba(0,0,0,.45), 0 1px 2px rgba(0,0,0,.4);
+    --shadow-lg:0 10px 30px rgba(0,0,0,.55);
   }
 }
+
+/* ========== 基础 ========== */
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html{scroll-behavior:smooth}
-body{font-family:"MiSans","PingFang SC","Microsoft YaHei",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC",sans-serif;
-  background:var(--sf);color:var(--on-sf);line-height:1.65;-webkit-font-smoothing:antialiased}
+body{
+  font-family:"MiSans","PingFang SC","Microsoft YaHei",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC",sans-serif;
+  background:var(--bg);color:var(--fg);line-height:1.65;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+img,svg{display:block}
 a{color:inherit;text-decoration:none}
-.wrap{max-width:1080px;margin:0 auto;padding:0 32px}
-svg{display:block}
 
-/* 顶栏 */
-.nav{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--sf) 88%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--sf-v)}
-.nav-in{display:flex;align-items:center;justify-content:space-between;height:64px}
-.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:16px;letter-spacing:.2px}
-.brand .logo{width:34px;height:34px;border-radius:10px;background:var(--p);color:var(--on-p);display:flex;align-items:center;justify-content:center}
-.brand .logo svg{width:20px;height:20px}
-.nav-links{display:flex;align-items:center;gap:8px}
-.nav-links a{padding:8px 14px;border-radius:999px;font-size:14px;font-weight:500;color:var(--on-sf-v);transition:background .15s,color .15s}
-.nav-links a:hover{background:var(--sf-v);color:var(--on-sf)}
-.nav-links a.gh{display:flex;align-items:center;gap:6px}
-.nav-links a.gh svg{width:18px;height:18px;fill:currentColor}
-body{overflow-x:hidden}
+/* 唯一的水平容器：所有内容都放进它，保证一致的左右留白 */
+.container{width:100%;max-width:var(--maxw);margin:0 auto;padding-left:var(--gutter);padding-right:var(--gutter)}
 
-/* ---------- 响应式适配 ---------- */
-@media(max-width:720px){
-  .wrap{padding:0 28px}
-  .hero{padding:52px 0 42px}
-  .hero .tag{margin-bottom:16px}
-  .hero .btns{margin-top:26px}
-  .btn{height:48px;padding:0 20px;font-size:15px}
-  section.blk{padding:42px 0}
-  .repo-meta{grid-template-columns:1fr 1fr}
-  .repo-meta .cell{border-right:1px solid var(--sf-v);border-bottom:1px solid var(--sf-v);padding:18px 22px}
-  .repo-meta .cell:nth-child(2n){border-right:none}
-  .repo-meta .cell:nth-last-child(-n+2){border-bottom:none}
-}
-@media(max-width:600px){
-  .nav-links a.hide-sm{display:none}
-  .nav-in{height:58px}
-}
-@media(max-width:520px){
-  .hero{padding:42px 0 32px}
-  .hero-bg i{display:none}
-  .hero h1{letter-spacing:-.3px}
-  .hero .btns{gap:10px}
-  .hero .btns .btn{flex:1;justify-content:center;min-width:0}
-  .grid{grid-template-columns:1fr}
-  .card{padding:24px}
-  .card .fi{margin-bottom:12px}
-  .step{padding:20px 22px;gap:12px}
-  .step .num{width:28px;height:28px;font-size:14px}
-  .step>div{min-width:0}
-  section.blk{padding:36px 0}
-  .sec-head{margin-bottom:20px}
-  .repo-top{flex-direction:column;align-items:flex-start;gap:14px;padding:22px}
-  .repo-top .name{font-size:16.5px;min-width:0}
-  .repo-top .name span{min-width:0;word-break:break-word}
-  .repo-top .btns{width:100%}
-  .repo-top .btns .btn{width:100%;justify-content:center}
-  .repo-meta{grid-template-columns:1fr}
-  .repo-meta .cell:nth-child(n){border-right:none;border-bottom:1px solid var(--sf-v);padding:16px 20px}
-  .repo-meta .cell:last-child{border-bottom:none}
-  .cdn-row{flex-direction:column;align-items:stretch;gap:5px}
-  .cdn-row .lbl{min-width:0}
-  .cdn-row code{width:100%;min-width:0}
-  .notice{padding:20px}
-  .notice .nhead{gap:10px;margin-bottom:14px}
-  .notice .nhead h2{font-size:18px}
-  .notice .nhead .ic{width:36px;height:36px}
-  .notice p{font-size:14px}
-  pre{font-size:12px;padding:14px;white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere}
-  .cdn-row code,.repo-meta .cell .v{overflow-wrap:anywhere;word-break:break-word}
-  .foot{flex-direction:column;align-items:flex-start;gap:12px}
-}
+/* ========== 顶栏 ========== */
+.topbar{position:sticky;top:0;z-index:50;background:var(--bg);border-bottom:1px solid var(--line)}
+.bar{display:flex;align-items:center;justify-content:space-between;height:62px;gap:12px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:15.5px;min-width:0}
+.brand .logo{width:34px;height:34px;border-radius:11px;background:var(--primary);color:var(--on-primary);display:grid;place-items:center;flex-shrink:0}
+.brand .logo svg{width:19px;height:19px}
+.brand .txt{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar .acts{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.bar .acts a{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border-radius:999px;font-size:13.5px;font-weight:600;color:var(--fg-2)}
+.bar .acts a:hover{background:var(--surface)}
+.bar .acts a svg{width:17px;height:17px;fill:currentColor}
+@media(max-width:560px){ .bar .acts a .lb{display:none} }
 
-/* Hero */
-.hero{position:relative;padding:72px 0 56px;overflow:hidden}
-.hero-bg{position:absolute;inset:0;pointer-events:none;z-index:0}
-.hero-bg i{position:absolute;border-radius:50%;background:var(--p-c);opacity:.5}
-.hero-bg i:nth-child(1){width:320px;height:320px;right:-80px;top:-120px}
-.hero-bg i:nth-child(2){width:180px;height:180px;left:-60px;top:120px;opacity:.35}
-.hero-in{position:relative;z-index:1;max-width:760px}
-.hero .tag{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:999px;background:var(--p-c);color:var(--on-p-c);font-size:13px;font-weight:600;margin-bottom:22px}
-.hero .tag svg{width:15px;height:15px}
-.hero h1{font-size:clamp(30px,5vw,50px);line-height:1.15;letter-spacing:-.5px;font-weight:800}
-.hero h1 .hl{color:var(--p)}
-.hero p.sub{margin-top:18px;font-size:clamp(15px,2.2vw,18px);color:var(--on-sf-v);max-width:620px}
-.hero .btns{margin-top:32px;display:flex;flex-wrap:wrap;gap:12px}
-.btn{display:inline-flex;align-items:center;gap:9px;height:52px;padding:0 26px;border-radius:999px;font-size:15.5px;font-weight:600;cursor:pointer;border:none;transition:transform .15s var(--sp),box-shadow .15s,background .15s}
-.btn svg{width:20px;height:20px}
+/* ========== 通用区块 ========== */
+.section{padding:52px 0}
+@media(max-width:600px){ .section{padding:38px 0} }
+.sec-title{display:flex;align-items:center;gap:12px;margin-bottom:22px}
+.sec-title .ic{width:38px;height:38px;border-radius:12px;background:var(--primary-c);color:var(--on-primary-c);display:grid;place-items:center;flex-shrink:0}
+.sec-title .ic svg{width:20px;height:20px}
+.sec-title h2{font-size:clamp(19px,3.4vw,24px);font-weight:800;letter-spacing:-.2px}
+.sec-title p{font-size:13.5px;color:var(--fg-3);margin-top:1px}
+
+/* ========== Hero ========== */
+.hero{position:relative;padding:64px 0 48px;overflow:hidden}
+@media(max-width:600px){ .hero{padding:44px 0 34px} }
+.hero .blob{position:absolute;border-radius:50%;background:var(--primary-c);opacity:.6;pointer-events:none}
+.hero .blob.b1{width:300px;height:300px;right:calc(var(--gutter) - 140px);top:-120px}
+.hero .blob.b2{width:150px;height:150px;left:calc(var(--gutter) - 90px);top:110px;opacity:.4}
+@media(max-width:600px){ .hero .blob{display:none} }
+.hero .inner{position:relative;z-index:1;max-width:720px}
+.pill{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:999px;background:var(--primary-c);color:var(--on-primary-c);font-size:12.5px;font-weight:700;margin-bottom:20px}
+.pill svg{width:14px;height:14px}
+.hero h1{font-size:clamp(28px,6vw,46px);line-height:1.14;font-weight:900;letter-spacing:-.6px}
+.hero h1 em{font-style:normal;color:var(--primary)}
+.hero .sub{margin-top:16px;font-size:clamp(14.5px,2.6vw,17px);color:var(--fg-2);max-width:600px}
+.hero .cta{margin-top:28px;display:flex;flex-wrap:wrap;gap:12px}
+@media(max-width:600px){ .hero .cta .btn{flex:1 1 100%;justify-content:center} }
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;height:50px;padding:0 24px;border-radius:999px;font-size:15px;font-weight:700;cursor:pointer;border:none;transition:transform .15s var(--ease),box-shadow .15s,background .15s;white-space:nowrap}
+.btn svg{width:19px;height:19px}
 .btn:active{transform:scale(.96)}
-.btn.primary{background:var(--p);color:var(--on-p);box-shadow:var(--e2)}
-.btn.primary:hover{box-shadow:var(--e3)}
-.btn.outline{background:transparent;color:var(--p);border:1.5px solid var(--ol-v)}
-.btn.outline:hover{background:var(--sf-c)}
+.btn.primary{background:var(--primary);color:var(--on-primary);box-shadow:var(--shadow)}
+.btn.primary:hover{box-shadow:var(--shadow-lg)}
+.btn.ghost{background:transparent;color:var(--primary);border:1.5px solid var(--line)}
+.btn.ghost:hover{background:var(--surface)}
 
-/* 分区标题 */
-section.blk{padding:52px 0}
-.sec-head{display:flex;align-items:center;gap:12px;margin-bottom:26px}
-.sec-head .ic{width:36px;height:36px;border-radius:11px;background:var(--p-c);color:var(--on-p-c);display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.sec-head .ic svg{width:20px;height:20px}
-.sec-head h2{font-size:clamp(21px,3vw,26px);font-weight:700;letter-spacing:-.2px}
-.sec-head p{font-size:14px;color:var(--on-sf-v);margin-top:2px}
-
-/* 功能网格 */
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px}
-.card{background:var(--sf-c);border:1px solid var(--sf-v);border-radius:var(--r-s);padding:22px;transition:transform .2s var(--sp),box-shadow .2s}
-.card:hover{transform:translateY(-3px);box-shadow:var(--e2)}
-.card .fi{width:44px;height:44px;border-radius:13px;background:var(--sf-v2);display:flex;align-items:center;justify-content:center;margin-bottom:15px;color:var(--p)}
+/* ========== 卡片网格 ========== */
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:var(--gap)}
+@media(max-width:600px){ .grid{grid-template-columns:1fr} }
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-s);padding:22px;transition:transform .2s var(--ease),box-shadow .2s}
+@media(max-width:600px){ .card{padding:20px} }
+.card:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
+.card .fi{width:44px;height:44px;border-radius:13px;background:var(--surface-2);color:var(--primary);display:grid;place-items:center;margin-bottom:14px}
 .card .fi svg{width:23px;height:23px}
-.card h3{font-size:17px;font-weight:700;margin-bottom:7px}
-.card p{font-size:14px;color:var(--on-sf-v)}
-.card .kbd{display:inline-block;margin-top:4px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;background:var(--sf-v);color:var(--on-sf-v);padding:2px 8px;border-radius:6px}
+.card h3{font-size:16.5px;font-weight:800;margin-bottom:7px}
+.card p{font-size:13.8px;color:var(--fg-2)}
 
-/* 步骤 / 指南 */
-.guide-grid{display:grid;gap:14px}
-.step{display:flex;gap:16px;background:var(--sf-c);border:1px solid var(--sf-v);border-radius:var(--r-s);padding:20px 22px}
-.step .num{flex-shrink:0;width:32px;height:32px;border-radius:50%;background:var(--p);color:var(--on-p);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px}
-.step h4{font-size:16px;font-weight:700;margin-bottom:5px}
-.step p{font-size:14px;color:var(--on-sf-v);margin-bottom:10px}
-pre{background:#1c1b1f;color:#e6e0e9;border-radius:12px;padding:16px 18px;overflow-x:auto;-webkit-overflow-scrolling:touch;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;line-height:1.7;border:1px solid #2b2930}
-pre .c{color:#8b8693}
-code.inl{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;background:var(--sf-v);color:var(--on-sf);padding:2px 7px;border-radius:6px;word-break:break-word;overflow-wrap:anywhere}
-.cdn-list{display:grid;gap:10px;margin-top:6px}
-.cdn-row{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
-.cdn-row .lbl{font-size:13px;font-weight:600;color:var(--on-sf-v);min-width:118px}
-.cdn-row code{display:block;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;background:var(--sf-v);color:var(--on-sf);padding:7px 11px;border-radius:8px;word-break:break-all;overflow-wrap:anywhere;flex:1;min-width:200px}
+/* 内联代码 */
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.88em;background:var(--surface-2);color:var(--fg);padding:2px 6px;border-radius:6px;word-break:break-word;overflow-wrap:anywhere}
 
-/* 仓库 */
-.repo-card{display:grid;grid-template-columns:1fr;gap:0;background:var(--sf-c);border:1px solid var(--sf-v);border-radius:var(--r);overflow:hidden}
-.repo-top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;padding:26px 28px;border-bottom:1px solid var(--sf-v)}
-.repo-top .name{display:flex;align-items:center;gap:12px;font-size:19px;font-weight:700}
-.repo-top .name svg{width:26px;height:26px;fill:var(--on-sf)}
-.repo-top .name .owner{color:var(--on-sf-v);font-weight:500}
-.repo-meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:0}
-.repo-meta .cell{padding:20px 28px;border-right:1px solid var(--sf-v)}
-.repo-meta .cell:last-child{border-right:none}
-.repo-meta .cell .k{font-size:12.5px;color:var(--on-sf-v);font-weight:600;letter-spacing:.4px}
-.repo-meta .cell .v{font-size:15px;font-weight:700;margin-top:5px;word-break:break-all}
-.chips{display:flex;flex-wrap:wrap;gap:8px}
-.chip{font-size:12.5px;font-weight:600;padding:5px 12px;border-radius:999px;background:var(--sf-v);color:var(--on-sf-v)}
-.chip.p{background:var(--p-c);color:var(--on-p-c)}
+/* 代码块 */
+pre{background:#17161b;color:#E9E4EE;border-radius:12px;padding:16px;border:1px solid #2a2830;overflow-x:auto;-webkit-overflow-scrolling:touch;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;line-height:1.7;margin-top:10px}
+pre .c{color:#8a8494}
+@media(max-width:600px){ pre{font-size:12px;padding:14px;white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere} }
 
-/* 广告警示 */
-.notice{background:var(--e-c);color:var(--on-e-c);border-radius:var(--r);padding:28px;border:1px solid color-mix(in srgb,var(--e) 40%,transparent)}
-.notice .nhead{display:flex;align-items:center;gap:12px;margin-bottom:16px}
-.notice .nhead .ic{width:40px;height:40px;border-radius:12px;background:var(--e);color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.notice .nhead .ic svg{width:22px;height:22px}
-.notice .nhead h2{font-size:20px;font-weight:800}
-.notice p{font-size:14.5px;margin-bottom:11px}
-.notice p:last-child{margin-bottom:0}
-.notice b{font-weight:800}
-.notice .strong{margin-top:16px;padding:14px 18px;background:color-mix(in srgb,var(--e) 16%,transparent);border-radius:12px;font-weight:700;border:1px solid color-mix(in srgb,var(--e) 35%,transparent)}
+/* ========== 步骤 ========== */
+.steps{display:grid;gap:14px}
+.step{display:flex;gap:14px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-s);padding:20px 22px}
+@media(max-width:600px){ .step{padding:18px 20px;gap:12px} }
+.step .n{flex-shrink:0;width:30px;height:30px;border-radius:50%;background:var(--primary);color:var(--on-primary);display:grid;place-items:center;font-weight:800;font-size:14px}
+.step .body{flex:1;min-width:0}
+.step h4{font-size:15.5px;font-weight:800;margin-bottom:5px}
+.step p{font-size:13.8px;color:var(--fg-2)}
+.step p+p{margin-top:8px}
 
-/* 页脚 */
-footer{border-top:1px solid var(--sf-v);margin-top:24px;padding:34px 0 46px}
-.foot{display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between}
-.foot .fnote{font-size:13px;color:var(--on-sf-v)}
-.foot .flinks{display:flex;gap:8px;flex-wrap:wrap}
-.foot .flinks a{font-size:13px;color:var(--on-sf-v);padding:6px 12px;border-radius:999px;transition:background .15s}
-.foot .flinks a:hover{background:var(--sf-v);color:var(--on-sf)}
+/* ========== CDN 列表 ========== */
+.cdn{display:grid;gap:12px;margin-top:4px}
+.cdn .row{display:flex;flex-wrap:wrap;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-s);padding:14px 16px}
+.cdn .lbl{flex:0 0 auto;font-size:12.5px;font-weight:700;color:var(--fg-3);min-width:112px}
+.cdn code.js-cdn{flex:1 1 240px;min-width:0;display:block;background:var(--surface-2);padding:9px 12px;border-radius:9px;font-size:12.5px;word-break:break-all;overflow-wrap:anywhere}
+@media(max-width:600px){ .cdn .row{flex-direction:column;align-items:stretch;gap:7px} .cdn .lbl{min-width:0} .cdn code.js-cdn{flex:1 1 auto} }
+
+/* ========== 仓库卡 ========== */
+.repo{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+.repo .rhead{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:14px;padding:22px 24px;border-bottom:1px solid var(--line)}
+@media(max-width:600px){ .repo .rhead{padding:20px;flex-direction:column;align-items:flex-start} .repo .rhead .btn{width:100%} }
+.repo .rname{display:flex;align-items:center;gap:11px;font-size:17px;font-weight:800;min-width:0}
+.repo .rname svg{width:24px;height:24px;fill:var(--fg);flex-shrink:0}
+.repo .rname .owner{color:var(--fg-3);font-weight:600}
+.repo .rname .rp{min-width:0;word-break:break-word}
+.rmeta{display:grid;grid-template-columns:repeat(auto-fit,minmax(148px,1fr))}
+@media(max-width:600px){ .rmeta{grid-template-columns:1fr} }
+.rmeta .c{padding:18px 24px;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+@media(max-width:600px){ .rmeta .c{padding:16px 20px;border-right:none} }
+.rmeta .c .k{font-size:12px;font-weight:700;letter-spacing:.3px;color:var(--fg-3)}
+.rmeta .c .v{font-size:14.5px;font-weight:800;margin-top:4px;word-break:break-word;overflow-wrap:anywhere}
+.rmeta .c .v.mono{font-size:13px}
+.tags{display:flex;flex-wrap:wrap;gap:8px;padding:18px 24px}
+@media(max-width:600px){ .tags{padding:16px 20px} }
+.tags span{font-size:12.5px;font-weight:600;padding:5px 12px;border-radius:999px;background:var(--surface-2);color:var(--fg-2)}
+.tags span.hl{background:var(--primary-c);color:var(--on-primary-c)}
+
+/* ========== 免责警示 ========== */
+.notice{background:var(--danger-c);color:var(--on-danger-c);border:1px solid var(--danger);border-radius:var(--radius);padding:26px}
+@media(max-width:600px){ .notice{padding:20px} }
+.notice .head{display:flex;align-items:center;gap:11px;margin-bottom:14px}
+.notice .head .ic{width:40px;height:40px;border-radius:12px;background:var(--danger);color:#fff;display:grid;place-items:center;flex-shrink:0}
+.notice .head .ic svg{width:22px;height:22px}
+.notice .head h2{font-size:18px;font-weight:900}
+.notice p{font-size:14px;margin-bottom:10px}
+.notice p:last-of-type{margin-bottom:0}
+.notice .final{margin-top:14px;padding:13px 16px;border-radius:12px;background:rgba(179,38,30,.12);font-weight:800}
+@media(prefers-color-scheme:dark){ .notice .final{background:rgba(242,184,181,.16)} }
+
+/* ========== 页脚 ========== */
+footer{border-top:1px solid var(--line);margin-top:20px;padding:30px 0 44px}
+.foot{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:14px}
+.foot .cp{font-size:12.8px;color:var(--fg-3)}
+.foot .lk{display:flex;flex-wrap:wrap;gap:6px}
+.foot .lk a{font-size:12.8px;color:var(--fg-2);padding:6px 12px;border-radius:999px}
+.foot .lk a:hover{background:var(--surface)}
+@media(max-width:600px){ .foot{flex-direction:column;align-items:flex-start} }
 </style>
 </head>
 <body>
 
-<header class="nav">
-  <div class="wrap nav-in">
+<header class="topbar">
+  <div class="container bar">
     <div class="brand">
       <span class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4" width="19" height="13" rx="2.2"/><path d="M8 21h8M12 17v4"/></svg></span>
-      TVBox 影视资源中心
+      <span class="txt">TVBox 影视资源中心</span>
     </div>
-    <nav class="nav-links">
-      <a href="#features" class="hide-sm">功能</a>
-      <a href="#guide" class="hide-sm">使用</a>
-      <a href="#repo" class="hide-sm">仓库</a>
-      <a class="gh" href="https://github.com/silverbullet-liang/tvbox-center" target="_blank" rel="noopener">
+    <nav class="acts">
+      <a href="#features"><span class="lb">功能</span></a>
+      <a href="#guide"><span class="lb">使用</span></a>
+      <a href="#repo"><span class="lb">仓库</span></a>
+      <a href="https://github.com/silverbullet-liang/tvbox-center" target="_blank" rel="noopener">
         <svg viewBox="0 0 24 24"><path d="M12 2A10 10 0 0 0 8.8 21.5c.5.1.7-.2.7-.5v-1.7c-2.8.6-3.4-1.3-3.4-1.3-.5-1.2-1.1-1.5-1.1-1.5-.9-.6.1-.6.1-.6 1 .1 1.5 1 1.5 1 .9 1.5 2.3 1.1 2.9.8.1-.6.3-1.1.6-1.3-2.2-.3-4.6-1.1-4.6-5 0-1.1.4-2 1-2.7-.1-.3-.4-1.3.1-2.7 0 0 .8-.3 2.7 1a9.4 9.4 0 0 1 5 0c1.9-1.3 2.7-1 2.7-1 .5 1.4.2 2.4.1 2.7.6.7 1 1.6 1 2.7 0 3.9-2.4 4.7-4.6 5 .3.3.6.9.6 1.8v2.7c0 .3.2.6.7.5A10 10 0 0 0 12 2z"/></svg>
-        GitHub
+        <span class="lb">GitHub</span>
       </a>
     </nav>
   </div>
@@ -218,20 +204,20 @@ footer{border-top:1px solid var(--sf-v);margin-top:24px;padding:34px 0 46px}
 <main>
   <!-- Hero -->
   <section class="hero">
-    <div class="hero-bg"><i></i><i></i></div>
-    <div class="wrap hero-in">
-      <span class="tag">
+    <span class="blob b1"></span><span class="blob b2"></span>
+    <div class="container inner">
+      <span class="pill">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 6v6c0 5 3.4 8.5 8 10 4.6-1.5 8-5 8-10V6l-8-4z"/></svg>
         开源 · AGPL-3.0 · 无广告
       </span>
-      <h1>一个 HTML，<span class="hl">打开即用的影视中心</span></h1>
+      <h1>一个 HTML，<em>打开即用的影视中心</em></h1>
       <p class="sub">纯前端 · 单文件 · 零构建的影视聚合播放器。多源并行搜索，播放干净利落，支持投屏、选集、倍速与键盘快捷键。同时提供公开 CDN，可一行代码嵌入你自己的页面。</p>
-      <div class="btns">
+      <div class="cta">
         <a class="btn primary" href="https://silverbullet-liang.github.io/tvbox-center/" target="_blank" rel="noopener">
           <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
           立即体验
         </a>
-        <a class="btn outline" href="https://github.com/silverbullet-liang/tvbox-center" target="_blank" rel="noopener">
+        <a class="btn ghost" href="https://github.com/silverbullet-liang/tvbox-center" target="_blank" rel="noopener">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6 3 12l5 6M16 6l5 6-5 6"/></svg>
           查看源码
         </a>
@@ -239,157 +225,160 @@ footer{border-top:1px solid var(--sf-v);margin-top:24px;padding:34px 0 46px}
     </div>
   </section>
 
-  <!-- 功能亮点 -->
-  <section class="blk wrap" id="features">
-    <div class="sec-head">
-      <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 2.5 5.5L20 11l-5.5 2.5L12 19l-2.5-5.5L4 11l5.5-2.5z"/></svg></span>
-      <div><h2>重点功能</h2><p>该有的都有，不该有的一个都没有</p></div>
-    </div>
-    <div class="grid">
-      <div class="card">
-        <div class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v5h5"/><path d="M6 3h8l5 5v13H6z"/></svg></div>
-        <h3>单文件，零构建</h3>
-        <p>整个应用就是一个 <code class="inl">index.html</code>。双击打开即用，无需安装、无需打包、无任何构建工具。</p>
+  <!-- 重点功能 -->
+  <section class="section" id="features">
+    <div class="container">
+      <div class="sec-title">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 2.5 5.5L20 11l-5.5 2.5L12 19l-2.5-5.5L4 11l5.5-2.5z"/></svg></span>
+        <div><h2>重点功能</h2><p>该有的都有，不该有的一个都没有</p></div>
       </div>
-      <div class="card">
-        <div class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6 3 12l5 6M16 6l5 6-5 6"/></svg></div>
-        <h3>完全开源</h3>
-        <p>以 <b>AGPL-3.0-or-later</b> 许可发布，源码公开可审计。任何人可自由使用、修改与再分发。</p>
-      </div>
-      <div class="card">
-        <div class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18h10a4 4 0 0 0 .6-7.96A6 6 0 0 0 6 9.5 3.5 3.5 0 0 0 7 18z"/></svg></div>
-        <h3>公开 CDN</h3>
-        <p>组件库与接口 SDK 经 jsDelivr 提供，一行 <code class="inl">&lt;script&gt;</code> 即可嵌入你自己的网页。</p>
-      </div>
-      <div class="card">
-        <div class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 3 8l9 5 9-5-9-5z"/><path d="M3 13l9 5 9-5"/></svg></div>
-        <h3>影视资源多</h3>
-        <p>支持多个公开采集接口并行搜索，一次关键词聚合多源结果，命中率更高、可切换线路。</p>
-      </div>
-      <div class="card">
-        <div class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4l13 8-13 8V4z"/></svg></div>
-        <h3>播放简洁</h3>
-        <p>干净播放器：画质 / 画幅 / 倍速、选集与线路切换、全屏与小窗、手势控制、键盘快捷键，还支持投屏。</p>
-      </div>
-      <div class="card">
-        <div class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z"/><path d="m9 12 2 2 4-4"/></svg></div>
-        <h3>项目自身无广告</h3>
-        <p>不接入任何广告、统计或追踪。数据全部存在你的浏览器本地，绝不上传。</p>
+      <div class="grid">
+        <div class="card">
+          <div class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v5h5"/><path d="M6 3h8l5 5v13H6z"/></svg></div>
+          <h3>单文件，零构建</h3>
+          <p>整个应用就是一个 <code>index.html</code>。双击打开即用，无需安装、无需打包、无任何构建工具。</p>
+        </div>
+        <div class="card">
+          <div class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6 3 12l5 6M16 6l5 6-5 6"/></svg></div>
+          <h3>完全开源</h3>
+          <p>以 <b>AGPL-3.0-or-later</b> 许可发布，源码公开可审计。任何人可自由使用、修改与再分发。</p>
+        </div>
+        <div class="card">
+          <div class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18h10a4 4 0 0 0 .6-7.96A6 6 0 0 0 6 9.5 3.5 3.5 0 0 0 7 18z"/></svg></div>
+          <h3>公开 CDN</h3>
+          <p>组件库与接口 SDK 经 jsDelivr 提供，一行 <code>&lt;script&gt;</code> 即可嵌入你自己的网页。</p>
+        </div>
+        <div class="card">
+          <div class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 3 8l9 5 9-5-9-5z"/><path d="M3 13l9 5 9-5"/></svg></div>
+          <h3>影视资源多</h3>
+          <p>支持多个公开采集接口并行搜索，一次关键词聚合多源结果，命中率更高、可切换线路。</p>
+        </div>
+        <div class="card">
+          <div class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4l13 8-13 8V4z"/></svg></div>
+          <h3>播放简洁</h3>
+          <p>干净播放器：画质 / 画幅 / 倍速、选集与线路、全屏与小窗、手势控制、键盘快捷键，还支持投屏。</p>
+        </div>
+        <div class="card">
+          <div class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z"/><path d="m9 12 2 2 4-4"/></svg></div>
+          <h3>项目自身无广告</h3>
+          <p>不接入任何广告、统计或追踪。数据全部存在你的浏览器本地，绝不上传。</p>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- 使用指南 -->
-  <section class="blk wrap" id="guide">
-    <div class="sec-head">
-      <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16M4 12h16M4 19h10"/></svg></span>
-      <div><h2>完整说明</h2><p>三种用法，按需选择</p></div>
-    </div>
-    <div class="guide-grid">
-      <div class="step">
-        <div class="num">1</div>
-        <div style="flex:1;min-width:0">
-          <h4>在线体验（最快）</h4>
-          <p>点击上方「立即体验」即可直接使用，无需下载。页面部署于 GitHub Pages。</p>
-          <code class="inl">https://silverbullet-liang.github.io/tvbox-center/</code>
-        </div>
+  <!-- 完整说明 -->
+  <section class="section" id="guide" style="padding-top:8px">
+    <div class="container">
+      <div class="sec-title">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16M4 12h16M4 19h10"/></svg></span>
+        <div><h2>完整说明</h2><p>三种用法，按需选择</p></div>
       </div>
-      <div class="step">
-        <div class="num">2</div>
-        <div style="flex:1;min-width:0">
-          <h4>本地运行</h4>
-          <p>下载 <code class="inl">index.html</code>，双击用浏览器打开；部分接口有跨域限制时，用本地服务器：</p>
-          <pre><span class="c"># 在文件所在目录执行</span>
+      <div class="steps">
+        <div class="step">
+          <div class="n">1</div>
+          <div class="body">
+            <h4>在线体验（最快）</h4>
+            <p>点击上方「立即体验」即可直接使用，无需下载。页面部署于 GitHub Pages。</p>
+            <p><code>https://silverbullet-liang.github.io/tvbox-center/</code></p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="n">2</div>
+          <div class="body">
+            <h4>本地运行</h4>
+            <p>下载 <code>index.html</code>，双击用浏览器打开；部分接口有跨域限制时，用本地服务器：</p>
+            <pre><span class="c"># 在文件所在目录执行</span>
 python3 -m http.server 8000
 <span class="c"># 浏览器访问 http://localhost:8000/index.html</span></pre>
+          </div>
         </div>
-      </div>
-      <div class="step">
-        <div class="num">3</div>
-        <div style="flex:1;min-width:0">
-          <h4>嵌入你自己的页面（CDN）</h4>
-          <p>引入组件库并挂载，即得一整套影视中心（含 Pro 全部功能）：</p>
-          <pre>&lt;div id="tvbox-app" style="height:100vh"&gt;&lt;/div&gt;
-&lt;script src="https://cdn.jsdelivr.net/gh/silverbullet-liang/tvbox-center@v1.2.0/dist/tvbox-center.min.js"&gt;&lt;/script&gt;
+        <div class="step">
+          <div class="n">3</div>
+          <div class="body">
+            <h4>嵌入你自己的页面（CDN）</h4>
+            <p>引入组件库并挂载，即得一整套影视中心（含 Pro 全部功能）：</p>
+            <pre>&lt;div id="tvbox-app" style="height:100vh"&gt;&lt;/div&gt;
+&lt;script src="https://cdn.jsdelivr.net/gh/silverbullet-liang/tvbox-center@v1.2.1/dist/tvbox-center.min.js"&gt;&lt;/script&gt;
 &lt;script&gt;
   TVBox.mount('#tvbox-app', {
     sources: [{ key:'lzi', name:'量子资源', api:'https://example.com/api.php/provide/vod/' }]
   });
 &lt;/script&gt;</pre>
+          </div>
         </div>
       </div>
-    </div>
-
-    <div class="sec-head" style="margin-top:34px">
-      <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18h10a4 4 0 0 0 .6-7.96A6 6 0 0 0 6 9.5 3.5 3.5 0 0 0 7 18z"/></svg></span>
-      <div><h2>CDN 资源</h2><p>标准 jsDelivr 地址，锁定版本或跟随 main</p></div>
-    </div>
-    <div class="cdn-list">
-      <div class="cdn-row"><span class="lbl">组件库（压缩）</span><code>https://cdn.jsdelivr.net/gh/silverbullet-liang/tvbox-center@v1.2.0/dist/tvbox-center.min.js</code></div>
-      <div class="cdn-row"><span class="lbl">组件库（源码）</span><code>https://cdn.jsdelivr.net/gh/silverbullet-liang/tvbox-center@main/dist/tvbox-center.js</code></div>
-      <div class="cdn-row"><span class="lbl">接口 SDK</span><code>https://cdn.jsdelivr.net/gh/silverbullet-liang/tvbox-center@v1.2.0/dist/tvbox-sdk.min.js</code></div>
-      <div class="cdn-row"><span class="lbl">raw 直链</span><code>https://raw.githubusercontent.com/silverbullet-liang/tvbox-center/main/dist/tvbox-center.min.js</code></div>
     </div>
   </section>
 
-  <!-- 仓库 -->
-  <section class="blk wrap" id="repo">
-    <div class="sec-head">
-      <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v14M5 7h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2zM9 3h6v4H9z"/></svg></span>
-      <div><h2>仓库说明</h2><p>源码、文档与发布全部公开</p></div>
+  <!-- CDN 资源 -->
+  <section class="section" style="padding-top:0">
+    <div class="container">
+      <div class="sec-title">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18h10a4 4 0 0 0 .6-7.96A6 6 0 0 0 6 9.5 3.5 3.5 0 0 0 7 18z"/></svg></span>
+        <div><h2>CDN 资源</h2><p>标准 jsDelivr 地址，锁定版本或跟随 main</p></div>
+      </div>
+      <div class="cdn">
+        <div class="row"><span class="lbl">组件库（压缩）</span><code class="js-cdn">https://cdn.jsdelivr.net/gh/silverbullet-liang/tvbox-center@v1.2.1/dist/tvbox-center.min.js</code></div>
+        <div class="row"><span class="lbl">组件库（源码）</span><code class="js-cdn">https://cdn.jsdelivr.net/gh/silverbullet-liang/tvbox-center@main/dist/tvbox-center.js</code></div>
+        <div class="row"><span class="lbl">接口 SDK</span><code class="js-cdn">https://cdn.jsdelivr.net/gh/silverbullet-liang/tvbox-center@v1.2.1/dist/tvbox-sdk.min.js</code></div>
+        <div class="row"><span class="lbl">raw 直链</span><code class="js-cdn">https://raw.githubusercontent.com/silverbullet-liang/tvbox-center/main/dist/tvbox-center.min.js</code></div>
+      </div>
     </div>
-    <div class="repo-card">
-      <div class="repo-top">
-        <div class="name">
-          <svg viewBox="0 0 24 24"><path d="M12 2A10 10 0 0 0 8.8 21.5c.5.1.7-.2.7-.5v-1.7c-2.8.6-3.4-1.3-3.4-1.3-.5-1.2-1.1-1.5-1.1-1.5-.9-.6.1-.6.1-.6 1 .1 1.5 1 1.5 1 .9 1.5 2.3 1.1 2.9.8.1-.6.3-1.1.6-1.3-2.2-.3-4.6-1.1-4.6-5 0-1.1.4-2 1-2.7-.1-.3-.4-1.3.1-2.7 0 0 .8-.3 2.7 1a9.4 9.4 0 0 1 5 0c1.9-1.3 2.7-1 2.7-1 .5 1.4.2 2.4.1 2.7.6.7 1 1.6 1 2.7 0 3.9-2.4 4.7-4.6 5 .3.3.6.9.6 1.8v2.7c0 .3.2.6.7.5A10 10 0 0 0 12 2z"/></svg>
-          <span><span class="owner">silverbullet-liang /</span> tvbox-center</span>
-        </div>
-        <div class="btns" style="margin:0">
-          <a class="btn primary" style="height:44px;padding:0 22px;font-size:14.5px" href="https://github.com/silverbullet-liang/tvbox-center" target="_blank" rel="noopener">前往仓库</a>
-        </div>
+  </section>
+
+  <!-- 仓库说明 -->
+  <section class="section" id="repo" style="padding-top:0">
+    <div class="container">
+      <div class="sec-title">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v14M5 7h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2zM9 3h6v4H9z"/></svg></span>
+        <div><h2>仓库说明</h2><p>源码、文档与发布全部公开</p></div>
       </div>
-      <div class="repo-meta">
-        <div class="cell"><div class="k">许可 LICENSE</div><div class="v">AGPL-3.0-or-later</div></div>
-        <div class="cell"><div class="k">最新版本</div><div class="v" id="latestVer">v1.2.1</div></div>
-        <div class="cell"><div class="k">内置版本</div><div class="v">Pro (v4.5) / Mini</div></div>
-        <div class="cell"><div class="k">开源地址</div><div class="v" style="font-size:13.5px">github.com/silverbullet-liang/tvbox-center</div></div>
-        <div class="cell"><div class="k">GitHub Stars</div><div class="v" id="starCount">-</div></div>
-      </div>
-      <div style="padding:20px 28px;border-top:1px solid var(--sf-v)">
-        <div class="chips">
-          <span class="chip p">纯前端</span>
-          <span class="chip p">单文件</span>
-          <span class="chip p">零构建</span>
-          <span class="chip">多源聚合</span>
-          <span class="chip">HLS 播放</span>
-          <span class="chip">投屏</span>
-          <span class="chip">公开 CDN</span>
-          <span class="chip">AGPL-3.0</span>
-          <span class="chip">无广告</span>
+      <div class="repo">
+        <div class="rhead">
+          <div class="rname">
+            <svg viewBox="0 0 24 24"><path d="M12 2A10 10 0 0 0 8.8 21.5c.5.1.7-.2.7-.5v-1.7c-2.8.6-3.4-1.3-3.4-1.3-.5-1.2-1.1-1.5-1.1-1.5-.9-.6.1-.6.1-.6 1 .1 1.5 1 1.5 1 .9 1.5 2.3 1.1 2.9.8.1-.6.3-1.1.6-1.3-2.2-.3-4.6-1.1-4.6-5 0-1.1.4-2 1-2.7-.1-.3-.4-1.3.1-2.7 0 0 .8-.3 2.7 1a9.4 9.4 0 0 1 5 0c1.9-1.3 2.7-1 2.7-1 .5 1.4.2 2.4.1 2.7.6.7 1 1.6 1 2.7 0 3.9-2.4 4.7-4.6 5 .3.3.6.9.6 1.8v2.7c0 .3.2.6.7.5A10 10 0 0 0 12 2z"/></svg>
+            <span class="rp"><span class="owner">silverbullet-liang /</span> tvbox-center</span>
+          </div>
+          <a class="btn primary" style="height:44px;padding:0 20px;font-size:14px" href="https://github.com/silverbullet-liang/tvbox-center" target="_blank" rel="noopener">前往仓库</a>
+        </div>
+        <div class="rmeta">
+          <div class="c"><div class="k">许可 LICENSE</div><div class="v">AGPL-3.0-or-later</div></div>
+          <div class="c"><div class="k">最新版本</div><div class="v" id="latestVer">v1.2.1</div></div>
+          <div class="c"><div class="k">内置版本</div><div class="v">Pro（v4.5）/ Mini</div></div>
+          <div class="c"><div class="k">GitHub Stars</div><div class="v" id="starCount">-</div></div>
+          <div class="c"><div class="k">开源地址</div><div class="v mono">github.com/silverbullet-liang/tvbox-center</div></div>
+        </div>
+        <div class="tags">
+          <span class="hl">纯前端</span><span class="hl">单文件</span><span class="hl">零构建</span>
+          <span>多源聚合</span><span>HLS 播放</span><span>投屏</span>
+          <span>公开 CDN</span><span>AGPL-3.0</span><span>无广告</span>
         </div>
       </div>
     </div>
   </section>
 
   <!-- 广告警示 -->
-  <section class="blk wrap">
-    <div class="notice">
-      <div class="nhead">
-        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></span>
-        <h2>关于广告 · 务必阅读</h2>
+  <section class="section" style="padding-top:0">
+    <div class="container">
+      <div class="notice">
+        <div class="head">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></span>
+          <h2>关于广告 · 务必阅读</h2>
+        </div>
+        <p>本项目<b>自身不含任何广告</b>，也不接入任何推广、统计或追踪。</p>
+        <p>影视内容均来自<b>第三方公开采集接口</b>。其播放画面或播放器内可能带有<b>片源方插入的广告</b>（例如赌博、色情、充值、兼职刷单等），这类广告与本项目无关。</p>
+        <p>请务必<b>不要相信影视播放中出现的任何广告</b>，不要点击、不要扫码、不要转账、不要填写任何个人信息。</p>
+        <div class="final">因轻信上述广告所造成的一切后果，本人一律不负责。请支持正版，通过正规渠道观看影视内容。</div>
       </div>
-      <p>本项目<b>自身不含任何广告</b>，也不接入任何推广、统计或追踪。</p>
-      <p>影视内容均来自<b>第三方公开采集接口</b>。其播放画面或播放器内可能带有<b>片源方插入的广告</b>（例如赌博、色情、充值、兼职刷单等），这类广告与本项目无关。</p>
-      <p>请务必<b>不要相信影视播放中出现的任何广告</b>，不要点击、不要扫码、不要转账、不要填写任何个人信息。</p>
-      <div class="strong">因轻信上述广告所造成的一切后果，本人一律不负责。请支持正版，通过正规渠道观看影视内容。</div>
     </div>
   </section>
 </main>
 
 <footer>
-  <div class="wrap foot">
-    <div class="fnote">Copyright (C) 2026 silverbullet-liang · AGPL-3.0-or-later · 仅供技术学习与交流</div>
-    <div class="flinks">
+  <div class="container foot">
+    <div class="cp">Copyright (C) 2026 silverbullet-liang · AGPL-3.0-or-later · 仅供技术学习与交流</div>
+    <div class="lk">
       <a href="https://github.com/silverbullet-liang/tvbox-center" target="_blank" rel="noopener">仓库</a>
       <a href="https://github.com/silverbullet-liang/tvbox-center/releases" target="_blank" rel="noopener">发布</a>
       <a href="https://github.com/silverbullet-liang/tvbox-center/blob/main/LICENSE" target="_blank" rel="noopener">许可证</a>
@@ -404,7 +393,7 @@ python3 -m http.server 8000
   fetch(API + '/releases/latest').then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
     if (!d || !d.tag_name) return;
     setText('latestVer', d.tag_name);
-    var codes = document.querySelectorAll('.cdn-row code, pre');
+    var codes = document.querySelectorAll('.js-cdn, pre');
     for (var i = 0; i < codes.length; i++) {
       codes[i].innerHTML = codes[i].innerHTML.replace(/@v\d+\.\d+\.\d+/g, '@' + d.tag_name);
     }
