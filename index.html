@@ -922,7 +922,7 @@ async function apiList(src,page,wd,t){
 }
 async function localSearch(src,wd,maxPages){
   const kw=String(wd).toLowerCase(),seen={},out=[];
-  const pages=maxPages||100;
+  const pages=maxPages||10;
   for(let p=1;p<=pages;p++){
     const r=await apiList(src,p,"");
     if(!r.ok||!r.list||!r.list.length)break;

@@ -2,6 +2,14 @@
 
 本项目遵循 [语义化版本](https://semver.org/lang/zh-CN/) 与 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/) 规范。
 
+## [1.5.1] - 2026-10-11
+
+### 变更
+
+- **Pro 版**：关闭「全库检索」时，仅列表源的检索范围由前 100 页调整为**前 10 页**（更快、更轻）；开启全库检索后仍使用本地索引的全量数据（前 100 页/源）。
+
+[1.5.1]: https://github.com/silverbullet-liang/tvbox-center/releases/tag/v1.5.1
+
 ## [1.5.0] - 2026-10-11
 
 ### 新增
