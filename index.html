@@ -398,6 +398,12 @@ iconify-icon{display:inline-block;width:1em;height:1em;flex-shrink:0;vertical-al
 .fp-action-btn:active{transform:scale(0.92)}
 .fp-action-btn iconify-icon{font-size:20px}
 .fullpage-body{flex:1;overflow-y:auto;padding:16px;-webkit-overflow-scrolling:touch}
+/* 全库索引 */
+.idx-box{margin-top:4px}
+.idx-bar{height:6px;border-radius:6px;background:var(--sf-v);overflow:hidden}
+.idx-fill{height:100%;width:0;border-radius:6px;background:var(--p);transition:width .3s var(--sp)}
+.idx-tip{font-size:12px;color:var(--on-sf-v);margin-top:8px;line-height:1.5}
+.idx-tip .hl{color:var(--p);font-weight:600}
 </style>
 </head>
 <body>
@@ -578,6 +584,26 @@ iconify-icon{display:inline-block;width:1em;height:1em;flex-shrink:0;vertical-al
         <div class="st-card" id="sourceList"></div>
       </div>
       <div class="st-section">
+        <div class="st-label">全库索引</div>
+        <div class="st-card">
+          <div class="st-item">
+            <div class="left"><iconify-icon icon="lucide:database"></iconify-icon><div><div class="t">开启全库检索</div><div class="s">用本地索引匹配，覆盖更多片源</div></div></div>
+            <div class="sw" id="swFullIndex"><div class="sw-track"></div><div class="sw-thumb"></div></div>
+          </div>
+          <div class="st-item" style="flex-direction:column;align-items:stretch;gap:10px;border-bottom:none">
+            <div class="left" style="gap:14px"><iconify-icon icon="lucide:list-tree" style="font-size:22px;color:var(--on-sf-v)"></iconify-icon><div><div class="t">索引状态</div><div class="s" id="idxHint">未启用</div></div></div>
+            <div class="limit-options" id="idxActions">
+              <button class="limit-btn active" data-act="build">构建 / 更新索引</button>
+              <button class="limit-btn" data-act="clear">清除索引</button>
+            </div>
+            <div class="idx-box" id="idxProgressWrap" style="display:none">
+              <div class="idx-bar"><div class="idx-fill" id="idxFill"></div></div>
+              <div class="idx-tip" id="idxTip"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="st-section">
         <div class="st-label">快捷键</div>
         <div class="st-card">
           <div class="kbd-list">
@@ -597,7 +623,7 @@ iconify-icon{display:inline-block;width:1em;height:1em;flex-shrink:0;vertical-al
       </div>
       <div class="st-section">
         <div class="st-label">关于</div>
-        <div class="st-card"><div class="st-item"><div class="left"><iconify-icon icon="lucide:info"></iconify-icon><div><div class="t">TVBox Pro 影视资源中心</div><div class="s">v5.0-pro · 双模搜索</div></div></div></div></div>
+        <div class="st-card"><div class="st-item"><div class="left"><iconify-icon icon="lucide:info"></iconify-icon><div><div class="t">TVBox Pro 影视资源中心</div><div class="s">v5.1-pro · 全库索引</div></div></div></div></div>
       </div>
       <div style="height:40px"></div>
     </div>
@@ -836,6 +862,7 @@ let histLimit=HIST_LIMIT_DEFAULT;
 let playerSettings={...DEFAULT_PLAYER_SETTINGS};
 let positionCache={};
 let searchQuery="",searchFilter="all",searchItems=[],searchPage=1,searchLoading=false,searchHasMore=true,searchDebounce=null;
+let fullIndexOn=false,idxReady=false,idxBuilding=false;const INDEX_MAX_PAGES=100;
 let suggestTimer=null,suggestAborters=[],suggestIndex=-1,suggestItems=[];
 let playerItem=null,playerSources={},playerSrc="",playerEp=0,hlsInst=null,isPlaying=false,isFs=false,isMini=false,vidSpeed=1;
 let controlsTimer=null,loadDelayTimer=null,loadTimerInterval=null,loadStartTime=0;
@@ -854,6 +881,7 @@ function loadStorage(){
     const pl=parseInt(hl,10);histLimit=isNaN(pl)?HIST_LIMIT_DEFAULT:pl;
     if(ps){try{playerSettings={...DEFAULT_PLAYER_SETTINGS,...JSON.parse(ps)};}catch(e){}}
     if(pc){try{positionCache=JSON.parse(pc);}catch(e){}}
+    fullIndexOn=safeGet("tvbox_full_index","0")==="1";
     if(m!=="1") setTimeout(showWelcome,600);
   }catch(e){sources=JSON.parse(JSON.stringify(DEFAULT_SOURCES));favorites=[];history=[];currentTheme="purple";histLimit=HIST_LIMIT_DEFAULT;setTimeout(showWelcome,600);}
 }
@@ -894,10 +922,12 @@ async function apiList(src,page,wd,t){
 }
 async function localSearch(src,wd,maxPages){
   const kw=String(wd).toLowerCase(),seen={},out=[];
-  const pages=maxPages||8,reqs=[];
-  for(let p=1;p<=pages;p++)reqs.push(apiList(src,p,""));
-  const rs=await Promise.all(reqs);
-  rs.forEach(r=>{if(r.ok&&r.list)r.list.forEach(it=>{const nm=(it.vod_name||"").toLowerCase();if(nm.indexOf(kw)>=0){const k=(it.vod_id||"")+"|"+src.key;if(!seen[k]){seen[k]=1;out.push(it)}}})});
+  const pages=maxPages||100;
+  for(let p=1;p<=pages;p++){
+    const r=await apiList(src,p,"");
+    if(!r.ok||!r.list||!r.list.length)break;
+    r.list.forEach(it=>{const nm=(it.vod_name||"").toLowerCase();if(nm.indexOf(kw)>=0){const k=(it.vod_id||"")+"|"+src.key;if(!seen[k]){seen[k]=1;out.push(it)}}});
+  }
   return out;
 }
 async function apiDetail(src,id){
@@ -1081,28 +1111,35 @@ async function doSearch(reset){
   if(!targets.length){empty.style.display="flex";empty.querySelector(".t1").textContent="没有启用的数据源";empty.querySelector(".t2").textContent="请先在设置中启用至少一个数据源";return}
   const kw=searchQuery;
   const fast=targets.filter(s=>s.search!==false);   /* 服务端搜索 */
-  const slow=targets.filter(s=>s.search===false);   /* 仅列表，客户端标题匹配 */
+  const slow=targets.filter(s=>s.search===false);   /* 仅列表，需本地匹配 */
+  const useIdx=fullIndexOn&&idxReady;               /* 本地全库索引 */
   const keyOf=it=>it.vod_id+"|"+it._sourceKey;
+  const rowOf=r=>({vod_id:r.vod_id,vod_name:r.vod_name,vod_pic:r.vod_pic,vod_remarks:r.vod_remarks,_source:r.source_name,_sourceKey:r.source_key,_api:r.api});
   const addItems=items=>{let a=0;items.forEach(it=>{const k=keyOf(it);if(!searchItems.some(x=>keyOf(x)===k)){searchItems.push(it);a++}});return a};
   const paint=()=>{searchItems.forEach(it=>{if(!grid.querySelector(`[data-key="${esc(keyOf(it))}"]`)){const card=createCard(it,"lg");card.dataset.key=keyOf(it);grid.appendChild(card)}})};
-  const refreshEmpty=()=>{if(searchItems.length===0){empty.style.display="flex";empty.querySelector(".t1").textContent="未找到相关结果";empty.querySelector(".t2").textContent=`关键词「${kw}」在所有源中均未匹配`}else empty.style.display="none"};
+  let pending=0,cleared=false;
+  const refreshEmpty=()=>{if(searchItems.length===0){empty.style.display="flex";if(pending>0){empty.querySelector(".t1").textContent="正在检索更多片源…";empty.querySelector(".t2").textContent="已启用源仍在后台匹配，请稍候"}else{empty.querySelector(".t1").textContent="未找到相关结果";empty.querySelector(".t2").textContent=`关键词「${kw}」在所有源中均未匹配`}}else empty.style.display="none"};
+  const clearOnce=()=>{if(!cleared){grid.innerHTML="";cleared=true;}};
   searchLoading=true;loading.style.display="flex";empty.style.display="none";
   if(reset)grid.appendChild(skel(6,"lg"));
-  /* 第一步：先出支持搜索的源（快） */
+  /* 阶段 1：本地全库索引（最快，全库模糊匹配） */
+  if(useIdx){try{const rows=await idxSearch(kw,300);const items=rows.map(rowOf);if(items.length){clearOnce();addItems(items);await batchFetchDetails(items.slice(0,80),3);paint();}}catch(e){}}
+  /* 阶段 2：服务端可搜源（全库检索，即时） */
   const results=await Promise.all(fast.map(s=>apiList(s,searchPage,kw,"")));
-  if(reset)grid.innerHTML="";
+  clearOnce();
   let first=[];
   results.forEach(r=>{if(r.ok&&r.list){addItems(r.list);first=first.concat(r.list)}});
   if(first.length>0){toast("正在获取封面...");await batchFetchDetails(first,3);}
   paint();
-  searchHasMore=fast.length>0&&first.length>0;searchLoading=false;loading.style.display="none";
+  searchHasMore=fast.length>0&&first.length>0;searchLoading=false;
+  /* 阶段 3：仅列表源后台匹配（未启用全库时）——保持加载动画，不提前显示"未找到" */
+  if(reset&&!useIdx&&slow.length){
+    pending=slow.length;loading.style.display="flex";refreshEmpty();
+    slow.forEach(src=>{localSearch(src,kw).then(async items=>{const added=items.length?addItems(items):0;if(added>0&&searchQuery===kw){await batchFetchDetails(items,3);paint();toast(`「${src.name}」补充 ${added} 条`);}}).catch(()=>{}).then(()=>{pending--;if(pending<=0)loading.style.display="none";refreshEmpty();});});
+  }else{
+    loading.style.display="none";
+  }
   refreshEmpty();
-  /* 第二步：仅列表的源后台加载（拉列表 + 标题模糊匹配），命中后追加 */
-  if(reset)slow.forEach(src=>{localSearch(src,kw).then(async items=>{
-    if(searchQuery!==kw||!items.length)return;
-    const added=addItems(items);
-    if(added>0){await batchFetchDetails(items,3);paint();refreshEmpty();toast(`「${src.name}」补充 ${added} 条`);}
-  }).catch(()=>{})});
 }
 function setSw(el,on){if(!el)return;el.classList.toggle("on",!!on);}
 function renderSettings(){
@@ -1127,6 +1164,7 @@ function renderSettings(){
   const list=document.getElementById("sourceList");list.innerHTML="";
   sources.forEach((src,idx)=>{const item=document.createElement("div");item.className="st-item";const noProxyTag=src.noProxy?`<span class="tag-inline">免代理</span>`:"";item.innerHTML=`<div class="left" style="flex:1;min-width:0">${iconTag('rss',22)}<div style="flex:1;min-width:0;overflow:hidden"><div class="t" style="display:flex;align-items:center;flex-wrap:wrap">${esc(src.name)}${noProxyTag}</div><div class="s" style="font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(src.api)}</div></div></div><div class="sw ${src.enabled?'on':''}" data-idx="${idx}"><div class="sw-track"></div><div class="sw-thumb"></div></div>`;list.appendChild(item);});
   list.querySelectorAll(".sw").forEach(sw=>{sw.addEventListener("click",()=>{const idx=parseInt(sw.dataset.idx);sources[idx].enabled=!sources[idx].enabled;sw.classList.toggle("on",sources[idx].enabled);saveSrc();updSrcCount();rebuildFilters();toast(`${sources[idx].name} 已${sources[idx].enabled?"启用":"禁用"}`)})});
+  if(typeof setSwIdx==="function")setSwIdx();
   updSrcCount();
 }
 document.getElementById("swRememberPos").addEventListener("click",()=>{playerSettings.rememberPos=!playerSettings.rememberPos;savePlayerSettings();renderSettings();toast(playerSettings.rememberPos?"已开启记忆播放位置":"已关闭记忆播放位置");});
@@ -1134,6 +1172,18 @@ document.getElementById("swLongPress").addEventListener("click",()=>{playerSetti
 document.getElementById("swAutoFs").addEventListener("click",()=>{playerSettings.autoFs=!playerSettings.autoFs;savePlayerSettings();renderSettings();toast(playerSettings.autoFs?"已开启打开自动全屏":"已关闭打开自动全屏");});
 document.getElementById("swGesture").addEventListener("click",()=>{playerSettings.gesture=!playerSettings.gesture;savePlayerSettings();renderSettings();toast(playerSettings.gesture?"已开启手势控制":"已关闭手势控制");});
 function updSrcCount(){const en=sources.filter(s=>s.enabled).length;document.getElementById("srcCount").textContent=`${en}/${sources.length}`;}
+/* ===== 本地全库索引（IndexedDB；结构仿 SQL：database=tvbox_center / table=works / index=idx_name） ===== */
+const IDX_DB="tvbox_center",IDX_TABLE="works",IDX_VER=1;
+function idxOpen(){return new Promise((res,rej)=>{const r=indexedDB.open(IDX_DB,IDX_VER);r.onupgradeneeded=()=>{const db=r.result;if(!db.objectStoreNames.contains(IDX_TABLE)){const st=db.createObjectStore(IDX_TABLE,{keyPath:"pk"});st.createIndex("idx_name","name_lower",{unique:false});st.createIndex("idx_source","source_key",{unique:false});}};r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);});}
+async function idxClear(){const db=await idxOpen();return new Promise((res,rej)=>{const t=db.transaction(IDX_TABLE,"readwrite");t.objectStore(IDX_TABLE).clear();t.oncomplete=()=>res();t.onerror=()=>rej(t.error);});}
+async function idxPutAll(rows){if(!rows.length)return;const db=await idxOpen();return new Promise((res,rej)=>{const t=db.transaction(IDX_TABLE,"readwrite"),st=t.objectStore(IDX_TABLE);rows.forEach(x=>st.put(x));t.oncomplete=()=>res();t.onerror=()=>rej(t.error);});}
+async function idxSearch(kw,limit){const kwl=String(kw).toLowerCase();const db=await idxOpen();return new Promise((res,rej)=>{const out=[],lim=limit||300,t=db.transaction(IDX_TABLE,"readonly"),st=t.objectStore(IDX_TABLE),cur=st.openCursor();cur.onsuccess=e=>{const c=e.target.result;if(!c||out.length>=lim){res(out);return;}if((c.value.name_lower||"").indexOf(kwl)>=0)out.push(c.value);c.continue();};cur.onerror=()=>rej(cur.error);});}
+function idxProgress(o){const wrap=document.getElementById("idxProgressWrap"),fill=document.getElementById("idxFill"),tip=document.getElementById("idxTip");if(!wrap)return;if(o.show===false){wrap.style.display="none";return;}wrap.style.display="block";if(typeof o.pct==="number")fill.style.width=Math.max(0,Math.min(100,o.pct))+"%";if(o.msg)tip.innerHTML=o.msg;}
+function refreshIdxHint(){const h=document.getElementById("idxHint");if(!h)return;const c=safeGet("tvbox_idx_count","0");h.innerHTML=fullIndexOn?(c!=="0"?`已启用 · 本地索引 <span class="hl">${c}</span> 条`:"已启用 · 尚未建立索引，请点下方构建"):"未启用（开启后用本地索引检索）";}
+function setSwIdx(){setSw(document.getElementById("swFullIndex"),fullIndexOn);const sw=document.getElementById("swFullIndex");if(sw)sw.onclick=()=>{fullIndexOn=!fullIndexOn;safeSet("tvbox_full_index",fullIndexOn?"1":"0");renderSettings();toast(fullIndexOn?"已开启全库检索":"已关闭全库检索");};const box=document.getElementById("idxActions");if(box)box.querySelectorAll(".limit-btn").forEach(btn=>{btn.onclick=()=>{if(btn.dataset.act==="build")buildFullIndex();else if(btn.dataset.act==="clear")clearIndex();};});refreshIdxHint();}
+async function buildFullIndex(){if(idxBuilding){toast("索引构建中，请稍候");return;}const srcs=sources.filter(s=>s.enabled);if(!srcs.length){toast("请先启用数据源");return;}idxBuilding=true;try{toast("开始构建索引…");await idxClear();let total=0;for(let si=0;si<srcs.length;si++){const src=srcs[si];for(let p=1;p<=INDEX_MAX_PAGES;p++){idxProgress({show:true,pct:((si+(p-1)/INDEX_MAX_PAGES)/srcs.length)*100,msg:`正在下载「${esc(src.name)}」第 ${p}/${INDEX_MAX_PAGES} 页 · 已入库 <span class="hl">${total}</span> 条`});let r;try{r=await apiList(src,p,"");}catch(e){r={ok:false};}if(!r.ok||!r.list||!r.list.length)break;const rows=r.list.map(it=>({pk:src.key+":"+(it.vod_id||""),source_key:src.key,source_name:src.name,api:src.api,vod_id:it.vod_id,vod_name:it.vod_name||"",name_lower:(it.vod_name||"").toLowerCase(),vod_pic:it.vod_pic||"",vod_remarks:it.vod_remarks||""}));await idxPutAll(rows);total+=rows.length;}idxProgress({show:true,pct:((si+1)/srcs.length)*100,msg:`「${esc(src.name)}」入库完成 · 累计 <span class="hl">${total}</span> 条`});}idxProgress({show:true,pct:100,msg:"正在建立索引 …"});idxReady=true;safeSet("tvbox_idx_count",String(total));idxProgress({show:true,pct:100,msg:`索引完成，共 <span class="hl">${total}</span> 条，已缓存到 IndexedDB。`});toast("索引完成："+total+" 条");}catch(e){idxProgress({show:true,msg:"索引构建失败："+(e&&e.message||e)});toast("索引构建失败");}finally{idxBuilding=false;refreshIdxHint();}}
+async function clearIndex(){try{await idxClear();}catch(e){}idxReady=false;safeSet("tvbox_idx_count","0");idxProgress({show:false});toast("已清除索引");refreshIdxHint();}
+async function idxInit(){try{const c=parseInt(safeGet("tvbox_idx_count","0"),10)||0;if(c>0){const db=await idxOpen();idxReady=await new Promise(res=>{const t=db.transaction(IDX_TABLE,"readonly"),rq=t.objectStore(IDX_TABLE).count();rq.onsuccess=()=>res(rq.result>0);rq.onerror=()=>res(false);});}}catch(e){}refreshIdxHint();}
 function startLoading(){
   if(loadDelayTimer)clearTimeout(loadDelayTimer);if(loadTimerInterval)clearInterval(loadTimerInterval);
   loadStartTime=Date.now();
@@ -1508,7 +1558,7 @@ document.querySelectorAll(".nav-item").forEach(item=>{item.addEventListener("cli
 document.getElementById("btnFavTop").addEventListener("click",()=>{switchPage("home");setTimeout(()=>{const fs=document.getElementById("favHomeSection");if(fs&&fs.style.display!=="none")fs.scrollIntoView({behavior:"smooth"});},100);});
 const contentArea=document.getElementById("contentArea");
 contentArea.addEventListener("scroll",()=>{if(currentPage==="search"&&contentArea.scrollTop+contentArea.clientHeight>=contentArea.scrollHeight-300&&!searchLoading&&searchHasMore&&searchQuery){searchPage++;doSearch(false)}});
-loadStorage();applyTheme(currentTheme);initSearch();initMiniDrag();renderHome();updSrcCount();setupCast();
+loadStorage();applyTheme(currentTheme);initSearch();initMiniDrag();renderHome();updSrcCount();setupCast();idxInit();
 if(window.matchMedia){window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{applyTheme(currentTheme);});}
 </script>
 </body>

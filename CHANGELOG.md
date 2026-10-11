@@ -2,6 +2,21 @@
 
 本项目遵循 [语义化版本](https://semver.org/lang/zh-CN/) 与 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/) 规范。
 
+## [1.5.0] - 2026-10-11
+
+### 新增
+
+- **全库检索**：设置页可开启「全库检索」，将启用源的列表（每源前 100 页）抓取并建立本地索引，缓存到浏览器 **IndexedDB**（结构仿 SQL：database `tvbox_center` / table `works` / index `idx_name`）。开启后搜索优先用本地索引做全库模糊匹配。
+- **索引进度 UI**：构建索引时显示进度条与实时文字（正在下载哪个源、第几页、已入库条数、正在建立索引、完成），过程全程可感知。
+- **仅列表源前 100 页检索**：不支持关键词搜索的源，普通模式下改为抓取其前 100 页并客户端标题匹配；检索期间保持加载动画，不再提前显示「未找到」。
+
+### 变更
+
+- **Pro 版**：内部标识更新为 `v5.1-pro`。
+- 组件库 `dist/tvbox-center.js` 同步支持全库索引与进度 UI。
+
+[1.5.0]: https://github.com/silverbullet-liang/tvbox-center/releases/tag/v1.5.0
+
 ## [1.4.0] - 2026-10-11
 
 ### 新增
