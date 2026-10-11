@@ -1,0 +1,25 @@
+# 操作系统
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 编辑器 / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 日志与临时文件
+*.log
+npm-debug.log*
+*.tmp
+*.bak
+*.orig
+
+# 依赖（本项目零依赖，保留以防）
+node_modules/
+
+# 构建产物
+dist/
+build/
