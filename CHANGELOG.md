@@ -2,6 +2,15 @@
 
 本项目遵循 [语义化版本](https://semver.org/lang/zh-CN/) 与 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/) 规范。
 
+## [1.8.1] - 2026-10-17
+
+### 修复
+
+- **Pro 版 · 一起看**：修复打开侧栏后未自动进入横向影院模式、播放器未缩小的问题。桌面宽屏（视口 ≥768px 且横向）点击「一起看」会自动进入全屏，并将播放器缩至「视口宽 − 320px」，右侧显示聊天侧栏。
+- **Pro 版 · 一起看**：侧栏布局改为仅按视口宽度判断（≤767px 为底部抽屉），不再把桌面竖屏窗口误判为移动端。
+
+[1.8.1]: https://github.com/silverbullet-liang/tvbox-center/releases/tag/v1.8.1
+
 ## [1.8.0] - 2026-10-17
 
 ### 新增

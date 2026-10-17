@@ -451,7 +451,7 @@ iconify-icon{display:inline-block;width:1em;height:1em;flex-shrink:0;vertical-al
 .wt-input::placeholder{color:var(--on-sf-v)}
 .wt-send{flex-shrink:0;padding:9px 13px;border-radius:999px;border:none;background:var(--p);color:var(--on-p);font-size:12px;font-weight:600;font-family:inherit;cursor:pointer}
 .wt-send:active{transform:scale(.94)}
-@media (max-width:899px),(orientation:portrait){
+@media (max-width:767px){
   .wt-panel{top:auto;left:0;right:0;width:auto;height:62vh;max-height:70vh;border-left:none;border-top:1px solid var(--ol-v);border-radius:16px 16px 0 0;box-shadow:0 -8px 24px rgba(0,0,0,.28)}
   @keyframes wtPanelIn{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
 }
@@ -761,7 +761,7 @@ iconify-icon{display:inline-block;width:1em;height:1em;flex-shrink:0;vertical-al
       </div>
       <div class="st-section">
         <div class="st-label">关于</div>
-        <div class="st-card"><div class="st-item"><div class="left"><iconify-icon icon="lucide:info"></iconify-icon><div><div class="t">TVBox Pro 影视资源中心</div><div class="s">v5.8-pro · 一起看</div></div></div></div></div>
+        <div class="st-card"><div class="st-item"><div class="left"><iconify-icon icon="lucide:info"></iconify-icon><div><div class="t">TVBox Pro 影视资源中心</div><div class="s">v5.8.1-pro · 一起看</div></div></div></div></div>
       </div>
       <div style="height:40px"></div>
     </div>
@@ -1623,7 +1623,7 @@ function applyFsLayout(){
   if(!isFs)return;
   const vw=window.innerWidth,vh=window.innerHeight;
   const needRotate=vh>vw;
-  const dock=typeof wtPanelOpen!=="undefined"&&wtPanelOpen&&!needRotate&&vw>=900;
+  const dock=typeof wtPanelOpen!=="undefined"&&wtPanelOpen&&!needRotate&&vw>=768;
   const panelW=dock?320:0;
   playerOverlay.style.width=(needRotate?vh:vw-panelW)+"px";
   playerOverlay.style.height=(needRotate?vw:vh)+"px";
@@ -2225,7 +2225,9 @@ function wtOpenPanel(){
   const panel=document.getElementById("wtPanel");
   if(panel)panel.classList.add("open");
   wtPanelOpen=true;
-  if(isFs)applyFsLayout();
+  const _vw=window.innerWidth,_vh=window.innerHeight;
+  if(!isFs&&_vw>=768&&_vw>_vh){enterFsMode();}
+  else if(isFs){applyFsLayout();}
   wtRenderMessages();
   wtMarkRead();
   wtAckVisible();
