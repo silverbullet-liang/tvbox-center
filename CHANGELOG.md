@@ -2,6 +2,16 @@
 
 本项目遵循 [语义化版本](https://semver.org/lang/zh-CN/) 与 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/) 规范。
 
+## [1.8.5] - 2026-10-17
+
+### 修复
+
+- **Pro 版 · 一起看**：竖屏点击「一起看」时优先请求系统横屏（全屏 + Screen Orientation API），整个页面进入真实横屏坐标系，侧栏固定在右侧、关闭按钮位于侧栏头部。
+- 浏览器不支持横屏锁定（如 iOS Safari）时，回退为与「选集」弹窗完全相同的 `inset:0` 覆盖层，随播放器一起旋转（不再自行计算 320px 定位），关闭按钮仍在侧栏头部。
+- 退出影院模式时释放横屏锁与浏览器全屏。
+
+[1.8.5]: https://github.com/silverbullet-liang/tvbox-center/releases/tag/v1.8.5
+
 ## [1.8.3] - 2026-10-17
 
 ### 修复

@@ -114,7 +114,7 @@ Fork this repo → `Settings` → `Pages` → Source: `Deploy from a branch` →
 The **Watch Together** button in the player controls opens a chat sidebar and switches to cinema mode:
 
 - **Desktop / landscape**: the player takes about 70% of the viewport, with a fixed 320px sidebar on the right.
-- **Portrait / mobile**: the player rotates 90° to landscape; the chat sidebar stays as a bottom drawer (not rotated with the player), so its header and close button remain upright.
+- **Portrait / mobile**: the app first requests real landscape (fullscreen + Screen Orientation API) and places the sidebar on the right. If orientation lock is unavailable, it falls back to the same inset overlay used by the episode panel, rotating with the player; the close button stays in the sidebar header.
 - **Closing the sidebar** restores the full-width player. The MQTT connection and subscription stay alive unless background monitoring is disabled in Settings.
 
 Rooms are isolated per title using `sourceKey::vodId` — different sources for the same title do not merge, while episodes and lines share one room.
@@ -152,7 +152,7 @@ Pipeline: JSON → UTF-8 → **GZIP** → XOR → RC4 → **AES-GCM-256**. PBKDF
 `dist/tvbox-center.js` is a self-contained component library with all Pro features. It bundles **hls.js 1.7.3** and **mqtt.js 5.15.1** into the same file and exposes them as `TVBoxCenter.hls` / `TVBoxCenter.mqtt`.
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/silverbullet-liang/tvbox-center@v1.8.3/dist/tvbox-center.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/silverbullet-liang/tvbox-center@v1.8.5/dist/tvbox-center.min.js"></script>
 <div id="tvbox-app" style="height:100vh"></div>
 <script>
   TVBox.mount('#tvbox-app', { theme: 'purple' });
@@ -163,7 +163,7 @@ In a Web Worker, `importScripts` the same file — only the vendor bundle is ins
 
 ```js
 const worker = new Worker(URL.createObjectURL(new Blob([`
-  importScripts('https://cdn.jsdelivr.net/gh/silverbullet-liang/tvbox-center@v1.8.3/dist/tvbox-center.js');
+  importScripts('https://cdn.jsdelivr.net/gh/silverbullet-liang/tvbox-center@v1.8.5/dist/tvbox-center.js');
   const client = TVBoxCenter.mqtt.connect('wss://broker.emqx.io:8084/mqtt');
 `], { type: 'application/javascript' })));
 ```
@@ -233,7 +233,7 @@ Watch Together requires WebSocket and Web Worker. Encrypted backup requires `Com
 The public broker may be blocked by your network or rate-limited. Point `MQTT_CONFIG` at your own broker. Chat being unavailable never blocks playback.
 
 **No landscape mode when opening Watch Together?**
-Since v1.8.3, opening it in portrait rotates the player to landscape; the sidebar stays as a bottom drawer and is not rotated with the player. Make sure you are using the latest `index.html`.
+Since v1.8.5, opening it in portrait requests real landscape first; if orientation lock is unavailable it falls back to an inset overlay that rotates with the player. Make sure you are using the latest `index.html`.
 
 **Import says "wrong key or corrupted backup"?**
 Make sure the key matches the export key exactly; unsupported versions, corrupted files and missing GZIP compression share the same message. Export a fresh backup with the current version and retry.

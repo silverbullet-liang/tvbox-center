@@ -455,6 +455,11 @@ iconify-icon{display:inline-block;width:1em;height:1em;flex-shrink:0;vertical-al
   .wt-panel{top:auto;left:0;right:0;width:auto;height:62vh;max-height:70vh;border-left:none;border-top:1px solid var(--ol-v);border-radius:16px 16px 0 0;box-shadow:0 -8px 24px rgba(0,0,0,.28)}
   @keyframes wtPanelIn{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
 }
+/* 竖屏回退：与选集弹窗 fs-ep-modal 相同的覆盖层定位，随播放器一起旋转 */
+.player-overlay.fs-mode .wt-panel.wt-overlay{
+  position:absolute;inset:0;width:auto;height:auto;max-height:none;
+  border:none;border-radius:0;box-shadow:none;z-index:120;background:var(--sf);
+}
 
 /* 个人资料 / 设置补充 */
 .wt-avatar-lg{width:48px;height:48px;border-radius:50%;object-fit:cover;background:var(--sf);flex-shrink:0}
@@ -761,7 +766,7 @@ iconify-icon{display:inline-block;width:1em;height:1em;flex-shrink:0;vertical-al
       </div>
       <div class="st-section">
         <div class="st-label">关于</div>
-        <div class="st-card"><div class="st-item"><div class="left"><iconify-icon icon="lucide:info"></iconify-icon><div><div class="t">TVBox Pro 影视资源中心</div><div class="s">v5.8.3-pro · 一起看</div></div></div></div></div>
+        <div class="st-card"><div class="st-item"><div class="left"><iconify-icon icon="lucide:info"></iconify-icon><div><div class="t">TVBox Pro 影视资源中心</div><div class="s">v5.8.5-pro · 一起看</div></div></div></div></div>
       </div>
       <div style="height:40px"></div>
     </div>
@@ -1633,7 +1638,7 @@ function applyFsLayout(){
 }
 function clearFsLayout(){playerOverlay.style.width="";playerOverlay.style.height="";playerOverlay.style.transform="";playerOverlay.style.left="";if(typeof wtApplyDockLayout==="function")wtApplyDockLayout();}
 function enterFsMode(){isFs=true;playerOverlay.classList.add("fs-mode");applyFsLayout();updateFsEpName();showControls();}
-function exitFsMode(){isFs=false;playerOverlay.classList.remove("fs-mode");playerOverlay.classList.remove("show-controls");clearFsLayout();closeFsEpModal();closePsModal();hideLpBadge();clearTimeout(_lpTimer);if(_lpActive){videoEl.playbackRate=vidSpeed||1;_lpActive=false;}}
+function exitFsMode(){if(typeof wtExitLandscape==="function")wtExitLandscape();isFs=false;playerOverlay.classList.remove("fs-mode");playerOverlay.classList.remove("show-controls");clearFsLayout();closeFsEpModal();closePsModal();hideLpBadge();clearTimeout(_lpTimer);if(_lpActive){videoEl.playbackRate=vidSpeed||1;_lpActive=false;}}
 document.getElementById("btnFullscreen").addEventListener("click",(e)=>{e.stopPropagation();if(!isFs)enterFsMode();else exitFsMode();});
 window.addEventListener("resize",()=>{if(isFs)applyFsLayout()});
 window.addEventListener("orientationchange",()=>{setTimeout(()=>{if(isFs)applyFsLayout()},120)});
@@ -2218,12 +2223,31 @@ function wtRenderMessages(){
 }
 
 /* ---------- 侧栏 ---------- */
+async function wtEnterLandscape(){
+  try{
+    if(window.innerWidth>window.innerHeight)return false;
+    const el=document.documentElement;
+    if(el.requestFullscreen&&!document.fullscreenElement){await el.requestFullscreen();}
+    if(screen.orientation&&screen.orientation.lock){await screen.orientation.lock("landscape");return true;}
+  }catch(e){}
+  return false;
+}
+function wtExitLandscape(){
+  try{if(screen.orientation&&screen.orientation.unlock)screen.orientation.unlock();}catch(e){}
+  try{if(document.fullscreenElement&&document.exitFullscreen)document.exitFullscreen();}catch(e){}
+}
 function wtApplyDockLayout(){
   const panel=document.getElementById("wtPanel");
   if(!panel)return;
   const app=document.getElementById("app");
-  if(app&&panel.parentElement!==app)app.appendChild(panel);
-  playerOverlay.classList.remove("wt-in-player");
+  const overlay=isFs&&wtPanelOpen&&window.innerHeight>window.innerWidth;
+  if(overlay){
+    if(panel.parentElement!==playerOverlay)playerOverlay.appendChild(panel);
+    panel.classList.add("wt-overlay");
+  }else{
+    if(panel.parentElement===playerOverlay&&app)app.appendChild(panel);
+    panel.classList.remove("wt-overlay");
+  }
 }
 function wtOpenPanel(){
   if(!wtSettings.enabled)return;
@@ -2233,8 +2257,13 @@ function wtOpenPanel(){
   const panel=document.getElementById("wtPanel");
   if(panel)panel.classList.add("open");
   wtPanelOpen=true;
-  if(!isFs){enterFsMode();}
-  else{applyFsLayout();}
+  if(!isFs){
+    enterFsMode();
+    if(window.innerWidth<=window.innerHeight)wtEnterLandscape();
+  }else{
+    applyFsLayout();
+    if(window.innerWidth<=window.innerHeight)wtEnterLandscape();
+  }
   wtRenderMessages();
   wtMarkRead();
   wtAckVisible();
