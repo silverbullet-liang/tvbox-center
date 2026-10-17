@@ -180,6 +180,26 @@ footer{border-top:1px solid var(--line);margin-top:20px;padding:30px 0 44px}
 .foot .lk a{font-size:12.8px;color:var(--fg-2);padding:6px 12px;border-radius:999px}
 .foot .lk a:hover{background:var(--surface)}
 @media(max-width:600px){ .foot{flex-direction:column;align-items:flex-start} }
+
+/* ========== 最新更新 ========== */
+.changelog{margin-top:22px;max-width:660px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-s);padding:14px 16px;box-shadow:var(--shadow)}
+.cl-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:12.5px;color:var(--fg-3);margin-bottom:8px}
+.cl-dot{width:7px;height:7px;border-radius:50%;background:var(--primary);box-shadow:0 0 0 3px var(--primary-c);flex-shrink:0}
+.cl-label{font-weight:700;color:var(--fg-2)}
+.cl-ver{font-weight:800;color:var(--primary);font-variant-numeric:tabular-nums}
+.cl-more{margin-left:auto;font-size:12px;color:var(--fg-3);text-decoration:underline;text-underline-offset:2px;white-space:nowrap}
+.cl-more:hover{color:var(--primary)}
+.cl-body{font-size:13.5px;color:var(--fg-2);line-height:1.65}
+.cl-body h4{font-size:13px;font-weight:800;color:var(--fg);margin:8px 0 5px}
+.cl-body h4:first-child{margin-top:0}
+.cl-body ul{list-style:none;padding:0;margin:0;display:grid;gap:5px}
+.cl-body li{position:relative;padding-left:13px}
+.cl-body li::before{content:"";position:absolute;left:1px;top:.62em;width:5px;height:5px;border-radius:50%;background:var(--primary)}
+.cl-body code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.9em;padding:1px 5px;border-radius:5px;background:var(--surface-2);color:var(--fg)}
+.cl-body a{color:var(--primary);text-decoration:underline;text-underline-offset:2px}
+.cl-body strong{color:var(--fg);font-weight:800}
+.cl-body p{margin:6px 0}
+.cl-skel{color:var(--fg-3);font-size:13px}
 </style>
 </head>
 <body>
@@ -222,6 +242,16 @@ footer{border-top:1px solid var(--line);margin-top:20px;padding:30px 0 44px}
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6 3 12l5 6M16 6l5 6-5 6"/></svg>
           查看源码
         </a>
+      </div>
+
+      <div class="changelog" id="changelog" aria-live="polite">
+        <div class="cl-head">
+          <span class="cl-dot"></span>
+          <span class="cl-label">最新更新</span>
+          <span class="cl-ver" id="clVer">读取中…</span>
+          <a class="cl-more" href="https://github.com/silverbullet-liang/tvbox-center/blob/main/CHANGELOG.md" target="_blank" rel="noopener">完整日志</a>
+        </div>
+        <div class="cl-body" id="clBody"><div class="cl-skel">正在从 GitHub 获取更新日志…</div></div>
       </div>
     </div>
   </section>
@@ -402,6 +432,111 @@ python3 -m http.server 8000
   fetch(API).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
     if (d && typeof d.stargazers_count === 'number') setText('starCount', d.stargazers_count);
   }).catch(function () {});
+
+  /* 更新日志：GitHub Contents API 实时获取 CHANGELOG.md，只渲染最新一个版本 */
+  var CL_KEY = 'tvbox:changelog:v1', CL_TTL = 5 * 60 * 1000;
+  function clDecode(b64) {
+    var bin = atob(String(b64).replace(/\s+/g, ''));
+    var bytes = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return new TextDecoder('utf-8').decode(bytes);
+  }
+  function clInline(text) {
+    var frag = document.createDocumentFragment();
+    var re = /(\*\*[^*]+\*\*|`[^`]+`|\[[^\]]+\]\(https?:\/\/[^)\s]+\))/g;
+    var last = 0, m;
+    while ((m = re.exec(text))) {
+      if (m.index > last) frag.appendChild(document.createTextNode(text.slice(last, m.index)));
+      var tok = m[0];
+      if (tok.slice(0, 2) === '**' && tok.slice(-2) === '**') {
+        var b = document.createElement('strong'); b.textContent = tok.slice(2, -2); frag.appendChild(b);
+      } else if (tok.charAt(0) === '`') {
+        var c = document.createElement('code'); c.textContent = tok.slice(1, -1); frag.appendChild(c);
+      } else {
+        var mm = tok.match(/^\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)$/);
+        if (mm) {
+          var a = document.createElement('a');
+          a.textContent = mm[1]; a.href = mm[2]; a.target = '_blank'; a.rel = 'noopener';
+          frag.appendChild(a);
+        } else {
+          frag.appendChild(document.createTextNode(tok));
+        }
+      }
+      last = re.lastIndex;
+    }
+    if (last < text.length) frag.appendChild(document.createTextNode(text.slice(last)));
+    return frag;
+  }
+  function clLatest(md) {
+    var lines = String(md || '').split(/\r?\n/), start = -1, end = lines.length;
+    for (var i = 0; i < lines.length; i++) {
+      if (/^##\s+\[/.test(lines[i])) { start = i; break; }
+    }
+    if (start < 0) return null;
+    for (var j = start + 1; j < lines.length; j++) {
+      if (/^##\s+\[/.test(lines[j])) { end = j; break; }
+    }
+    var block = lines.slice(start, end);
+    var head = block[0].match(/^##\s+\[([^\]]+)\](?:\s*-\s*(.+))?/);
+    if (!head) return null;
+    var body = document.createElement('div'), list = null;
+    for (var k = 1; k < block.length; k++) {
+      var ln = block[k];
+      if (!ln.trim()) continue;
+      if (/^\[[^\]]+\]:\s*/.test(ln)) continue;
+      if (/^###\s+/.test(ln)) {
+        var h = document.createElement('h4');
+        h.textContent = ln.replace(/^###\s+/, '');
+        body.appendChild(h); list = null; continue;
+      }
+      if (/^-\s+/.test(ln)) {
+        if (!list) { list = document.createElement('ul'); body.appendChild(list); }
+        var li = document.createElement('li');
+        li.appendChild(clInline(ln.replace(/^-\s+/, '')));
+        list.appendChild(li); continue;
+      }
+      var p = document.createElement('p');
+      p.appendChild(clInline(ln));
+      body.appendChild(p); list = null;
+    }
+    return { version: head[1], date: (head[2] || '').trim(), body: body };
+  }
+  function clRender(data) {
+    var ver = document.getElementById('clVer'), body = document.getElementById('clBody');
+    if (!ver || !body) return;
+    if (!data) {
+      ver.textContent = '获取失败';
+      body.textContent = '暂时无法获取更新日志，请前往 GitHub 查看。';
+      return;
+    }
+    ver.textContent = 'v' + data.version + (data.date ? ' · ' + data.date : '');
+    body.textContent = '';
+    body.appendChild(data.body);
+  }
+  function clLoad() {
+    var ver = document.getElementById('clVer'), body = document.getElementById('clBody');
+    if (!ver || !body) return;
+    var cached = null;
+    try { cached = JSON.parse(sessionStorage.getItem(CL_KEY) || 'null'); } catch (e) {}
+    if (cached && cached.at && Date.now() - cached.at < CL_TTL && cached.md) {
+      clRender(clLatest(cached.md)); return;
+    }
+    fetch(API + '/contents/CHANGELOG.md?ref=main', { headers: { 'Accept': 'application/vnd.github+json' } })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) {
+        if (!d || !d.content) throw new Error('no-content');
+        var md = clDecode(d.content);
+        try { sessionStorage.setItem(CL_KEY, JSON.stringify({ at: Date.now(), md: md })); } catch (e) {}
+        clRender(clLatest(md));
+      })
+      .catch(function () {
+        fetch('https://raw.githubusercontent.com/silverbullet-liang/tvbox-center/main/CHANGELOG.md')
+          .then(function (r) { return r.ok ? r.text() : null; })
+          .then(function (md) { clRender(md ? clLatest(md) : null); })
+          .catch(function () { clRender(null); });
+      });
+  }
+  clLoad();
 })();
 </script>
 </body>

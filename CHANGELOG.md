@@ -2,6 +2,14 @@
 
 本项目遵循 [语义化版本](https://semver.org/lang/zh-CN/) 与 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/) 规范。
 
+## [1.8.8] - 2026-10-17
+
+### 新增
+
+- **宣传页**：一键体验按钮下方新增「最新更新」卡片。通过 GitHub Contents API 实时读取 `CHANGELOG.md` 并在本地渲染 Markdown，只展示最新一个版本；5 分钟内使用会话缓存，接口不可用时回退 raw 文件，失败不影响页面其他内容。
+
+[1.8.8]: https://github.com/silverbullet-liang/tvbox-center/releases/tag/v1.8.8
+
 ## [1.8.7] - 2026-10-17
 
 ### 修复
