@@ -2,6 +2,14 @@
 
 本项目遵循 [语义化版本](https://semver.org/lang/zh-CN/) 与 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/) 规范。
 
+## [1.8.3] - 2026-10-17
+
+### 修复
+
+- **Pro 版 · 一起看**：侧栏不再嵌入旋转中的播放器，避免关闭按钮与播放控件重叠、误触。竖屏与移动端改为固定在底部的聊天抽屉（不随播放器旋转，关闭按钮始终在侧栏顶部），视频仍自动横屏；桌面宽屏保持右侧 320px 侧栏。
+
+[1.8.3]: https://github.com/silverbullet-liang/tvbox-center/releases/tag/v1.8.3
+
 ## [1.8.2] - 2026-10-17
 
 ### 修复

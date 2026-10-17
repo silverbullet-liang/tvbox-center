@@ -33,7 +33,7 @@ License: `AGPL-3.0-or-later`
 
 | Capability | Mini | Pro |
 | --- | :--: | :--: |
-| Bundled sources | 1 | 2 |
+| Bundled sources | 1 | 6 |
 | Parallel multi-source search | Yes | Yes |
 | Search suggestions | — | Yes |
 | HLS playback (hls.js) | Yes | Yes |
@@ -50,6 +50,9 @@ License: `AGPL-3.0-or-later`
 | Play mode (seq / loop / random) | — | Yes |
 | Casting (Chromecast / AirPlay) | — | Yes |
 | History limit setting | — | Yes |
+| Watch Together (MQTT chat / online users / unread badge) | — | Yes |
+| Watch Together shares (`TVC1:` / clipboard & search) | — | Yes |
+| Encrypted backup (`.tvcbak` export / import) | — | Yes |
 | Themes (4 colors + dark/light) | Yes | Yes |
 | MiSans font | — | Yes |
 
@@ -106,6 +109,65 @@ Fork this repo → `Settings` → `Pages` → Source: `Deploy from a branch` →
 
 ---
 
+## Watch Together
+
+The **Watch Together** button in the player controls opens a chat sidebar and switches to cinema mode:
+
+- **Desktop / landscape**: the player takes about 70% of the viewport, with a fixed 320px sidebar on the right.
+- **Portrait / mobile**: the player rotates 90° to landscape; the chat sidebar stays as a bottom drawer (not rotated with the player), so its header and close button remain upright.
+- **Closing the sidebar** restores the full-width player. The MQTT connection and subscription stay alive unless background monitoring is disabled in Settings.
+
+Rooms are isolated per title using `sourceKey::vodId` — different sources for the same title do not merge, while episodes and lines share one room.
+
+- Broker: `wss://broker.emqx.io:8084/mqtt` by default. Edit `MQTT_CONFIG` to use your own broker.
+- Topics: `tvbox-center/v1/chat/{roomHash}`.
+- Status dot: green connected, yellow connecting, red failed; reconnection is automatic.
+- Presence: 15s heartbeat; the online list de-duplicates by user ID (multiple tabs count once).
+- Read receipts: ACK is sent only after another client opens the sidebar and renders the message; reconnect triggers an incremental sync (up to 200 messages).
+- Limits: 500 characters per message, 1.2s send interval, 200 messages retained per title. Messages on a public broker are visible to anyone who knows the topic — **do not send sensitive information**.
+
+### Share links
+
+The **Share** button builds a `TVC1:` string (JSON → deflate-raw → base64url) and copies it to the clipboard. The app recognizes it from the clipboard on load/focus, when pasted into the search box (press Enter), from a global paste, or via Settings → "Open from clipboard". Joining switches to the matching source, loads the title, selects the line/episode, seeks to the shared position, enters fullscreen and opens the sidebar.
+
+## Encrypted backup
+
+Settings → **Data backup**:
+
+- **Export all data**: enter a key twice; produces `tvbox-backup-YYYYMMDD-HHmm.tvcbak`.
+- **Import backup**: pick a `.tvcbak` file and enter the export key.
+
+The backup covers favorites, settings, history, playback positions, profile (avatar / nickname), Watch Together switches, chat records and the full-library IndexedDB index.
+
+```text
+magic(8) "TVCBAK1\0" | version(1) | flags(1) | salt(16) | iv(12) | AES-GCM ciphertext
+```
+
+Pipeline: JSON → UTF-8 → **GZIP** → XOR → RC4 → **AES-GCM-256**. PBKDF2-SHA256 (200,000 iterations) derives 64 bytes for the AES / RC4 / XOR keys; AES-GCM additional data binds the header to prevent tampering.
+
+> The key is never stored, uploaded or logged. Losing it makes the backup unrecoverable. Backup files contain chat records and profile data — keep them safe. Export/import requires `CompressionStream` (GZIP) and WebCrypto over **HTTPS or localhost**.
+
+## Component library
+
+`dist/tvbox-center.js` is a self-contained component library with all Pro features. It bundles **hls.js 1.7.3** and **mqtt.js 5.15.1** into the same file and exposes them as `TVBoxCenter.hls` / `TVBoxCenter.mqtt`.
+
+```html
+<script src="https://cdn.jsdelivr.net/gh/silverbullet-liang/tvbox-center@v1.8.3/dist/tvbox-center.min.js"></script>
+<div id="tvbox-app" style="height:100vh"></div>
+<script>
+  TVBox.mount('#tvbox-app', { theme: 'purple' });
+</script>
+```
+
+In a Web Worker, `importScripts` the same file — only the vendor bundle is installed when `document` is absent:
+
+```js
+const worker = new Worker(URL.createObjectURL(new Blob([`
+  importScripts('https://cdn.jsdelivr.net/gh/silverbullet-liang/tvbox-center@v1.8.3/dist/tvbox-center.js');
+  const client = TVBoxCenter.mqtt.connect('wss://broker.emqx.io:8084/mqtt');
+`], { type: 'application/javascript' })));
+```
+
 ## Data sources
 
 Sources are public Apple CMS (MacCMS v10) JSON endpoints using these parameters:
@@ -133,7 +195,10 @@ const DEFAULT_SOURCES = [
 ```
 tvbox-center/
 ├── index.html          Pro edition (default entry)
+├── promo.html          Single-file landing page
+├── dist/               CDN assets (component library with mqtt/hls, API SDK)
 ├── mini.html           Mini edition
+├── favicon.png         Site icon
 ├── LICENSE             Full AGPL-3.0 text
 ├── README.md           Chinese docs
 ├── README.en.md        English docs
@@ -158,9 +223,20 @@ tvbox-center/
 
 HLS playback uses `hls.js`; Safari's native HLS is used as fallback.
 
+Watch Together requires WebSocket and Web Worker. Encrypted backup requires `CompressionStream` (GZIP) and WebCrypto (Safari 16.4+), and must run over **HTTPS or localhost**.
+
 ---
 
 ## FAQ
+
+**Watch Together keeps showing "connecting" / "failed"?**
+The public broker may be blocked by your network or rate-limited. Point `MQTT_CONFIG` at your own broker. Chat being unavailable never blocks playback.
+
+**No landscape mode when opening Watch Together?**
+Since v1.8.3, opening it in portrait rotates the player to landscape; the sidebar stays as a bottom drawer and is not rotated with the player. Make sure you are using the latest `index.html`.
+
+**Import says "wrong key or corrupted backup"?**
+Make sure the key matches the export key exactly; unsupported versions, corrupted files and missing GZIP compression share the same message. Export a fresh backup with the current version and retry.
 
 **No search results?**
 Usually an endpoint outage or a CORS limit. Use a local server / HTTPS, or switch sources in settings.
@@ -182,7 +258,8 @@ This project stays deliberately **single-file and build-free**: no bundler, no m
 
 - Design: Material Design 3 tokens
 - Icons: Iconify (lucide set)
-- Playback: hls.js
+- Playback: hls.js 1.7.3
+- Realtime chat: mqtt.js 5.15.1
 - Encoding: UTF-8, inline CSS / JS
 
 Read [CONTRIBUTING.md](CONTRIBUTING.md) before contributing.

@@ -110,7 +110,13 @@ Fork 本仓库 → `Settings` → `Pages` → Source 选择 `Deploy from a branc
 
 ## 一起看（Watch Together）
 
-全屏播放控件右侧的「一起看」按钮可打开聊天侧栏。房间按影视隔离：`sourceKey + "::" + vodId` 哈希成 `roomHash`，同一影片的不同采集源不会合并，不同剧集 / 线路共用同一个房间。
+播放控件右下角的「一起看」按钮可打开聊天侧栏。点击后会直接进入影院模式：
+
+- **桌面宽屏**：播放器约占 70%，右侧固定 320px 侧栏；
+- **竖屏 / 移动端**：播放器自动旋转 90° 横屏；聊天侧栏固定在底部作为抽屉，不随播放器旋转，关闭按钮始终在侧栏顶部；
+- **关闭侧栏**：播放器恢复全宽；MQTT 连接与订阅默认保持（可在设置中关闭后台监控）。
+
+房间按影视隔离：`sourceKey + "::" + vodId` 哈希成 `roomHash`，同一影片的不同采集源不会合并，不同剧集 / 线路共用同一个房间。
 
 - **连接**：默认使用公共 Broker `wss://broker.emqx.io:8084/mqtt`，无需账号；首次点击「一起看」时创建 Web Worker（Blob URL），后续复用。
 - **自建 Broker**：修改 `index.html` 顶部的 `MQTT_CONFIG`（`url` / `username` / `password` / `clientIdPrefix` / `topicPrefix`）。Topic 形如 `tvbox-center/v1/chat/{roomHash}`。
@@ -146,6 +152,8 @@ magic(8) "TVCBAK1\0" | version(1) | flags(1) | salt(16) | iv(12) | AES-GCM ciphe
 加密流程：JSON → UTF-8 → **GZIP** → XOR → RC4 → **AES-GCM-256**。密钥经 PBKDF2-SHA256（200000 次）派生 64 字节，分别用作 AES / RC4 / XOR 密钥；AES-GCM 的 additionalData 绑定文件头，防篡改。
 
 > 密钥不会保存、不会上传，也不会写入日志。密钥丢失将无法恢复备份。备份文件包含聊天记录与个人资料，请妥善保管。
+>
+> 导出 / 导入需要浏览器支持 `CompressionStream`（GZIP）与 WebCrypto，并通过 **HTTPS 或 localhost** 访问。
 
 ## 数据源
 
@@ -177,7 +185,7 @@ const DEFAULT_SOURCES = [
 
 ```html
 <!-- jsDelivr · 锁定版本（生产环境推荐） -->
-<script src="https://cdn.jsdelivr.net/gh/silverbullet-liang/tvbox-center@v1.8.0/dist/tvbox-center.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/silverbullet-liang/tvbox-center@v1.8.3/dist/tvbox-center.min.js"></script>
 
 <!-- jsDelivr · 跟随 main（始终最新） -->
 <script src="https://cdn.jsdelivr.net/gh/silverbullet-liang/tvbox-center@main/dist/tvbox-center.min.js"></script>
@@ -224,7 +232,7 @@ const Hls  = TVBoxCenter.hls;    // hls.js 1.7.3
 
 ```js
 const worker = new Worker(URL.createObjectURL(new Blob([`
-  importScripts('https://cdn.jsdelivr.net/gh/silverbullet-liang/tvbox-center@v1.8.0/dist/tvbox-center.js');
+  importScripts('https://cdn.jsdelivr.net/gh/silverbullet-liang/tvbox-center@v1.8.3/dist/tvbox-center.js');
   const client = TVBoxCenter.mqtt.connect('wss://broker.emqx.io:8084/mqtt');
 `], { type: 'application/javascript' })));
 ```
@@ -327,7 +335,7 @@ const TVBoxSDK = require('./dist/tvbox-sdk.js');
 tvbox-center/
 ├── index.html           Pro 版（全功能，默认入口）
 ├── promo.html           宣传页（单文件落地页）
-├── dist/                通用 CDN 资源（组件库 tvbox-center.js + 接口 SDK tvbox-sdk.js）
+├── dist/                通用 CDN 资源（组件库 tvbox-center.js，已聚合 mqtt.js / hls.js；接口 SDK tvbox-sdk.js）
 ├── mini.html            Mini 版（轻量）
 ├── favicon.png          网站图标（favicon）
 ├── LICENSE              AGPL-3.0 全文
@@ -354,9 +362,20 @@ tvbox-center/
 
 HLS 播放依赖 `hls.js`；Safari 原生支持 HLS，会自动回退。
 
+一起看需要 WebSocket 与 Web Worker（现代浏览器均支持）；加密备份需要 `CompressionStream`（GZIP）与 WebCrypto（Safari 16.4+），且页面需在 **HTTPS 或 localhost** 下运行。
+
 ---
 
 ## 常见问题
+
+**一起看一直显示「正在连接」/「连接失败」？**
+公共 Broker 可能被网络或防火墙拦截，也可能临时限流。可修改 `MQTT_CONFIG` 指向自建 Broker。聊天不可用不影响正常播放。
+
+**打开一起看没有横屏？**
+v1.8.3 起，竖屏点击「一起看」会自动旋转为横屏影院模式，侧栏固定在底部抽屉、不随播放器旋转；请确认使用的是最新 `index.html`。
+
+**导入备份提示「密钥错误或备份文件损坏」？**
+请确认密钥与导出时完全一致；版本不支持、文件损坏或缺少 GZIP 压缩都会统一提示。建议先用当前版本重新导出一份备份再导入。
 
 **搜索没有结果？**
 多为接口不可用或跨域限制。请用本地服务器或 HTTPS 访问，或在设置中切换其它数据源。

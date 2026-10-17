@@ -455,13 +455,6 @@ iconify-icon{display:inline-block;width:1em;height:1em;flex-shrink:0;vertical-al
   .wt-panel{top:auto;left:0;right:0;width:auto;height:62vh;max-height:70vh;border-left:none;border-top:1px solid var(--ol-v);border-radius:16px 16px 0 0;box-shadow:0 -8px 24px rgba(0,0,0,.28)}
   @keyframes wtPanelIn{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
 }
-/* 竖屏影院旋转：侧栏随播放器一起旋转，落在视觉右侧，视频让出 320px */
-.player-overlay.fs-mode.wt-in-player .wt-panel{
-  position:absolute;top:0;left:auto;right:0;bottom:0;width:320px;height:auto;max-height:none;
-  border-left:1px solid var(--ol-v);border-top:none;border-radius:0;
-  box-shadow:-8px 0 24px rgba(0,0,0,.22);z-index:120;
-}
-.player-overlay.fs-mode.wt-in-player .video-wrap{right:320px;width:auto}
 
 /* 个人资料 / 设置补充 */
 .wt-avatar-lg{width:48px;height:48px;border-radius:50%;object-fit:cover;background:var(--sf);flex-shrink:0}
@@ -768,7 +761,7 @@ iconify-icon{display:inline-block;width:1em;height:1em;flex-shrink:0;vertical-al
       </div>
       <div class="st-section">
         <div class="st-label">关于</div>
-        <div class="st-card"><div class="st-item"><div class="left"><iconify-icon icon="lucide:info"></iconify-icon><div><div class="t">TVBox Pro 影视资源中心</div><div class="s">v5.8.2-pro · 一起看</div></div></div></div></div>
+        <div class="st-card"><div class="st-item"><div class="left"><iconify-icon icon="lucide:info"></iconify-icon><div><div class="t">TVBox Pro 影视资源中心</div><div class="s">v5.8.3-pro · 一起看</div></div></div></div></div>
       </div>
       <div style="height:40px"></div>
     </div>
@@ -2228,15 +2221,9 @@ function wtRenderMessages(){
 function wtApplyDockLayout(){
   const panel=document.getElementById("wtPanel");
   if(!panel)return;
-  const vw=window.innerWidth,vh=window.innerHeight;
-  const rotate=isFs&&wtPanelOpen&&vh>vw;
-  if(rotate){
-    if(panel.parentElement!==playerOverlay)playerOverlay.appendChild(panel);
-    playerOverlay.classList.add("wt-in-player");
-  }else{
-    if(panel.parentElement===playerOverlay){const app=document.getElementById("app");if(app)app.appendChild(panel);}
-    playerOverlay.classList.remove("wt-in-player");
-  }
+  const app=document.getElementById("app");
+  if(app&&panel.parentElement!==app)app.appendChild(panel);
+  playerOverlay.classList.remove("wt-in-player");
 }
 function wtOpenPanel(){
   if(!wtSettings.enabled)return;
