@@ -455,6 +455,13 @@ iconify-icon{display:inline-block;width:1em;height:1em;flex-shrink:0;vertical-al
   .wt-panel{top:auto;left:0;right:0;width:auto;height:62vh;max-height:70vh;border-left:none;border-top:1px solid var(--ol-v);border-radius:16px 16px 0 0;box-shadow:0 -8px 24px rgba(0,0,0,.28)}
   @keyframes wtPanelIn{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
 }
+/* 竖屏影院旋转：侧栏随播放器一起旋转，落在视觉右侧，视频让出 320px */
+.player-overlay.fs-mode.wt-in-player .wt-panel{
+  position:absolute;top:0;left:auto;right:0;bottom:0;width:320px;height:auto;max-height:none;
+  border-left:1px solid var(--ol-v);border-top:none;border-radius:0;
+  box-shadow:-8px 0 24px rgba(0,0,0,.22);z-index:120;
+}
+.player-overlay.fs-mode.wt-in-player .video-wrap{right:320px;width:auto}
 
 /* 个人资料 / 设置补充 */
 .wt-avatar-lg{width:48px;height:48px;border-radius:50%;object-fit:cover;background:var(--sf);flex-shrink:0}
@@ -761,7 +768,7 @@ iconify-icon{display:inline-block;width:1em;height:1em;flex-shrink:0;vertical-al
       </div>
       <div class="st-section">
         <div class="st-label">关于</div>
-        <div class="st-card"><div class="st-item"><div class="left"><iconify-icon icon="lucide:info"></iconify-icon><div><div class="t">TVBox Pro 影视资源中心</div><div class="s">v5.8.1-pro · 一起看</div></div></div></div></div>
+        <div class="st-card"><div class="st-item"><div class="left"><iconify-icon icon="lucide:info"></iconify-icon><div><div class="t">TVBox Pro 影视资源中心</div><div class="s">v5.8.2-pro · 一起看</div></div></div></div></div>
       </div>
       <div style="height:40px"></div>
     </div>
@@ -1621,6 +1628,7 @@ document.querySelectorAll(".ratio-item").forEach(item=>{item.addEventListener("c
 function hideRatioMenu(){document.getElementById("ratioMenu").classList.remove("show")}
 function applyFsLayout(){
   if(!isFs)return;
+  if(typeof wtApplyDockLayout==="function")wtApplyDockLayout();
   const vw=window.innerWidth,vh=window.innerHeight;
   const needRotate=vh>vw;
   const dock=typeof wtPanelOpen!=="undefined"&&wtPanelOpen&&!needRotate&&vw>=768;
@@ -1630,7 +1638,7 @@ function applyFsLayout(){
   if(dock){playerOverlay.style.left="0";playerOverlay.style.transform="translate(0, -50%)";}
   else{playerOverlay.style.left="";playerOverlay.style.transform=needRotate?"translate(-50%, -50%) rotate(90deg)":"translate(-50%, -50%)";}
 }
-function clearFsLayout(){playerOverlay.style.width="";playerOverlay.style.height="";playerOverlay.style.transform="";playerOverlay.style.left="";}
+function clearFsLayout(){playerOverlay.style.width="";playerOverlay.style.height="";playerOverlay.style.transform="";playerOverlay.style.left="";if(typeof wtApplyDockLayout==="function")wtApplyDockLayout();}
 function enterFsMode(){isFs=true;playerOverlay.classList.add("fs-mode");applyFsLayout();updateFsEpName();showControls();}
 function exitFsMode(){isFs=false;playerOverlay.classList.remove("fs-mode");playerOverlay.classList.remove("show-controls");clearFsLayout();closeFsEpModal();closePsModal();hideLpBadge();clearTimeout(_lpTimer);if(_lpActive){videoEl.playbackRate=vidSpeed||1;_lpActive=false;}}
 document.getElementById("btnFullscreen").addEventListener("click",(e)=>{e.stopPropagation();if(!isFs)enterFsMode();else exitFsMode();});
@@ -2217,6 +2225,19 @@ function wtRenderMessages(){
 }
 
 /* ---------- 侧栏 ---------- */
+function wtApplyDockLayout(){
+  const panel=document.getElementById("wtPanel");
+  if(!panel)return;
+  const vw=window.innerWidth,vh=window.innerHeight;
+  const rotate=isFs&&wtPanelOpen&&vh>vw;
+  if(rotate){
+    if(panel.parentElement!==playerOverlay)playerOverlay.appendChild(panel);
+    playerOverlay.classList.add("wt-in-player");
+  }else{
+    if(panel.parentElement===playerOverlay){const app=document.getElementById("app");if(app)app.appendChild(panel);}
+    playerOverlay.classList.remove("wt-in-player");
+  }
+}
 function wtOpenPanel(){
   if(!wtSettings.enabled)return;
   if(!playerItem){toast("请先播放影视");return;}
@@ -2225,9 +2246,8 @@ function wtOpenPanel(){
   const panel=document.getElementById("wtPanel");
   if(panel)panel.classList.add("open");
   wtPanelOpen=true;
-  const _vw=window.innerWidth,_vh=window.innerHeight;
-  if(!isFs&&_vw>=768&&_vw>_vh){enterFsMode();}
-  else if(isFs){applyFsLayout();}
+  if(!isFs){enterFsMode();}
+  else{applyFsLayout();}
   wtRenderMessages();
   wtMarkRead();
   wtAckVisible();

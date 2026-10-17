@@ -2,6 +2,15 @@
 
 本项目遵循 [语义化版本](https://semver.org/lang/zh-CN/) 与 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/) 规范。
 
+## [1.8.2] - 2026-10-17
+
+### 修复
+
+- **Pro 版 · 一起看**：修复移动端 / 竖屏下打开侧栏不横屏的问题。现在点击「一起看」会进入影院横屏模式；竖屏时侧栏**随播放器一起旋转**到视觉右侧，文字方向正确，视频让出 320px。
+- 关闭侧栏后播放器恢复全宽。
+
+[1.8.2]: https://github.com/silverbullet-liang/tvbox-center/releases/tag/v1.8.2
+
 ## [1.8.1] - 2026-10-17
 
 ### 修复
