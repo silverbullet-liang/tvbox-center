@@ -113,7 +113,7 @@ Fork 本仓库 → `Settings` → `Pages` → Source 选择 `Deploy from a branc
 播放控件右下角的「一起看」按钮可打开聊天侧栏。点击后会直接进入影院模式：
 
 - **桌面宽屏**：播放器约占 70%，右侧固定 320px 侧栏；
-- **竖屏 / 移动端**：优先请求系统横屏（全屏 + Screen Orientation API），侧栏固定到右侧；不支持横屏锁定时，回退为与「选集」弹窗相同的覆盖层并随播放器旋转，关闭按钮仍在侧栏头部；
+- **竖屏 / 移动端**：优先请求系统横屏；不支持时，侧栏与播放器同处旋转坐标系，视频让出 320px，侧栏位于视觉右侧、头部位于视觉顶部，关闭按钮在右上角；
 - **关闭侧栏**：播放器恢复全宽；MQTT 连接与订阅默认保持（可在设置中关闭后台监控）。
 
 房间按影视隔离：`sourceKey + "::" + vodId` 哈希成 `roomHash`，同一影片的不同采集源不会合并，不同剧集 / 线路共用同一个房间。
@@ -185,7 +185,7 @@ const DEFAULT_SOURCES = [
 
 ```html
 <!-- jsDelivr · 锁定版本（生产环境推荐） -->
-<script src="https://cdn.jsdelivr.net/gh/silverbullet-liang/tvbox-center@v1.8.5/dist/tvbox-center.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/silverbullet-liang/tvbox-center@v1.8.6/dist/tvbox-center.min.js"></script>
 
 <!-- jsDelivr · 跟随 main（始终最新） -->
 <script src="https://cdn.jsdelivr.net/gh/silverbullet-liang/tvbox-center@main/dist/tvbox-center.min.js"></script>
@@ -232,7 +232,7 @@ const Hls  = TVBoxCenter.hls;    // hls.js 1.7.3
 
 ```js
 const worker = new Worker(URL.createObjectURL(new Blob([`
-  importScripts('https://cdn.jsdelivr.net/gh/silverbullet-liang/tvbox-center@v1.8.5/dist/tvbox-center.js');
+  importScripts('https://cdn.jsdelivr.net/gh/silverbullet-liang/tvbox-center@v1.8.6/dist/tvbox-center.js');
   const client = TVBoxCenter.mqtt.connect('wss://broker.emqx.io:8084/mqtt');
 `], { type: 'application/javascript' })));
 ```
@@ -372,7 +372,7 @@ HLS 播放依赖 `hls.js`；Safari 原生支持 HLS，会自动回退。
 公共 Broker 可能被网络或防火墙拦截，也可能临时限流。可修改 `MQTT_CONFIG` 指向自建 Broker。聊天不可用不影响正常播放。
 
 **打开一起看没有横屏？**
-v1.8.5 起，竖屏点击「一起看」优先请求系统横屏；浏览器不支持时回退为覆盖层并随播放器旋转。请确认使用的是最新 `index.html`。
+v1.8.6 起，竖屏点击「一起看」会优先请求系统横屏；不支持时侧栏与播放器同处旋转坐标系，视频自动让出 320px，侧栏在视觉右侧。请确认使用的是最新 `index.html`。
 
 **导入备份提示「密钥错误或备份文件损坏」？**
 请确认密钥与导出时完全一致；版本不支持、文件损坏或缺少 GZIP 压缩都会统一提示。建议先用当前版本重新导出一份备份再导入。

@@ -2,6 +2,15 @@
 
 本项目遵循 [语义化版本](https://semver.org/lang/zh-CN/) 与 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/) 规范。
 
+## [1.8.6] - 2026-10-17
+
+### 修复
+
+- **Pro 版 · 一起看**：竖屏布局改为「侧栏与播放器同处旋转坐标系」——视频让出 320px 并缩小，侧栏位于视觉右侧；通过 `order` 把侧栏头部排到视觉顶部，关闭按钮回到侧栏右上角，不再落到播放控件层。
+- 不再依赖系统横屏锁定；即使 Screen Orientation API 不可用，也能正确缩小播放器并显示右侧栏。
+
+[1.8.6]: https://github.com/silverbullet-liang/tvbox-center/releases/tag/v1.8.6
+
 ## [1.8.5] - 2026-10-17
 
 ### 修复
