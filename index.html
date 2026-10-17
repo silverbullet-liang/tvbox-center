@@ -404,6 +404,83 @@ iconify-icon{display:inline-block;width:1em;height:1em;flex-shrink:0;vertical-al
 .idx-fill{height:100%;width:0;border-radius:6px;background:var(--p);transition:width .3s var(--sp)}
 .idx-tip{font-size:12px;color:var(--on-sf-v);margin-top:8px;line-height:1.5}
 .idx-tip .hl{color:var(--p);font-weight:600}
+
+/* ==================== 一起看 ==================== */
+.wt-btn{position:relative}
+.wt-badge{position:absolute;top:-4px;right:-4px;min-width:16px;height:16px;padding:0 4px;border-radius:8px;background:var(--e);color:#fff;font-size:10px;font-weight:700;display:none;align-items:center;justify-content:center;line-height:1;pointer-events:none;box-shadow:0 1px 3px rgba(0,0,0,.4)}
+.wt-panel{position:fixed;top:0;right:0;bottom:0;width:320px;max-width:100vw;background:var(--sf);z-index:350;display:none;flex-direction:column;border-left:1px solid var(--ol-v);box-shadow:-8px 0 24px rgba(0,0,0,.22)}
+.wt-panel.open{display:flex;animation:wtPanelIn .24s var(--sp)}
+@keyframes wtPanelIn{from{opacity:0;transform:translateX(18px)}to{opacity:1;transform:translateX(0)}}
+.wt-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 12px;border-bottom:1px solid var(--ol-v);flex-shrink:0}
+.wt-status{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--on-sf-v);min-width:0}
+.wt-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;background:var(--ol)}
+.wt-dot.ok{background:#22c55e;box-shadow:0 0 0 3px rgba(34,197,94,.16)}
+.wt-dot.wait{background:#eab308;box-shadow:0 0 0 3px rgba(234,179,8,.16)}
+.wt-dot.bad{background:#ef4444;box-shadow:0 0 0 3px rgba(239,68,68,.16)}
+.wt-head-actions{display:flex;align-items:center;gap:4px;flex-shrink:0}
+.wt-online-btn{display:flex;align-items:center;gap:4px;padding:5px 9px;border-radius:999px;border:none;background:var(--sf-v);color:var(--on-sf-v);font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap}
+.wt-online-btn iconify-icon{font-size:14px}
+.wt-close{width:30px;height:30px;border-radius:50%;border:none;background:transparent;color:var(--on-sf-v);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.wt-close:hover{background:var(--sf-v)}
+.wt-close iconify-icon{font-size:18px}
+.wt-online-list{display:none;max-height:38%;overflow-y:auto;border-bottom:1px solid var(--ol-v);padding:6px 10px;flex-shrink:0}
+.wt-user{display:flex;align-items:center;gap:8px;padding:6px 4px;font-size:12px;color:var(--on-sf)}
+.wt-user-avatar{width:26px;height:26px;border-radius:50%;flex-shrink:0;object-fit:cover;background:var(--sf-v)}
+.wt-user-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wt-me{font-size:10px;font-weight:700;padding:1px 6px;border-radius:999px;background:var(--p-c);color:var(--on-p-c)}
+.wt-more{font-size:11px;color:var(--on-sf-v);text-align:center;padding:8px 0}
+.wt-msgs{flex:1;min-height:0;overflow-y:auto;padding:12px 12px 8px;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.wt-msgs::-webkit-scrollbar{width:4px}
+.wt-msgs::-webkit-scrollbar-thumb{background:var(--ol-v);border-radius:2px}
+.wt-empty{margin:auto;padding:40px 16px;text-align:center;font-size:12px;color:var(--on-sf-v);line-height:1.7}
+.wt-msg{display:flex;gap:8px;margin-bottom:12px;align-items:flex-start}
+.wt-msg.mine{flex-direction:row-reverse}
+.wt-msg-avatar{width:30px;height:30px;border-radius:50%;flex-shrink:0;object-fit:cover;background:var(--sf-v)}
+.wt-bubble{max-width:78%;min-width:0}
+.wt-meta{display:flex;align-items:center;gap:7px;font-size:10px;color:var(--on-sf-v);margin-bottom:3px}
+.wt-msg.mine .wt-meta{justify-content:flex-end}
+.wt-nick{max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wt-text{font-size:13px;line-height:1.5;padding:8px 10px;border-radius:12px;background:var(--sf-v);color:var(--on-sf);word-break:break-word;white-space:pre-wrap}
+.wt-msg.mine .wt-text{background:var(--p-c);color:var(--on-p-c)}
+.wt-state{font-size:10px;color:var(--on-sf-v);text-align:right;margin-top:3px}
+.wt-foot{display:flex;align-items:center;gap:6px;padding:8px 8px max(8px,env(safe-area-inset-bottom));border-top:1px solid var(--ol-v);flex-shrink:0}
+.wt-share{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;width:42px;flex-shrink:0;border:none;background:transparent;color:var(--on-sf-v);font-size:9px;font-family:inherit;cursor:pointer;padding:2px 0}
+.wt-share iconify-icon{font-size:18px}
+.wt-share:hover{color:var(--p)}
+.wt-input{flex:1;min-width:0;border:none;outline:none;background:var(--sf-v);border-radius:999px;padding:9px 12px;font-size:13px;color:var(--on-sf);font-family:inherit}
+.wt-input::placeholder{color:var(--on-sf-v)}
+.wt-send{flex-shrink:0;padding:9px 13px;border-radius:999px;border:none;background:var(--p);color:var(--on-p);font-size:12px;font-weight:600;font-family:inherit;cursor:pointer}
+.wt-send:active{transform:scale(.94)}
+@media (max-width:899px),(orientation:portrait){
+  .wt-panel{top:auto;left:0;right:0;width:auto;height:62vh;max-height:70vh;border-left:none;border-top:1px solid var(--ol-v);border-radius:16px 16px 0 0;box-shadow:0 -8px 24px rgba(0,0,0,.28)}
+  @keyframes wtPanelIn{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+}
+
+/* 个人资料 / 设置补充 */
+.wt-avatar-lg{width:48px;height:48px;border-radius:50%;object-fit:cover;background:var(--sf);flex-shrink:0}
+.wt-profile-actions{display:flex;gap:6px;flex-shrink:0}
+.wt-profile-actions .limit-btn{padding:6px 12px;font-size:12px}
+.wt-nick-input{width:130px;max-width:42vw;border:1px solid var(--ol);border-radius:8px;background:var(--sf);color:var(--on-sf);padding:8px 10px;font-size:13px;outline:none;font-family:inherit;text-align:right}
+.wt-nick-input:focus{border-color:var(--p)}
+
+/* 通用弹窗 */
+.wt-modal{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:460;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)}
+.wt-modal.show{display:flex}
+#wtConfirmModal{z-index:470}
+#wtCopyModal{z-index:480}
+.wt-modal-card{width:100%;max-width:380px;background:var(--sf);border-radius:20px;padding:20px;box-shadow:var(--e3);animation:modalCardIn .22s var(--sp);max-height:90vh;overflow-y:auto}
+.wt-modal-title{font-size:17px;font-weight:600;color:var(--on-sf);margin-bottom:8px}
+.wt-modal-desc{font-size:13px;line-height:1.65;color:var(--on-sf-v);margin-bottom:14px;white-space:pre-wrap;word-break:break-word}
+.wt-modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:14px}
+.wt-modal-actions .limit-btn{flex:1;text-align:center;padding:10px 12px}
+.wt-copy-text{width:100%;height:130px;resize:none;border:1px solid var(--ol);border-radius:10px;background:var(--sf-v);color:var(--on-sf);padding:10px;font-size:12px;font-family:SFMono-Regular,Consolas,monospace;outline:none;margin-bottom:12px;word-break:break-all}
+.bk-input{width:100%;padding:11px 13px;border:1px solid var(--ol);border-radius:10px;background:var(--sf-v);color:var(--on-sf);font-size:14px;outline:none;font-family:inherit;margin-bottom:9px;display:block}
+.bk-input:focus{border-color:var(--p)}
+.bk-hint{font-size:12px;line-height:1.6;color:var(--on-sf-v);margin:2px 0 8px;min-height:18px}
+.bk-progress{margin:12px 0 4px}
+.bk-track{height:6px;border-radius:3px;background:var(--sf-v);overflow:hidden}
+.bk-bar{height:100%;width:0%;background:var(--p);border-radius:3px;transition:width .25s}
+.bk-stage{font-size:12px;color:var(--on-sf-v);margin-top:7px;text-align:center}
 </style>
 </head>
 <body>
@@ -455,6 +532,52 @@ iconify-icon{display:inline-block;width:1em;height:1em;flex-shrink:0;vertical-al
       </div>
     </div>
     <div class="page" id="pageSettings">
+      <div class="st-section">
+        <div class="st-label">个人资料</div>
+        <div class="st-card">
+          <div class="st-item">
+            <div class="left" style="gap:14px"><img class="wt-avatar-lg" id="wtAvatarImg" alt=""><div><div class="t">头像</div><div class="s">默认生成像素头像，可上传覆盖</div></div></div>
+            <div class="wt-profile-actions"><button class="limit-btn" id="wtAvatarPick">更换</button><button class="limit-btn" id="wtAvatarReset">默认</button></div>
+          </div>
+          <div class="st-item">
+            <div class="left" style="gap:14px"><iconify-icon icon="lucide:user" style="font-size:22px;color:var(--on-sf-v)"></iconify-icon><div><div class="t">名字</div><div class="s">1–16 个字符</div></div></div>
+            <input class="wt-nick-input" id="wtNickInput" type="text" maxlength="16" placeholder="匿名用户" autocomplete="off">
+          </div>
+          <input type="file" id="wtAvatarFile" accept="image/*" style="display:none">
+        </div>
+      </div>
+      <div class="st-section">
+        <div class="st-label">一起看</div>
+        <div class="st-card">
+          <div class="st-item">
+            <div class="left" style="gap:14px"><iconify-icon icon="lucide:users-round" style="font-size:22px;color:var(--on-sf-v)"></iconify-icon><div><div class="t">一起看功能</div><div class="s">与同一影视的观众实时聊天</div></div></div>
+            <div class="sw" id="swWtEnabled"><div class="sw-track"></div><div class="sw-thumb"></div></div>
+          </div>
+          <div class="st-item">
+            <div class="left" style="gap:14px"><iconify-icon icon="lucide:radio" style="font-size:22px;color:var(--on-sf-v)"></iconify-icon><div><div class="t">后台一起看监控</div><div class="s">关闭侧栏后继续接收当前影视消息</div></div></div>
+            <div class="sw" id="swWtBackground"><div class="sw-track"></div><div class="sw-thumb"></div></div>
+          </div>
+          <div class="st-item">
+            <div class="left" style="gap:14px"><iconify-icon icon="lucide:bell-dot" style="font-size:22px;color:var(--on-sf-v)"></iconify-icon><div><div class="t">一起看红点提示</div><div class="s">显示未读消息数量</div></div></div>
+            <div class="sw" id="swWtBadge"><div class="sw-track"></div><div class="sw-thumb"></div></div>
+          </div>
+          <div class="st-item" style="border-bottom:none">
+            <div class="left" style="gap:14px"><iconify-icon icon="lucide:clipboard-paste" style="font-size:22px;color:var(--on-sf-v)"></iconify-icon><div><div class="t">从剪贴板打开一起看</div><div class="s">读取已复制的分享内容并加入</div></div></div>
+            <button class="limit-btn" id="wtClipboardJoin">打开</button>
+          </div>
+        </div>
+      </div>
+      <div class="st-section">
+        <div class="st-label">数据备份</div>
+        <div class="st-card">
+          <div class="st-item" style="flex-direction:column;align-items:stretch;gap:10px">
+            <div class="left" style="gap:14px"><iconify-icon icon="lucide:shield-check" style="font-size:22px;color:var(--on-sf-v)"></iconify-icon><div><div class="t">加密备份</div><div class="s">GZIP 压缩 + AES-GCM 加密，密钥不会保存或上传</div></div></div>
+            <div class="limit-options"><button class="limit-btn" id="btnBackupExport">一键导出所有数据</button><button class="limit-btn" id="btnBackupImport">导入备份数据</button></div>
+            <div class="s" style="font-size:12px;color:var(--on-sf-v)">备份包含收藏、设置、历史、头像、昵称、一起看开关、聊天记录与全库索引，请妥善保管密钥和文件。</div>
+          </div>
+        </div>
+      </div>
+
       <div class="st-section">
         <div class="st-label">历史记录</div>
         <div class="st-card">
@@ -638,7 +761,7 @@ iconify-icon{display:inline-block;width:1em;height:1em;flex-shrink:0;vertical-al
       </div>
       <div class="st-section">
         <div class="st-label">关于</div>
-        <div class="st-card"><div class="st-item"><div class="left"><iconify-icon icon="lucide:info"></iconify-icon><div><div class="t">TVBox Pro 影视资源中心</div><div class="s">v5.7-pro · 控件隐藏优化</div></div></div></div></div>
+        <div class="st-card"><div class="st-item"><div class="left"><iconify-icon icon="lucide:info"></iconify-icon><div><div class="t">TVBox Pro 影视资源中心</div><div class="s">v5.8-pro · 一起看</div></div></div></div></div>
       </div>
       <div style="height:40px"></div>
     </div>
@@ -730,6 +853,7 @@ iconify-icon{display:inline-block;width:1em;height:1em;flex-shrink:0;vertical-al
           <button class="ctrl-btn" id="btnPlayerSettings"><iconify-icon icon="lucide:settings"></iconify-icon></button>
           <button class="ctrl-btn" id="btnFullscreen"><iconify-icon icon="lucide:maximize"></iconify-icon></button>
           <button class="ctrl-btn" id="btnMini"><iconify-icon icon="lucide:picture-in-picture-2"></iconify-icon></button>
+          <button class="ctrl-btn wt-btn" id="btnWatchTogether" title="一起看"><iconify-icon icon="lucide:users-round"></iconify-icon><span class="wt-badge" id="wtBadgeCount">0</span></button>
           <button class="ctrl-btn" id="btnClosePlayer"><iconify-icon icon="lucide:x"></iconify-icon></button>
         </div>
       </div>
@@ -832,6 +956,62 @@ iconify-icon{display:inline-block;width:1em;height:1em;flex-shrink:0;vertical-al
     </div>
     <div class="fs-toast" id="fsToast"></div>
   </div>
+
+  <div class="wt-panel" id="wtPanel">
+    <div class="wt-head">
+      <div class="wt-status"><span class="wt-dot wait" id="wtStatusDot"></span><span id="wtStatusText">未连接</span></div>
+      <div class="wt-head-actions">
+        <button class="wt-online-btn" id="wtOnlineBtn" title="在线用户"><iconify-icon icon="lucide:users"></iconify-icon><span id="wtOnlineText">在线 0 人</span></button>
+        <button class="wt-close" id="wtClose" title="关闭"><iconify-icon icon="lucide:x"></iconify-icon></button>
+      </div>
+    </div>
+    <div class="wt-online-list" id="wtOnlineList" style="display:none"></div>
+    <div class="wt-msgs" id="wtMsgs"></div>
+    <div class="wt-foot">
+      <button class="wt-share" id="wtShare" title="分享当前影视"><iconify-icon icon="lucide:share-2"></iconify-icon><span>分享</span></button>
+      <input class="wt-input" id="wtInput" type="text" maxlength="500" placeholder="聊点什么…" autocomplete="off">
+      <button class="wt-send" id="wtSend">发送</button>
+    </div>
+  </div>
+
+  <div class="wt-modal" id="wtCopyModal">
+    <div class="wt-modal-card">
+      <div class="wt-modal-title">手动复制分享内容</div>
+      <div class="wt-modal-desc">自动复制失败，请选中或长按下方文本复制。</div>
+      <textarea class="wt-copy-text" id="wtCopyText" readonly></textarea>
+      <button class="limit-btn active" id="wtCopyClose">关闭</button>
+    </div>
+  </div>
+
+  <div class="wt-modal" id="wtConfirmModal">
+    <div class="wt-modal-card">
+      <div class="wt-modal-title" id="wtConfirmTitle">确认</div>
+      <div class="wt-modal-desc" id="wtConfirmDesc"></div>
+      <div class="wt-modal-actions">
+        <button class="limit-btn" id="wtConfirmCancel">取消</button>
+        <button class="limit-btn active" id="wtConfirmOk">确定</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="wt-modal" id="bkModal">
+    <div class="wt-modal-card">
+      <div class="wt-modal-title" id="bkTitle">导出数据</div>
+      <div class="wt-modal-desc" id="bkDesc"></div>
+      <input class="bk-input" type="password" id="bkKey" placeholder="请输入密钥" autocomplete="new-password">
+      <input class="bk-input" type="password" id="bkKey2" placeholder="再次输入密钥" autocomplete="new-password">
+      <div class="bk-hint" id="bkHint"></div>
+      <div class="bk-progress" id="bkProgress" style="display:none">
+        <div class="bk-track"><div class="bk-bar" id="bkBar"></div></div>
+        <div class="bk-stage" id="bkStage">准备中…</div>
+      </div>
+      <div class="wt-modal-actions">
+        <button class="limit-btn" id="bkCancel">取消</button>
+        <button class="limit-btn active" id="bkOk">开始导出</button>
+      </div>
+    </div>
+  </div>
+  <input type="file" id="bkFile" accept=".tvcbak,application/octet-stream" style="display:none">
 
   <div class="video-wrap mini" id="miniPlayer" style="display:none"></div>
   <button class="mini-toggle" id="miniToggle"><iconify-icon icon="lucide:expand"></iconify-icon></button>
@@ -1099,12 +1279,13 @@ function initSearch(){
   input.addEventListener("input",(e)=>{
     searchQuery=e.target.value.trim();clearBtn.classList.toggle("show",searchQuery.length>0);
     if(searchDebounce)clearTimeout(searchDebounce);if(suggestTimer)clearTimeout(suggestTimer);
+    if(searchQuery.indexOf("TVC1:")===0){hideSuggest();wtClipboardNotice();return;}
     if(searchQuery.length>=1){suggestTimer=setTimeout(fetchSuggest,250);searchDebounce=setTimeout(()=>doSearch(true),600);}
     else{hideSuggest();clearSearch();}
   });
   input.addEventListener("keydown",(e)=>{
     const box=document.getElementById("suggestBox"),isOpen=box&&box.classList.contains("show");
-    if(!isOpen||!suggestItems.length){if(e.key==="Enter"){hideSuggest();doSearch(true);}return;}
+    if(!isOpen||!suggestItems.length){if(e.key==="Enter"){hideSuggest();if(handleSearchInput(input.value))return;doSearch(true);}return;}
     if(e.key==="ArrowDown"){e.preventDefault();suggestIndex=Math.min(suggestIndex+1,suggestItems.length-1);updateSuggestActive();}
     else if(e.key==="ArrowUp"){e.preventDefault();suggestIndex=Math.max(suggestIndex-1,-1);updateSuggestActive();}
     else if(e.key==="Enter"){e.preventDefault();if(suggestIndex>=0&&suggestItems[suggestIndex]){const name=suggestItems[suggestIndex].name;input.value=name;searchQuery=name;hideSuggest();doSearch(true);}else{hideSuggest();doSearch(true);}}
@@ -1189,6 +1370,7 @@ function renderSettings(){
   sources.forEach((src,idx)=>{const item=document.createElement("div");item.className="st-item";const noProxyTag=src.noProxy?`<span class="tag-inline">免代理</span>`:"";item.innerHTML=`<div class="left" style="flex:1;min-width:0">${iconTag('rss',22)}<div style="flex:1;min-width:0;overflow:hidden"><div class="t" style="display:flex;align-items:center;flex-wrap:wrap">${esc(src.name)}${noProxyTag}</div><div class="s" style="font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(src.api)}</div></div></div><div class="sw ${src.enabled?'on':''}" data-idx="${idx}"><div class="sw-track"></div><div class="sw-thumb"></div></div>`;list.appendChild(item);});
   list.querySelectorAll(".sw").forEach(sw=>{sw.addEventListener("click",()=>{const idx=parseInt(sw.dataset.idx);sources[idx].enabled=!sources[idx].enabled;sw.classList.toggle("on",sources[idx].enabled);saveSrc();updSrcCount();rebuildFilters();toast(`${sources[idx].name} 已${sources[idx].enabled?"启用":"禁用"}`)})});
   if(typeof setSwIdx==="function")setSwIdx();
+  if(typeof wtRenderSettings==="function")wtRenderSettings();
   updSrcCount();
 }
 document.getElementById("swRememberPos").addEventListener("click",()=>{playerSettings.rememberPos=!playerSettings.rememberPos;savePlayerSettings();renderSettings();toast(playerSettings.rememberPos?"已开启记忆播放位置":"已关闭记忆播放位置");});
@@ -1258,7 +1440,7 @@ async function tryAirPlay(){if(!checkAirPlayAvailable())return false;try{videoEl
 async function handleCastClick(e){e.stopPropagation();if(!playerItem){toast("请先播放影片");return;}if(castConnected){if(presentationConnection)presentationConnection.close();else toast("请在设备端断开投屏");return;}if(await tryRemotePlayback())return;if(await tryPresentationAPI())return;if(await tryGoogleCast())return;if(await tryAirPlay())return;toast("当前浏览器/环境不支持投屏");}
 function setupCast(){const btn=document.getElementById("btnCast");if(!btn)return;btn.addEventListener("click",handleCastClick);initRemotePlayback();if(window.cast&&cast.framework){initGoogleCast();}videoEl.addEventListener("webkitplaybacktargetavailabilitychanged",(ev)=>{if(ev.availability==="available"&&!castConnected){castType=castType||"airplay";}});updateCastButton();}
 window.__onGCastApiAvailable=function(isAvailable){if(isAvailable)initGoogleCast();};
-async function openPlayer(it){
+async function openPlayer(it,opts){
   addHist(it);playerItem=it;
   playerOverlay.classList.add("active");
   document.getElementById("playerTitle").textContent=it.vod_name||"播放中";
@@ -1285,7 +1467,18 @@ async function openPlayer(it){
   const tabs=document.getElementById("sourceTabs");tabs.innerHTML="";
   const names=Object.keys(playerSources);
   if(!names.length){tabs.innerHTML=`<div style="color:var(--on-sf-v);padding:12px;font-size:14px">暂无播放链接</div>`;document.getElementById("episodeGrid").innerHTML="";}
-  else{names.forEach((n,i)=>{const btn=document.createElement("button");btn.className="source-tab"+(i===0?" active":"");btn.textContent=n;btn.addEventListener("click",()=>selSrc(n));tabs.appendChild(btn)});selSrc(names[0]);const eps=playerSources[names[0]]||[];if(eps.length>0)setTimeout(()=>playEp(0),80);}
+  else{
+    names.forEach((n,i)=>{const btn=document.createElement("button");btn.className="source-tab"+(i===0?" active":"");btn.textContent=n;btn.addEventListener("click",()=>selSrc(n));tabs.appendChild(btn)});
+    const wantFrom=opts&&opts.playFrom&&playerSources[opts.playFrom]?opts.playFrom:names[0];
+    selSrc(wantFrom);
+    let wantEp=opts&&Number.isInteger(opts.episodeIndex)?opts.episodeIndex:0;
+    if(opts&&opts.episodeName){const ee=playerSources[wantFrom]||[];const fi=ee.findIndex(x=>x.name===opts.episodeName);if(fi>=0)wantEp=fi;}
+    const eps=playerSources[wantFrom]||[];
+    wantEp=Math.max(0,Math.min(wantEp,Math.max(0,eps.length-1)));
+    if(opts&&typeof opts.position==="number"&&opts.position>0)wtPendingShare=opts.position;
+    if(eps.length>0)setTimeout(()=>playEp(wantEp),80);
+  }
+  if(typeof wtOnPlayerOpen==="function")wtOnPlayerOpen(it);
   updateFsEpName();
   if(playerSettings.autoFs)setTimeout(()=>{if(!isFs)enterFsMode();},200);
 }
@@ -1303,7 +1496,7 @@ function playEp(idx){
   currentQuality=-1;hideQualityMenu();
   startLoading();
   const isM3u8=url.includes(".m3u8")||url.includes("?v=m3u8")||url.includes("/hls/");
-  const canPlay=()=>{stopLoading();showControls();const key=playerItem?posKey(playerItem):"";const pos=key?positionCache[key]:null;if(playerSettings.rememberPos&&pos&&pos.ep===idx&&pos.src===playerSrc&&pos.time>5&&pos.time<videoEl.duration-5){try{videoEl.currentTime=pos.time;toast(`已恢复播放位置 ${fmtTime(pos.time)}`);}catch(e){}}else if(playerSettings.skipStart>0&&videoEl.duration>playerSettings.skipStart+5){try{videoEl.currentTime=playerSettings.skipStart;}catch(e){}}};
+  const canPlay=()=>{stopLoading();showControls();const sharePos=wtPendingShare;wtPendingShare=null;if(sharePos>0&&videoEl.duration>sharePos+1){try{videoEl.currentTime=sharePos;toast(`已跳转到 ${fmtTime(sharePos)}`);}catch(e){}}else{const key=playerItem?posKey(playerItem):"";const pos=key?positionCache[key]:null;if(playerSettings.rememberPos&&pos&&pos.ep===idx&&pos.src===playerSrc&&pos.time>5&&pos.time<videoEl.duration-5){try{videoEl.currentTime=pos.time;toast(`已恢复播放位置 ${fmtTime(pos.time)}`);}catch(e){}}else if(playerSettings.skipStart>0&&videoEl.duration>playerSettings.skipStart+5){try{videoEl.currentTime=playerSettings.skipStart;}catch(e){}}}};
   if(isM3u8&&Hls.isSupported()){hlsInst=new Hls({enableWorker:false,maxBufferLength:30,debug:false});hlsInst.loadSource(url);hlsInst.attachMedia(videoEl);hlsInst.on(Hls.Events.MANIFEST_PARSED,()=>{videoEl.play().catch(()=>{});canPlay();setupQualityMenu();});hlsInst.on(Hls.Events.ERROR,(e,d)=>{console.error("HLS error",d);if(d.fatal){stopLoading();toast("播放失败，请尝试切换源");}});}
   else{videoEl.src=url;videoEl.oncanplay=canPlay;videoEl.onerror=()=>{stopLoading();toast("播放失败，请尝试切换源")};videoEl.play().catch(()=>{});document.getElementById("btnQuality").style.display="none";}
   isPlaying=true;updPlayBtn();videoEl.playbackRate=vidSpeed;updateFsEpName();
@@ -1430,11 +1623,14 @@ function applyFsLayout(){
   if(!isFs)return;
   const vw=window.innerWidth,vh=window.innerHeight;
   const needRotate=vh>vw;
-  playerOverlay.style.width=(needRotate?vh:vw)+"px";
+  const dock=typeof wtPanelOpen!=="undefined"&&wtPanelOpen&&!needRotate&&vw>=900;
+  const panelW=dock?320:0;
+  playerOverlay.style.width=(needRotate?vh:vw-panelW)+"px";
   playerOverlay.style.height=(needRotate?vw:vh)+"px";
-  playerOverlay.style.transform=needRotate?"translate(-50%, -50%) rotate(90deg)":"translate(-50%, -50%)";
+  if(dock){playerOverlay.style.left="0";playerOverlay.style.transform="translate(0, -50%)";}
+  else{playerOverlay.style.left="";playerOverlay.style.transform=needRotate?"translate(-50%, -50%) rotate(90deg)":"translate(-50%, -50%)";}
 }
-function clearFsLayout(){playerOverlay.style.width="";playerOverlay.style.height="";playerOverlay.style.transform="";}
+function clearFsLayout(){playerOverlay.style.width="";playerOverlay.style.height="";playerOverlay.style.transform="";playerOverlay.style.left="";}
 function enterFsMode(){isFs=true;playerOverlay.classList.add("fs-mode");applyFsLayout();updateFsEpName();showControls();}
 function exitFsMode(){isFs=false;playerOverlay.classList.remove("fs-mode");playerOverlay.classList.remove("show-controls");clearFsLayout();closeFsEpModal();closePsModal();hideLpBadge();clearTimeout(_lpTimer);if(_lpActive){videoEl.playbackRate=vidSpeed||1;_lpActive=false;}}
 document.getElementById("btnFullscreen").addEventListener("click",(e)=>{e.stopPropagation();if(!isFs)enterFsMode();else exitFsMode();});
@@ -1531,6 +1727,7 @@ document.getElementById("btnMini").addEventListener("click",(e)=>{e.stopPropagat
 function updMini(){const toggle=document.getElementById("miniToggle");if(isMini&&playerItem){miniPlayer.style.display="block";toggle.classList.add("show");if(videoEl.parentElement!==miniPlayer)miniPlayer.appendChild(videoEl);}else{miniPlayer.style.display="none";toggle.classList.remove("show");if(videoEl.parentElement!==videoWrap)videoWrap.appendChild(videoEl);}}
 document.getElementById("miniToggle").addEventListener("click",()=>{isMini=false;playerOverlay.classList.add("active");updMini();});
 function closePlayer(){
+  if(typeof wtOnPlayerClose==="function")wtOnPlayerClose();
   savePosition();playerOverlay.classList.remove("active");
   if(isFs)exitFsMode();
   isMini=false;updMini();
@@ -1592,7 +1789,1176 @@ document.querySelectorAll(".nav-item").forEach(item=>{item.addEventListener("cli
 document.getElementById("btnFavTop").addEventListener("click",()=>{switchPage("home");setTimeout(()=>{const fs=document.getElementById("favHomeSection");if(fs&&fs.style.display!=="none")fs.scrollIntoView({behavior:"smooth"});},100);});
 const contentArea=document.getElementById("contentArea");
 contentArea.addEventListener("scroll",()=>{if(currentPage==="search"&&contentArea.scrollTop+contentArea.clientHeight>=contentArea.scrollHeight-300&&!searchLoading&&searchHasMore&&searchQuery){doSearch(false)}});
-loadStorage();applyTheme(currentTheme);initSearch();initMiniDrag();renderHome();updSrcCount();setupCast();idxInit();
+/* ==================== 一起看（Watch Together） ==================== */
+/* 复用现有播放器、全屏布局、设置、搜索、IndexedDB 与安全存储工具 */
+const MQTT_CONFIG={
+  url:"wss://broker.emqx.io:8084/mqtt",
+  username:"",
+  password:"",
+  clientIdPrefix:"tvc_",
+  topicPrefix:"tvbox-center/v1",
+  vendorUrl:(function(){try{return new URL("dist/tvbox-center.js",location.href).href;}catch(e){return "";}})(),
+  vendorCdn:"https://cdn.jsdelivr.net/gh/silverbullet-liang/tvbox-center@main/dist/tvbox-center.js"
+};
+
+const WT_LS_SETTINGS="tvbox_wt_settings",WT_LS_PROFILE="tvbox_wt_profile",WT_LS_UID="tvbox_wt_uid",WT_LS_SEEN="tvbox_wt_share_seen",WT_LS_CLIENT="tvbox_wt_client";
+const WT_CHAT_PREFIX="tvbox-center:chat:";
+const WT_MSG_MAX=200,WT_READ_MAX=1000,WT_TEXT_MAX=500,WT_SYNC_MAX=200,WT_MSG_BYTES=16000;
+const DEFAULT_WT_SETTINGS={enabled:true,background:true,badge:true};
+
+let wtSettings={...DEFAULT_WT_SETTINGS};
+let wtProfile={nick:"",avatarType:"identicon",avatarSeed:"",avatarData:""};
+let wtWorker=null,wtWorkerReady=false,wtConnected=false,wtConnState="idle";
+let wtRoom=null,wtPanelOpen=false,wtOnline={},wtLastPresence=0,wtPresenceTimer=null;
+let wtOnlineTimer=null,wtLastSend=0,wtSyncCool={},wtAckSent={},wtPendingShare=null;
+let wtClipBusy=false,wtClipNoticeAt=0,wtIdentity=null;
+const wtIdentCache={},wtMsgEls={};
+
+function wtRand(n){const a=new Uint8Array(n||8);try{crypto.getRandomValues(a);}catch(e){for(let i=0;i<a.length;i++)a[i]=Math.floor(Math.random()*256);}return Array.from(a).map(b=>b.toString(16).padStart(2,"0")).join("");}
+function wtUid8(){return wtRand(8);}
+
+function wtLoadIdentity(){
+  let uid=safeGet(WT_LS_UID,""),cid="";
+  if(!uid||!uid.length){uid=wtRand(12);safeSet(WT_LS_UID,uid);}
+  try{cid=sessionStorage.getItem(WT_LS_CLIENT)||"";}catch(e){}
+  if(!cid){cid=wtRand(8);try{sessionStorage.setItem(WT_LS_CLIENT,cid);}catch(e){}}
+  wtIdentity={uid,clientId:cid};
+  return wtIdentity;
+}
+function wtLoadSettings(){
+  try{const raw=safeGet(WT_LS_SETTINGS,"");wtSettings=raw?{...DEFAULT_WT_SETTINGS,...JSON.parse(raw)}:{...DEFAULT_WT_SETTINGS};}catch(e){wtSettings={...DEFAULT_WT_SETTINGS};}
+}
+function wtSaveSettings(){safeSet(WT_LS_SETTINGS,JSON.stringify(wtSettings));}
+function wtLoadProfile(){
+  try{const raw=safeGet(WT_LS_PROFILE,"");if(raw)wtProfile={nick:"",avatarType:"identicon",avatarSeed:"",avatarData:"",...JSON.parse(raw)};}catch(e){}
+  if(!wtProfile.nick)wtProfile.nick="匿名用户"+wtUid8().slice(0,4);
+  if(!wtProfile.avatarSeed)wtProfile.avatarSeed=wtProfile.nick+wtIdentity.uid;
+  if(!wtProfile.avatarType)wtProfile.avatarType="identicon";
+  return wtProfile;
+}
+function wtSaveProfile(){safeSet(WT_LS_PROFILE,JSON.stringify(wtProfile));}
+
+function wtRoomKeyOf(it){return String(it&&it._sourceKey||"")+"::"+String(it&&it.vod_id||"");}
+function wtRoomHash(key){
+  let h1=0x811c9dc5>>>0,h2=0x9e3779b9>>>0;
+  for(let i=0;i<key.length;i++){
+    const c=key.charCodeAt(i);
+    h1=((h1^c)>>>0);h1=Math.imul(h1,0x01000193)>>>0;
+    h2=((h2^(c+0x9e3779b9))>>>0);h2=Math.imul(h2,0x85ebca6b)>>>0;
+  }
+  return ("00000000"+h1.toString(16)).slice(-8)+("00000000"+h2.toString(16)).slice(-8);
+}
+function wtTopic(hash){return MQTT_CONFIG.topicPrefix+"/chat/"+hash;}
+function wtValidAvatarType(t){return t==="upload"||t==="identicon";}
+
+/* ---------- 本地聊天缓存 ---------- */
+function wtChatKey(hash){return WT_CHAT_PREFIX+hash;}
+function wtLoadChat(hash){
+  try{const raw=safeGet(wtChatKey(hash),"");if(!raw)return {messages:[],readIds:[]};const o=JSON.parse(raw);return {messages:Array.isArray(o.messages)?o.messages:[],readIds:Array.isArray(o.readIds)?o.readIds:[]};}catch(e){return {messages:[],readIds:[]};}
+}
+function wtSaveChat(hash,data){
+  if(!hash)return;
+  const msgs=(data.messages||[]).slice().sort((a,b)=>(a.ts||0)-(b.ts||0)||String(a.msgId).localeCompare(String(b.msgId))).slice(-WT_MSG_MAX);
+  const reads=Array.from(new Set(data.readIds||[])).slice(-WT_READ_MAX);
+  safeSet(wtChatKey(hash),JSON.stringify({messages:msgs,readIds:reads}));
+}
+function wtUnreadCount(hash){
+  if(!hash)return 0;
+  const d=wtLoadChat(hash),read=new Set(d.readIds||[]),my=wtIdentity?wtIdentity.uid:"";
+  return d.messages.filter(m=>m&&m.userId!==my&&!read.has(m.msgId)).length;
+}
+function wtUpdateBadge(){
+  const badge=document.getElementById("wtBadgeCount");
+  if(!badge)return;
+  const n=wtSettings.enabled&&wtSettings.badge&&wtRoom?wtUnreadCount(wtRoom.hash):0;
+  badge.textContent=n>99?"99+":String(n);
+  badge.style.display=n>0?"flex":"none";
+}
+
+/* ---------- 头像 ---------- */
+function wtIdenticon(seed){
+  const key=String(seed||"anon");
+  if(wtIdentCache[key])return wtIdentCache[key];
+  let h=2166136261>>>0;
+  for(let i=0;i<key.length;i++){h=((h^key.charCodeAt(i))>>>0);h=Math.imul(h,16777619)>>>0;}
+  const hue=h%360,bg="hsl("+hue+" 55% 92%)",fg="hsl("+hue+" 55% 42%)";
+  let cells="";
+  for(let y=0;y<5;y++)for(let x=0;x<3;x++){
+    if(((h>>((y*3+x)%30))&1)===0)continue;
+    cells+='<rect x="'+x+'" y="'+y+'" width="1" height="1"/><rect x="'+(4-x)+'" y="'+y+'" width="1" height="1"/>';
+  }
+  const svg='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 5 5" shape-rendering="crispEdges"><rect width="5" height="5" fill="'+bg+'"/><g fill="'+fg+'">'+cells+"</g></svg>";
+  const url="data:image/svg+xml,"+encodeURIComponent(svg);
+  wtIdentCache[key]=url;return url;
+}
+function wtAvatarSrc(m){
+  if(m&&typeof m.avatarData==="string"&&m.avatarData.indexOf("data:image/")===0&&m.avatarData.length<40000)return m.avatarData;
+  return wtIdenticon(m&&(m.avatarSeed||m.userId||m.senderId)||"anon");
+}
+function wtValidAvatarData(s){return typeof s==="string"&&s.indexOf("data:image/")===0&&s.length<=24000;}
+
+/* ---------- Worker ---------- */
+function wtWorkerSource(){
+  return [
+'"use strict";',
+'var lib=null,client=null,cfg=null,subs={},failAt=0;',
+'function send(m){self.postMessage(m);}',
+'function status(s){var t=Date.now();if(s==="connecting"&&t-failAt<2000)return;if(s==="failed")failAt=t;send({type:"status",state:s});}',
+'function loadLib(){if(lib)return true;var urls=[cfg&&cfg.vendorUrl,cfg&&cfg.vendorCdn];for(var i=0;i<urls.length;i++){if(!urls[i])continue;try{importScripts(urls[i]);}catch(e){}var m=self.TVBoxCenter&&self.TVBoxCenter.mqtt;if(m){lib=m;send({type:"vendor-ready"});return true;}}send({type:"error",code:"vendor",message:"聊天服务不可用"});status("failed");return false;}',
+'function connect(){',
+'  if(!cfg)return;',
+'  if(!loadLib())return;',
+'  if(client){try{client.end(true);}catch(e){}client=null;}',
+'  status("connecting");',
+'  try{',
+'    client=lib.connect(cfg.url,{clientId:cfg.clientIdPrefix+(cfg.clientSeed||Math.random().toString(16).slice(2,10)),username:cfg.username||undefined,password:cfg.password||undefined,clean:true,connectTimeout:8000,reconnectPeriod:3000,keepalive:30,protocolVersion:4});',
+'  }catch(e){status("failed");send({type:"error",message:String(e&&e.message||e)});return;}',
+'  client.on("connect",function(){status("connected");Object.keys(subs).forEach(function(t){try{client.subscribe(t,{qos:0});}catch(e){}});});',
+'  client.on("reconnect",function(){status("connecting");});',
+'  client.on("offline",function(){status("connecting");});',
+'  client.on("close",function(){status("connecting");});',
+'  client.on("error",function(e){status("failed");send({type:"error",message:String(e&&e.message||e)});});',
+'  client.on("message",function(topic,payload){',
+'    var s;try{s=payload.toString("utf8");}catch(e){return;}',
+'    if(!s||s.length>16384)return;',
+'    var obj;try{obj=JSON.parse(s);}catch(e){return;}',
+'    send({type:"message",payload:obj,topic:topic});',
+'  });',
+'}',
+'function publish(topic,obj){if(!client||!client.connected)return false;var s;try{s=JSON.stringify(obj);}catch(e){return false;}if(s.length>16384)return false;try{client.publish(topic,s,{qos:0});return true;}catch(e){return false;}}',
+'self.onmessage=function(ev){',
+'  var d=ev.data||{};',
+'  if(d.type==="init"){cfg=d.config||{};return;}',
+'  if(d.type==="connect"){connect();return;}',
+'  if(d.type==="disconnect"){if(client){try{client.end(true);}catch(e){}client=null;}status("idle");return;}',
+'  if(d.type==="subscribe"){if(!d.topic)return;subs[d.topic]=1;if(client&&client.connected){try{client.subscribe(d.topic,{qos:0});}catch(e){}}return;}',
+'  if(d.type==="unsubscribe"){if(!d.topic)return;delete subs[d.topic];if(client&&client.connected){try{client.unsubscribe(d.topic);}catch(e){}}return;}',
+'  if(d.type==="publish"){send({type:"published",ok:publish(d.topic,d.payload)});return;}',
+'};'
+  ].join("\n");
+}
+function wtEnsureWorker(){
+  if(wtWorker)return true;
+  if(typeof Worker==="undefined"||typeof Blob==="undefined"||typeof URL==="undefined"||!URL.createObjectURL){wtSetStatus("failed");return false;}
+  try{
+    const blob=new Blob([wtWorkerSource()],{type:"application/javascript"});
+    wtWorker=new Worker(URL.createObjectURL(blob));
+    wtWorker.onmessage=wtOnWorkerMessage;
+    wtWorker.onerror=function(){wtWorkerReady=false;wtConnected=false;wtSetStatus("failed");};
+    wtWorker.postMessage({type:"init",config:{...MQTT_CONFIG,clientSeed:wtIdentity.clientId}});
+    wtWorkerReady=true;
+    return true;
+  }catch(e){wtWorkerReady=false;wtSetStatus("failed");return false;}
+}
+function wtSetStatus(state){
+  wtConnState=state;
+  const dot=document.getElementById("wtStatusDot"),txt=document.getElementById("wtStatusText");
+  if(dot){dot.className="wt-dot "+(state==="connected"?"ok":state==="failed"?"bad":"wait");}
+  if(txt){txt.textContent=state==="connected"?"已连接":state==="failed"?"连接失败":state==="connecting"?"正在连接":"未连接";}
+}
+function wtOnWorkerMessage(ev){
+  const d=ev.data||{};
+  if(d.type==="status"){
+    wtConnected=d.state==="connected";wtSetStatus(d.state);
+    if(d.state==="connected"){wtOnReconnected();}
+    return;
+  }
+  if(d.type==="error"){
+    if(d.code==="vendor"){wtSetStatus("failed");toast("聊天服务不可用");}
+    return;
+  }
+  if(d.type==="vendor-ready"){wtWorkerReady=true;return;}
+  if(d.type==="message"){
+    if(d.topic!==(wtRoom?wtTopic(wtRoom.hash):""))return;
+    wtHandlePayload(d.payload);
+  }
+}
+function wtConnect(){
+  if(!wtEnsureWorker()){toast("聊天服务不可用");return;}
+  wtSetStatus("connecting");
+  wtWorker.postMessage({type:"connect"});
+}
+function wtDisconnect(){
+  if(wtWorker)wtWorker.postMessage({type:"disconnect"});
+  wtConnected=false;wtSetStatus("idle");
+}
+function wtSub(topic){if(wtWorker)wtWorker.postMessage({type:"subscribe",topic});}
+function wtUnsub(topic){if(wtWorker)wtWorker.postMessage({type:"unsubscribe",topic});}
+function wtPublish(payload){
+  if(!wtRoom||!wtWorker)return false;
+  const body={...payload,v:1,room:wtRoom.hash,senderId:wtIdentity.clientId,userId:wtIdentity.uid,ts:payload.ts||Date.now()};
+  let s;try{s=JSON.stringify(body);}catch(e){return false;}
+  if(s.length>WT_MSG_BYTES&&body.avatarData){delete body.avatarData;s=JSON.stringify(body);}
+  if(s.length>WT_MSG_BYTES)return false;
+  wtWorker.postMessage({type:"publish",topic:wtTopic(wtRoom.hash),payload:body});
+  return true;
+}
+function wtOnReconnected(){
+  if(!wtRoom)return;
+  wtPublishPresence();
+  wtSendSyncRequest();
+}
+
+/* ---------- 房间生命周期 ---------- */
+function wtJoinRoom(roomKey){
+  if(!wtSettings.enabled)return;
+  const hash=wtRoomHash(roomKey);
+  if(wtRoom&&wtRoom.hash===hash){wtUpdateBadge();return;}
+  if(wtRoom)wtLeaveRoom(true);
+  wtRoom={key:roomKey,hash};
+  wtOnline={};wtRenderOnline();
+  wtEnsureWorker();
+  if(!wtConnected)wtConnect();
+  wtSub(wtTopic(hash));
+  wtPublishPresence();
+  wtSendSyncRequest();
+  wtRenderMessages();
+  if(wtPanelOpen){
+    const b=document.getElementById("wtMsgs");if(b)b.scrollTop=b.scrollHeight;
+    wtMarkRead();wtAckVisible();
+  }
+  wtUpdateBadge();
+}
+function wtLeaveRoom(silent){
+  if(!wtRoom)return;
+  wtPublish({type:"presence-leave"});
+  wtUnsub(wtTopic(wtRoom.hash));
+  wtRoom=null;wtOnline={};wtRenderOnline();
+  if(!silent){wtRenderMessages();wtUpdateBadge();}
+}
+function wtRoomKeyCurrent(){return playerItem?wtRoomKeyOf(playerItem):"";}
+
+function wtOnPlayerOpen(it){
+  if(!wtSettings.enabled||!it)return;
+  wtJoinRoom(wtRoomKeyOf(it));
+  wtUpdateBadge();
+}
+function wtOnPlayerClose(){
+  if(wtPanelOpen)wtClosePanel();
+  if(wtRoom)wtLeaveRoom(false);
+}
+
+/* ---------- presence ---------- */
+function wtPublishPresence(){
+  if(!wtRoom||!wtSettings.enabled)return;
+  if(!wtPanelOpen&&!wtSettings.background)return;
+  wtLastPresence=Date.now();
+  wtPublish({type:"presence",nick:wtProfile.nick,avatarType:wtProfile.avatarType,avatarSeed:wtProfile.avatarSeed});
+}
+function wtStartPresenceTimer(){
+  if(wtPresenceTimer)return;
+  wtPresenceTimer=setInterval(function(){
+    if(wtRoom&&wtConnected&&(wtPanelOpen||wtSettings.background))wtPublishPresence();
+    if(wtPanelOpen||wtSettings.background)wtPruneOnline();
+  },15000);
+}
+function wtPruneOnline(){
+  const now=Date.now();let changed=false;
+  Object.keys(wtOnline).forEach(function(k){
+    if(now-(wtOnline[k].lastSeen||0)>45000){delete wtOnline[k];changed=true;}
+  });
+  if(changed)wtRenderOnline();
+}
+
+/* ---------- 在线列表 ---------- */
+function wtRenderOnline(){
+  const list=document.getElementById("wtOnlineList"),btn=document.getElementById("wtOnlineText");
+  const rows=Object.keys(wtOnline).map(function(k){return wtOnline[k];});
+  rows.sort(function(a,b){
+    const am=a.userId===wtIdentity.uid?0:1,bm=b.userId===wtIdentity.uid?0:1;
+    return am-bm||String(a.nick||"").localeCompare(String(b.nick||""));
+  });
+  if(btn)btn.textContent="在线 "+rows.length+" 人";
+  if(!list)return;
+  list.textContent="";
+  rows.slice(0,100).forEach(function(u){
+    const row=document.createElement("div");row.className="wt-user";
+    const img=document.createElement("img");img.className="wt-user-avatar";img.alt="";img.src=wtAvatarSrc(u);img.draggable=false;
+    const name=document.createElement("span");name.className="wt-user-name";name.textContent=u.nick||"匿名用户";
+    row.appendChild(img);row.appendChild(name);
+    if(u.userId===wtIdentity.uid){const me=document.createElement("span");me.className="wt-me";me.textContent="我";row.appendChild(me);}
+    list.appendChild(row);
+  });
+  if(rows.length>100){const more=document.createElement("div");more.className="wt-more";more.textContent="仅显示前 100 人";list.appendChild(more);}
+}
+
+/* ---------- 消息收发 ---------- */
+function wtHandlePayload(p){
+  if(!p||p.v!==1||typeof p.type!=="string"||!p.room||typeof p.ts!=="number")return;
+  if(p.room!==(wtRoom?wtRoom.hash:""))return;
+  if(p.ts>Date.now()+600000||Date.now()-p.ts>7*86400000)return;
+  const myUid=wtIdentity.uid;
+  if(p.type==="presence"){
+    const key=p.userId||p.senderId;
+    if(!key)return;
+    wtOnline[key]={userId:p.userId||"",senderId:p.senderId||"",nick:String(p.nick||"匿名用户").slice(0,16),avatarType:wtValidAvatarType(p.avatarType)?p.avatarType:"identicon",avatarSeed:String(p.avatarSeed||p.userId||p.senderId).slice(0,64),avatarData:wtValidAvatarData(p.avatarData)?p.avatarData:"",lastSeen:Date.now()};
+    wtRenderOnline();return;
+  }
+  if(p.type==="presence-leave"){
+    const key=p.userId||p.senderId;if(key&&wtOnline[key]){delete wtOnline[key];wtRenderOnline();}return;
+  }
+  if(p.type==="chat"){
+    if(!p.msgId||p.senderId===wtIdentity.clientId)return;
+    if(typeof p.text!=="string"||!p.text.length||p.text.length>WT_TEXT_MAX)return;
+    const d=wtLoadChat(p.room);
+    if(d.messages.some(m=>m.msgId===p.msgId))return;
+    const msg={msgId:String(p.msgId).slice(0,64),userId:String(p.userId||""),senderId:String(p.senderId||""),nick:String(p.nick||"匿名用户").slice(0,16),avatarType:wtValidAvatarType(p.avatarType)?p.avatarType:"identicon",avatarSeed:String(p.avatarSeed||p.userId||"").slice(0,64),avatarData:wtValidAvatarData(p.avatarData)?p.avatarData:"",text:p.text,ts:p.ts,acked:false};
+    d.messages.push(msg);wtSaveChat(p.room,d);
+    if(wtPanelOpen&&wtRoom&&wtRoom.hash===p.room){
+      wtRenderMessages();wtMarkRead();wtAck(p.msgId);
+    }else if(wtSettings.background){
+      wtUpdateBadge();
+    }
+    return;
+  }
+  if(p.type==="ack"){
+    if(!p.ackFor||p.userId===myUid)return;
+    const d=wtLoadChat(p.room);let changed=false;
+    d.messages.forEach(function(m){if(m.msgId===p.ackFor&&m.userId===myUid&&!m.acked){m.acked=true;changed=true;}});
+    if(changed){wtSaveChat(p.room,d);wtRenderMessages();}
+    return;
+  }
+  if(p.type==="sync-request"){
+    if(p.senderId===wtIdentity.clientId||p.userId===myUid)return;
+    wtRespondSync(p);return;
+  }
+  if(p.type==="sync-response"){
+    if(p.userId===myUid)return;
+    wtMergeSync(p);return;
+  }
+}
+const wtAckQueue=[];
+let wtAckTimer=null;
+function wtFlushAck(){
+  if(wtAckTimer)return;
+  wtAckTimer=setTimeout(function(){
+    wtAckTimer=null;
+    const item=wtAckQueue.shift();
+    if(!item)return;
+    if(wtRoom&&wtRoom.hash===item.hash)wtPublish({type:"ack",ackFor:item.id});
+    wtFlushAck();
+  },160);
+}
+function wtAck(msgId){
+  if(!wtRoom||!msgId)return;
+  const k=wtRoom.hash+":"+msgId;
+  if(wtAckSent[k])return;
+  wtAckSent[k]=1;
+  wtAckQueue.push({hash:wtRoom.hash,id:msgId});
+  wtFlushAck();
+}
+function wtMarkRead(){
+  if(!wtRoom)return;
+  const d=wtLoadChat(wtRoom.hash),read=new Set(d.readIds||[]),my=wtIdentity.uid;
+  let changed=false;
+  d.messages.forEach(function(m){if(m.userId!==my&&!read.has(m.msgId)){read.add(m.msgId);changed=true;}});
+  if(changed){d.readIds=Array.from(read).slice(-WT_READ_MAX);wtSaveChat(wtRoom.hash,d);}
+  wtUpdateBadge();
+}
+function wtSendSyncRequest(){
+  if(!wtRoom||!wtConnected)return;
+  const d=wtLoadChat(wtRoom.hash);
+  const ids=d.messages.slice(-WT_MSG_MAX).map(m=>m.msgId);
+  const since=d.messages.length?d.messages[d.messages.length-1].ts:0;
+  wtPublish({type:"sync-request",sinceTs:since,existingIds:ids});
+}
+function wtRespondSync(p){
+  if(!wtRoom)return;
+  const now=Date.now();
+  if(wtSyncCool[p.senderId]&&now-wtSyncCool[p.senderId]<3000)return;
+  wtSyncCool[p.senderId]=now;
+  const d=wtLoadChat(wtRoom.hash),have=new Set(p.existingIds||[]);
+  const missing=d.messages.filter(m=>m.ts>=(p.sinceTs||0)&&!have.has(m.msgId)).slice(-WT_SYNC_MAX);
+  wtPublish({type:"sync-response",messages:missing.map(m=>({msgId:m.msgId,userId:m.userId,senderId:m.senderId,nick:m.nick,avatarType:m.avatarType,avatarSeed:m.avatarSeed,avatarData:m.avatarData,text:m.text,ts:m.ts})),readIds:d.readIds.slice(-500)});
+}
+function wtMergeSync(p){
+  if(!wtRoom)return;
+  const d=wtLoadChat(wtRoom.hash),have={};d.messages.forEach(m=>have[m.msgId]=1);
+  let added=0;
+  (p.messages||[]).slice(0,WT_SYNC_MAX).forEach(function(m){
+    if(!m||!m.msgId||have[m.msgId]||typeof m.text!=="string"||m.text.length>WT_TEXT_MAX)return;
+    d.messages.push({msgId:String(m.msgId).slice(0,64),userId:String(m.userId||""),senderId:String(m.senderId||""),nick:String(m.nick||"匿名用户").slice(0,16),avatarType:wtValidAvatarType(m.avatarType)?m.avatarType:"identicon",avatarSeed:String(m.avatarSeed||"").slice(0,64),avatarData:wtValidAvatarData(m.avatarData)?m.avatarData:"",text:m.text,ts:m.ts,acked:false});
+    have[m.msgId]=1;added++;
+  });
+  const reads=p.readIds||[];
+  if(p.userId!==wtIdentity.uid&&reads.length){
+    const rs=new Set(reads);d.messages.forEach(function(m){if(m.userId===wtIdentity.uid&&rs.has(m.msgId))m.acked=true;});
+  }
+  if(added||reads.length){wtSaveChat(wtRoom.hash,d);wtRenderMessages();wtUpdateBadge();}
+}
+
+/* ---------- 渲染 ---------- */
+function wtFmtTime(ts){const d=new Date(ts||Date.now());return String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");}
+function wtRenderMessages(){
+  const box=document.getElementById("wtMsgs");
+  if(!box)return;
+  const area=box.scrollTop+box.clientHeight>=box.scrollHeight-40;
+  const prevTop=box.scrollTop;
+  box.textContent="";
+  if(!wtRoom){const e=document.createElement("div");e.className="wt-empty";e.textContent="播放影视后即可加入聊天";box.appendChild(e);return;}
+  const d=wtLoadChat(wtRoom.hash);
+  if(!d.messages.length){const e=document.createElement("div");e.className="wt-empty";e.textContent="暂无消息，来说点什么吧";box.appendChild(e);return;}
+  const my=wtIdentity.uid;
+  d.messages.forEach(function(m){
+    const mine=m.userId===my;
+    const row=document.createElement("div");row.className="wt-msg "+(mine?"mine":"other");
+    const img=document.createElement("img");img.className="wt-msg-avatar";img.alt="";img.src=wtAvatarSrc(m);img.draggable=false;
+    const body=document.createElement("div");body.className="wt-bubble";
+    const meta=document.createElement("div");meta.className="wt-meta";
+    const nick=document.createElement("span");nick.className="wt-nick";nick.textContent=m.nick||"匿名用户";
+    const time=document.createElement("span");time.className="wt-time";time.textContent=wtFmtTime(m.ts);
+    meta.appendChild(nick);meta.appendChild(time);
+    const text=document.createElement("div");text.className="wt-text";text.textContent=m.text;
+    body.appendChild(meta);body.appendChild(text);
+    if(mine){const st=document.createElement("div");st.className="wt-state";st.textContent=m.acked?"已读":"未读";body.appendChild(st);}
+    row.appendChild(img);row.appendChild(body);box.appendChild(row);
+  });
+  if(area)box.scrollTop=box.scrollHeight;else box.scrollTop=prevTop;
+}
+
+/* ---------- 侧栏 ---------- */
+function wtOpenPanel(){
+  if(!wtSettings.enabled)return;
+  if(!playerItem){toast("请先播放影视");return;}
+  wtJoinRoom(wtRoomKeyOf(playerItem));
+  if(!wtConnected)wtConnect();
+  const panel=document.getElementById("wtPanel");
+  if(panel)panel.classList.add("open");
+  wtPanelOpen=true;
+  if(isFs)applyFsLayout();
+  wtRenderMessages();
+  wtMarkRead();
+  wtAckVisible();
+  wtPublishPresence();
+  const box=document.getElementById("wtMsgs");if(box)box.scrollTop=box.scrollHeight;
+}
+function wtClosePanel(){
+  const panel=document.getElementById("wtPanel");
+  if(panel)panel.classList.remove("open");
+  wtPanelOpen=false;
+  const ol=document.getElementById("wtOnlineList");if(ol)ol.style.display="none";
+  if(isFs)applyFsLayout();
+  if(!wtSettings.background&&wtRoom){wtLeaveRoom(false);}
+  wtUpdateBadge();
+}
+function wtTogglePanel(){if(wtPanelOpen)wtClosePanel();else wtOpenPanel();}
+function wtAckVisible(){
+  if(!wtPanelOpen||!wtRoom)return;
+  const d=wtLoadChat(wtRoom.hash),my=wtIdentity.uid;
+  d.messages.forEach(function(m){if(m.userId!==my)wtAck(m.msgId);});
+}
+
+/* ---------- 发送 ---------- */
+function wtSendMessage(){
+  if(!wtSettings.enabled){toast("一起看功能已关闭");return;}
+  if(!wtRoom||!playerItem){toast("请先播放影视");return;}
+  const input=document.getElementById("wtInput");if(!input)return;
+  const text=String(input.value||"").trim().slice(0,WT_TEXT_MAX);
+  if(!text){return;}
+  const now=Date.now();
+  if(now-wtLastSend<1200){toast("发送太快，请稍候");return;}
+  wtLastSend=now;
+  const msg={msgId:wtRand(10),userId:wtIdentity.uid,senderId:wtIdentity.clientId,nick:wtProfile.nick,avatarType:wtProfile.avatarType,avatarSeed:wtProfile.avatarSeed,text:text,ts:now,acked:false};
+  if(wtProfile.avatarType==="upload"&&wtValidAvatarData(wtProfile.avatarData))msg.avatarData=wtProfile.avatarData;
+  const d=wtLoadChat(wtRoom.hash);
+  if(d.messages.some(m=>m.msgId===msg.msgId))return;
+  d.messages.push(msg);wtSaveChat(wtRoom.hash,d);
+  const payload={type:"chat",msgId:msg.msgId,nick:msg.nick,avatarType:msg.avatarType,avatarSeed:msg.avatarSeed,text:msg.text,ts:msg.ts};
+  if(msg.avatarData)payload.avatarData=msg.avatarData;
+  if(!wtPublish(payload)){toast("发送失败，请检查网络");return;}
+  input.value="";
+  wtRenderMessages();
+  wtUpdateBadge();
+  const box=document.getElementById("wtMsgs");if(box)box.scrollTop=box.scrollHeight;
+}
+
+/* ---------- 分享编码 ---------- */
+function wtBase64Url(bytes){
+  let s="";for(let i=0;i<bytes.length;i++)s+=String.fromCharCode(bytes[i]);
+  return btoa(s).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
+}
+function wtBase64UrlDecode(str){
+  let s=str.replace(/-/g,"+").replace(/_/g,"/");while(s.length%4)s+="=";
+  const bin=atob(s),out=new Uint8Array(bin.length);
+  for(let i=0;i<bin.length;i++)out[i]=bin.charCodeAt(i);
+  return out;
+}
+async function wtCompressRaw(bytes){
+  if(typeof CompressionStream==="undefined")return null;
+  try{
+    const cs=new CompressionStream("deflate-raw");
+    const stream=new Blob([bytes]).stream().pipeThrough(cs);
+    return new Uint8Array(await new Response(stream).arrayBuffer());
+  }catch(e){return null;}
+}
+async function wtDecompressRaw(bytes){
+  if(typeof DecompressionStream==="undefined")return null;
+  try{
+    const ds=new DecompressionStream("deflate-raw");
+    const stream=new Blob([bytes]).stream().pipeThrough(ds);
+    return new Uint8Array(await new Response(stream).arrayBuffer());
+  }catch(e){return null;}
+}
+async function wtEncodeShare(obj){
+  const bytes=new TextEncoder().encode(JSON.stringify(obj));
+  const packed=await wtCompressRaw(bytes);
+  return "TVC1:"+wtBase64Url(packed||bytes);
+}
+async function wtDecodeShare(raw){
+  const s=String(raw||"").trim();
+  if(s.indexOf("TVC1:")!==0)throw new Error("prefix");
+  let bytes=wtBase64UrlDecode(s.slice(5));
+  const un=await wtDecompressRaw(bytes);
+  if(un)bytes=un;
+  const txt=new TextDecoder().decode(bytes);
+  const obj=JSON.parse(txt);
+  if(!obj||obj.v!==1||obj.app!=="tvbox-center"||obj.type!=="watch-together-share")throw new Error("type");
+  if(typeof obj.ts!=="number"||Date.now()-obj.ts>86400000||obj.ts>Date.now()+600000)throw new Error("expired");
+  if(!obj.sourceKey||!obj.vodId)throw new Error("id");
+  if(obj.roomKey!==String(obj.sourceKey)+"::"+String(obj.vodId))throw new Error("room");
+  if(obj.roomHash!==wtRoomHash(obj.roomKey))throw new Error("hash");
+  if(!sources.some(x=>x.key===obj.sourceKey))throw new Error("source");
+  if(obj.episodeIndex!=null&&(!Number.isInteger(obj.episodeIndex)||obj.episodeIndex<0))throw new Error("episode");
+  if(typeof obj.episodeIndex!=="number"&&!obj.episodeName)throw new Error("episode");
+  return obj;
+}
+function wtBuildShare(){
+  if(!playerItem)return null;
+  const eps=playerSources[playerSrc]||[],ep=eps[playerEp];
+  const roomKey=wtRoomKeyOf(playerItem);
+  return {
+    v:1,app:"tvbox-center",type:"watch-together-share",ts:Date.now(),
+    sourceKey:String(playerItem._sourceKey||""),
+    sourceName:String((sources.find(s=>s.key===playerItem._sourceKey)||{}).name||playerItem._source||""),
+    vodId:String(playerItem.vod_id||""),
+    vodName:String(playerItem.vod_name||""),
+    vodPic:String(playerItem.vod_pic||"").slice(0,500),
+    episodeIndex:playerEp,
+    episodeName:String(ep&&ep.name||"").slice(0,80),
+    playFrom:String(playerSrc||""),
+    playUrl:String(ep&&ep.url||"").slice(0,1000),
+    roomKey:roomKey,roomHash:wtRoomHash(roomKey),
+    position:videoEl&&isFinite(videoEl.currentTime)?Math.round(videoEl.currentTime*10)/10:0
+  };
+}
+async function wtCopyText(text){
+  try{if(navigator.clipboard&&navigator.clipboard.writeText){await navigator.clipboard.writeText(text);return true;}}catch(e){}
+  try{
+    const ta=document.createElement("textarea");ta.value=text;ta.style.position="fixed";ta.style.left="-9999px";
+    document.body.appendChild(ta);ta.focus();ta.select();
+    const ok=document.execCommand("copy");document.body.removeChild(ta);
+    return ok;
+  }catch(e){return false;}
+}
+async function wtShare(){
+  if(!wtSettings.enabled){toast("一起看功能已关闭");return;}
+  if(!playerItem){toast("请先播放影视");return;}
+  const data=wtBuildShare();
+  if(!data||!data.sourceKey||!data.vodId){toast("分享信息不完整");return;}
+  const str=await wtEncodeShare(data);
+  const ok=await wtCopyText(str);
+  if(ok)toast("分享内容已复制");
+  else wtShowManualCopy(str);
+}
+function wtShowManualCopy(text){
+  const m=document.getElementById("wtCopyModal");if(!m)return;
+  const ta=document.getElementById("wtCopyText");if(ta){ta.value=text;}
+  m.classList.add("show");
+  if(ta){ta.focus();ta.select();}
+}
+
+/* ---------- 分享加入 ---------- */
+function wtReadSeen(){try{return JSON.parse(safeGet(WT_LS_SEEN,"{}"))||{};}catch(e){return {};}}
+function wtMarkSeen(key){
+  const seen=wtReadSeen();seen[key]=Date.now();
+  const keys=Object.keys(seen).sort((a,b)=>seen[b]-seen[a]).slice(0,20);
+  const out={};keys.forEach(k=>{out[k]=seen[k];});
+  safeSet(WT_LS_SEEN,JSON.stringify(out));
+}
+async function wtConfirm(title,desc,okText){
+  return new Promise(function(resolve){
+    const m=document.getElementById("wtConfirmModal");
+    if(!m){resolve(false);return;}
+    const t=document.getElementById("wtConfirmTitle"),d=document.getElementById("wtConfirmDesc"),ok=document.getElementById("wtConfirmOk"),cancel=document.getElementById("wtConfirmCancel");
+    if(t)t.textContent=title||"确认";
+    if(d)d.textContent=desc||"";
+    if(ok)ok.textContent=okText||"确定";
+    function done(v){m.classList.remove("show");ok.removeEventListener("click",onOk);cancel.removeEventListener("click",onCancel);m.removeEventListener("click",onBack);resolve(v);}
+    function onOk(){done(true);}function onCancel(){done(false);}function onBack(e){if(e.target===m)done(false);}
+    ok.addEventListener("click",onOk);cancel.addEventListener("click",onCancel);m.addEventListener("click",onBack);
+    m.classList.add("show");
+  });
+}
+async function handleShareJoin(raw,options){
+  options=options||{};
+  let share;
+  try{share=await wtDecodeShare(raw);}catch(e){toast("分享内容无效或已过期");return false;}
+  const seenKey=share.ts+":"+share.roomHash;
+  const seen=wtReadSeen();
+  if(seen[seenKey]&&Date.now()-seen[seenKey]<86400000)return false;
+  const sameMovie=playerItem&&String(playerItem._sourceKey)===String(share.sourceKey)&&String(playerItem.vod_id)===String(share.vodId);
+  const sameEp=sameMovie&&String(playerSrc||"")===String(share.playFrom||playerSrc||"")&&Number(share.episodeIndex)===playerEp;
+  if(playerOverlay.classList.contains("active")&&playerItem&&!sameEp){
+    const ok=await wtConfirm("加入一起看","将离开当前播放的《"+String(playerItem.vod_name||"影片")+"》，并打开《"+String(share.vodName||"影片")+"》。","继续加入");
+    if(!ok){wtMarkSeen(seenKey);return false;}
+  }
+  const src=sources.find(s=>s.key===share.sourceKey);
+  if(!src){toast("分享内容无效或已过期");return false;}
+  try{
+    if(!sameEp){
+      const it={vod_id:share.vodId,vod_name:share.vodName||"",vod_pic:share.vodPic||"",_source:src.name,_sourceKey:src.key,_api:src.api};
+      await openPlayer(it,{playFrom:share.playFrom,episodeIndex:share.episodeIndex,episodeName:share.episodeName,position:share.position});
+    }
+    setTimeout(function(){if(!isFs)enterFsMode();},180);
+    if(wtSettings.enabled){setTimeout(function(){wtOpenPanel();},420);}
+    else toast("一起看功能已关闭");
+    wtMarkSeen(seenKey);
+    return true;
+  }catch(e){toast("分享内容无效或已过期");return false;}
+}
+function handleSearchInput(raw){
+  const t=String(raw||"").trim();
+  if(t.indexOf("TVC1:")===0){handleShareJoin(t);return true;}
+  return false;
+}
+function wtClipboardNotice(){
+  const now=Date.now();if(now-wtClipNoticeAt<3000)return;wtClipNoticeAt=now;
+  toast("检测到一起看分享，按回车加入");
+}
+async function wtCheckClipboard(){
+  if(!wtSettings.enabled||wtClipBusy)return;
+  if(!navigator.clipboard||!navigator.clipboard.readText)return;
+  if(location.protocol!=="https:"&&location.hostname!=="localhost"&&location.hostname!=="127.0.0.1")return;
+  wtClipBusy=true;
+  try{
+    const raw=await navigator.clipboard.readText();
+    const t=(raw||"").trim().split(/\r?\n/)[0].trim();
+    if(t&&t.indexOf("TVC1:")===0)await handleShareJoin(t,{auto:true});
+  }catch(e){}
+  wtClipBusy=false;
+}
+
+/* ---------- 设置页 ---------- */
+function wtRenderSettings(){
+  const img=document.getElementById("wtAvatarImg");if(img)img.src=wtAvatarSrc({avatarType:wtProfile.avatarType,avatarSeed:wtProfile.avatarSeed,avatarData:wtProfile.avatarData});
+  const nick=document.getElementById("wtNickInput");if(nick&&nick!==document.activeElement)nick.value=wtProfile.nick;
+  setSw(document.getElementById("swWtEnabled"),wtSettings.enabled);
+  setSw(document.getElementById("swWtBackground"),wtSettings.background);
+  setSw(document.getElementById("swWtBadge"),wtSettings.badge);
+  ["swWtBackground","swWtBadge"].forEach(function(id){
+    const el=document.getElementById(id);if(!el)return;
+    el.style.opacity=wtSettings.enabled?"":"0.4";
+    el.style.pointerEvents=wtSettings.enabled?"":"none";
+  });
+  const clip=document.getElementById("wtClipboardJoin");if(clip)clip.style.display=wtSettings.enabled?"":"none";
+}
+function wtApplyEnabled(){
+  const btn=document.getElementById("btnWatchTogether");
+  if(btn)btn.style.display=wtSettings.enabled?"":"none";
+  if(!wtSettings.enabled){
+    wtClosePanel();wtDisconnect();wtLeaveRoom(false);
+  }else{
+    if(playerItem&&playerOverlay.classList.contains("active"))wtJoinRoom(wtRoomKeyOf(playerItem));
+  }
+  wtUpdateBadge();wtRenderSettings();
+}
+function wtSetSetting(key,val){
+  if(key!=="enabled"&&!wtSettings.enabled)return;
+  wtSettings[key]=!!val;wtSaveSettings();
+  if(key==="enabled")wtApplyEnabled();
+  if(key==="background"&&!wtSettings.background&&!wtPanelOpen&&wtRoom)wtLeaveRoom(false);
+  if(key==="background"&&wtSettings.background&&playerItem&&playerOverlay.classList.contains("active"))wtJoinRoom(wtRoomKeyOf(playerItem));
+  wtUpdateBadge();wtRenderSettings();
+}
+function wtSetNick(v){
+  let s=String(v||"").replace(/[<>]/g,"").replace(/[\u0000-\u001f\u007f]/g,"").trim().slice(0,16);
+  if(!s)s="匿名用户"+wtUid8().slice(0,4);
+  wtProfile.nick=s;wtProfile.avatarSeed=s+wtIdentity.uid;wtSaveProfile();
+  wtRenderSettings();
+  if(wtPanelOpen)wtRenderMessages();
+  return s;
+}
+function wtHandleAvatar(file){
+  if(!file||file.type.indexOf("image/")!==0)return;
+  const url=URL.createObjectURL(file),img=new Image();
+  img.onload=function(){
+    try{
+      const size=96,c=document.createElement("canvas");c.width=size;c.height=size;
+      const ctx=c.getContext("2d");
+      const s=Math.min(img.width,img.height);
+      ctx.drawImage(img,(img.width-s)/2,(img.height-s)/2,s,s,0,0,size,size);
+      const data=c.toDataURL("image/jpeg",0.72);
+      if(data.length>24000){toast("头像过大，请换一张更小的图片");URL.revokeObjectURL(url);return;}
+      wtProfile.avatarType="upload";wtProfile.avatarData=data;wtSaveProfile();wtRenderSettings();
+      toast("头像已更新");
+    }catch(e){toast("头像处理失败");}
+    URL.revokeObjectURL(url);
+  };
+  img.onerror=function(){toast("图片无法读取");URL.revokeObjectURL(url);};
+  img.src=url;
+}
+
+/* ---------- 初始化 ---------- */
+function wtInit(){
+  wtLoadIdentity();wtLoadSettings();wtLoadProfile();
+  const btn=document.getElementById("btnWatchTogether");
+  if(btn)btn.addEventListener("click",function(e){e.stopPropagation();wtTogglePanel();});
+  const close=document.getElementById("wtClose");if(close)close.addEventListener("click",wtClosePanel);
+  const send=document.getElementById("wtSend");if(send)send.addEventListener("click",wtSendMessage);
+  const input=document.getElementById("wtInput");
+  if(input)input.addEventListener("keydown",function(e){if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();wtSendMessage();}});
+  const share=document.getElementById("wtShare");if(share)share.addEventListener("click",wtShare);
+  const online=document.getElementById("wtOnlineBtn");
+  if(online)online.addEventListener("click",function(e){
+    e.stopPropagation();
+    const list=document.getElementById("wtOnlineList");if(!list)return;
+    list.style.display=list.style.display==="none"?"":"none";
+  });
+  document.addEventListener("click",function(e){
+    const list=document.getElementById("wtOnlineList");
+    if(list&&list.style.display!=="none"&&!e.target.closest("#wtOnlineBtn")&&!e.target.closest("#wtOnlineList"))list.style.display="none";
+  });
+  const swE=document.getElementById("swWtEnabled");if(swE)swE.addEventListener("click",()=>wtSetSetting("enabled",!wtSettings.enabled));
+  const swB=document.getElementById("swWtBackground");if(swB)swB.addEventListener("click",()=>wtSetSetting("background",!wtSettings.background));
+  const swG=document.getElementById("swWtBadge");if(swG)swG.addEventListener("click",()=>wtSetSetting("badge",!wtSettings.badge));
+  const nick=document.getElementById("wtNickInput");
+  if(nick){
+    nick.addEventListener("change",()=>wtSetNick(nick.value));
+    nick.addEventListener("blur",()=>wtSetNick(nick.value));
+  }
+  const pick=document.getElementById("wtAvatarPick"),file=document.getElementById("wtAvatarFile");
+  if(pick&&file)pick.addEventListener("click",()=>file.click());
+  if(file)file.addEventListener("change",()=>{if(file.files&&file.files[0])wtHandleAvatar(file.files[0]);file.value="";});
+  const reset=document.getElementById("wtAvatarReset");
+  if(reset)reset.addEventListener("click",()=>{wtProfile.avatarType="identicon";wtProfile.avatarData="";wtProfile.avatarSeed=wtProfile.nick+wtIdentity.uid;wtSaveProfile();wtRenderSettings();toast("已恢复默认头像");});
+  const clip=document.getElementById("wtClipboardJoin");
+  if(clip)clip.addEventListener("click",async()=>{try{const raw=await navigator.clipboard.readText();const t=(raw||"").trim().split(/\r?\n/)[0].trim();if(t&&t.indexOf("TVC1:")===0)await handleShareJoin(t);else toast("剪贴板中没有一起看分享");}catch(e){toast("无法读取剪贴板");}});
+  const copyClose=document.getElementById("wtCopyClose");if(copyClose)copyClose.addEventListener("click",()=>document.getElementById("wtCopyModal").classList.remove("show"));
+  document.addEventListener("paste",function(e){
+    const t=(((e.clipboardData||window.clipboardData).getData("text")||"").trim().split(/\r?\n/)[0]||"").trim();
+    if(t.indexOf("TVC1:")!==0)return;
+    const tag=(e.target&&e.target.tagName||"").toLowerCase();
+    if(tag==="input"||tag==="textarea"){
+      if(e.target.id==="searchInput")wtClipboardNotice();
+      return;
+    }
+    handleShareJoin(t);
+  });
+  window.addEventListener("focus",wtCheckClipboard);
+  document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible"){wtCheckClipboard();if(wtRoom&&wtConnected&&(wtPanelOpen||wtSettings.background))wtPublishPresence();}});
+  wtStartPresenceTimer();
+  if(wtOnlineTimer)clearInterval(wtOnlineTimer);
+  wtOnlineTimer=setInterval(wtPruneOnline,10000);
+  wtApplyEnabled();
+  setTimeout(wtCheckClipboard,800);
+}
+
+/* ==================== 数据备份：GZIP + AES-GCM + RC4 + XOR ==================== */
+const BK_MAGIC=new Uint8Array([84,86,67,66,65,75,49,0]); /* TVCBAK1\0 */
+const BK_VERSION=1,BK_FLAG_GZIP=1,BK_ITER=200000;
+const BK_LS_KEYS=["tvbox_sources","tvbox_favorites","tvbox_history","tvbox_theme","tvbox_no_welcome","tvbox_hist_limit","tvbox_player_settings","tvbox_position_cache","tvbox_full_index","tvbox_idx_pages","tvbox_idx_pick","tvbox_idx_prog","tvbox_idx_count","tvbox_wt_profile","tvbox_wt_settings","tvbox_wt_uid","tvbox_wt_share_seen"];
+let bkBusy=false,bkResolve=null,bkMode="export";
+
+function bkRandom(n){
+  const a=new Uint8Array(n);crypto.getRandomValues(a);return a;
+}
+function bkConcat(parts){
+  const n=parts.reduce((s,p)=>s+p.length,0),out=new Uint8Array(n);let o=0;
+  parts.forEach(p=>{out.set(p,o);o+=p.length;});return out;
+}
+async function deriveBackupKeys(password,salt){
+  if(!crypto||!crypto.subtle)throw new Error("NO_CRYPTO");
+  const base=await crypto.subtle.importKey("raw",new TextEncoder().encode(password),"PBKDF2",false,["deriveBits"]);
+  const bits=await crypto.subtle.deriveBits({name:"PBKDF2",salt:salt,iterations:BK_ITER,hash:"SHA-256"},base,512);
+  const dk=new Uint8Array(bits);
+  return {aes:dk.slice(0,32),rc4:dk.slice(32,48),xor:dk.slice(48,64)};
+}
+function xorTransform(bytes,key){
+  const out=new Uint8Array(bytes.length);
+  for(let i=0;i<bytes.length;i++)out[i]=bytes[i]^key[i%key.length];
+  return out;
+}
+function rc4(bytes,key){
+  const S=new Uint8Array(256);for(let i=0;i<256;i++)S[i]=i;
+  let j=0;
+  for(let i=0;i<256;i++){j=(j+S[i]+key[i%key.length])&255;const t=S[i];S[i]=S[j];S[j]=t;}
+  let i=0;j=0;const out=new Uint8Array(bytes.length);
+  for(let n=0;n<bytes.length;n++){
+    i=(i+1)&255;j=(j+S[i])&255;
+    const t=S[i];S[i]=S[j];S[j]=t;
+    out[n]=bytes[n]^S[(S[i]+S[j])&255];
+  }
+  return out;
+}
+async function gzipCompress(bytes){
+  if(typeof CompressionStream==="undefined")throw new Error("NO_GZIP_COMPRESS");
+  try{
+    const cs=new CompressionStream("gzip");
+    const stream=new Blob([bytes]).stream().pipeThrough(cs);
+    return new Uint8Array(await new Response(stream).arrayBuffer());
+  }catch(e){throw new Error("NO_GZIP_COMPRESS");}
+}
+async function gzipDecompress(bytes){
+  if(typeof DecompressionStream==="undefined")throw new Error("NO_GZIP_DECOMPRESS");
+  try{
+    const ds=new DecompressionStream("gzip");
+    const stream=new Blob([bytes]).stream().pipeThrough(ds);
+    return new Uint8Array(await new Response(stream).arrayBuffer());
+  }catch(e){throw new Error("NO_GZIP_DECOMPRESS");}
+}
+
+/* ---------- 收集 ---------- */
+function collectProjectLocalStorage(){
+  const out={};
+  BK_LS_KEYS.forEach(function(k){
+    try{const v=localStorage.getItem(k);if(v!==null)out[k]=v;}catch(e){}
+  });
+  return out;
+}
+function collectChatRecords(){
+  const out={};
+  try{
+    for(let i=0;i<localStorage.length;i++){
+      const k=localStorage.key(i);
+      if(k&&k.indexOf(WT_CHAT_PREFIX)===0){
+        const room=k.slice(WT_CHAT_PREFIX.length);
+        try{out[room]=JSON.parse(localStorage.getItem(k));}catch(e){}
+      }
+    }
+  }catch(e){}
+  return out;
+}
+function bkReadStore(db,name,onProgress){
+  return new Promise(function(res,rej){
+    let rows=[];
+    let tx;
+    try{tx=db.transaction(name,"readonly");}catch(e){rej(e);return;}
+    const req=tx.objectStore(name).openCursor();
+    req.onsuccess=function(){
+      const cur=req.result;
+      if(cur){
+        rows.push(cur.value);
+        if(onProgress&&rows.length%200===0)onProgress("读取索引 "+name,rows.length);
+        cur.continue();
+      }else res(rows);
+    };
+    req.onerror=function(){rej(req.error);};
+  });
+}
+async function collectIndexedDBData(onStage){
+  const out={};
+  let db;
+  try{db=await idxOpen();}catch(e){return out;}
+  const names=Array.from(db.objectStoreNames||[]);
+  for(let i=0;i<names.length;i++){
+    const name=names[i];
+    try{
+      out[name]=await bkReadStore(db,name,function(label,n){if(onStage)onStage(label+"（"+n+" 条）",0.2+0.3*(i/names.length));});
+    }catch(e){/* 单个 store 失败不阻断 */}
+  }
+  try{db.close();}catch(e){}
+  return out;
+}
+async function collectBackupPayload(onStage){
+  if(onStage)onStage("读取本地数据…",0.05);
+  const payload={
+    meta:{app:"tvbox-center",backupVersion:1,exportedAt:Date.now(),compressed:true,compression:"gzip"},
+    localStorage:collectProjectLocalStorage(),
+    chatRecords:collectChatRecords(),
+    indexedDB:{}
+  };
+  if(onStage)onStage("读取聊天记录…",0.15);
+  await new Promise(r=>setTimeout(r,0));
+  payload.indexedDB=await collectIndexedDBData(onStage);
+  if(onStage)onStage("数据收集完成",0.5);
+  return payload;
+}
+
+/* ---------- 加解密 ---------- */
+async function encryptBackup(payload,password){
+  const raw=new TextEncoder().encode(JSON.stringify(payload));
+  const gz=await gzipCompress(raw);
+  const salt=bkRandom(16),iv=bkRandom(12);
+  const keys=await deriveBackupKeys(password,salt);
+  const mixed=rc4(xorTransform(gz,keys.xor),keys.rc4);
+  const aad=bkConcat([BK_MAGIC,new Uint8Array([BK_VERSION,BK_FLAG_GZIP]),salt]);
+  const key=await crypto.subtle.importKey("raw",keys.aes,"AES-GCM",false,["encrypt"]);
+  const ct=new Uint8Array(await crypto.subtle.encrypt({name:"AES-GCM",iv:iv,additionalData:aad,tagLength:128},key,mixed));
+  return bkConcat([aad,iv,ct]);
+}
+async function decryptBackup(arrayBuffer,password){
+  const u=arrayBuffer instanceof Uint8Array?arrayBuffer:new Uint8Array(arrayBuffer);
+  if(u.length<8+1+1+16+12+16)throw new Error("BAD_FILE");
+  for(let i=0;i<8;i++)if(u[i]!==BK_MAGIC[i])throw new Error("BAD_FILE");
+  const version=u[8],flags=u[9];
+  if(version!==BK_VERSION)throw new Error("BAD_VERSION");
+  if((flags&BK_FLAG_GZIP)!==BK_FLAG_GZIP)throw new Error("NO_GZIP_FLAG");
+  const salt=u.slice(10,26),iv=u.slice(26,38),ct=u.slice(38);
+  const aad=u.slice(0,26);
+  const keys=await deriveBackupKeys(password,salt);
+  let mixed;
+  try{
+    const key=await crypto.subtle.importKey("raw",keys.aes,"AES-GCM",false,["decrypt"]);
+    mixed=new Uint8Array(await crypto.subtle.decrypt({name:"AES-GCM",iv:iv,additionalData:aad,tagLength:128},key,ct));
+  }catch(e){throw new Error("BAD_KEY");}
+  const gz=rc4(xorTransform(mixed,keys.xor),keys.rc4);
+  const raw=await gzipDecompress(gz);
+  const json=new TextDecoder().decode(raw);
+  let payload;try{payload=JSON.parse(json);}catch(e){throw new Error("BAD_JSON");}
+  if(!bkValidPayload(payload))throw new Error("BAD_STRUCT");
+  return payload;
+}
+function bkValidPayload(p){
+  return !!p&&typeof p==="object"&&
+    p.meta&&p.meta.app==="tvbox-center"&&p.meta.backupVersion===1&&p.meta.compressed===true&&
+    p.localStorage&&typeof p.localStorage==="object"&&
+    p.chatRecords&&typeof p.chatRecords==="object"&&
+    p.indexedDB&&typeof p.indexedDB==="object";
+}
+
+/* ---------- 写回 ---------- */
+function restoreLocalStorage(data){
+  const allow=new Set(BK_LS_KEYS);
+  Object.keys(data||{}).forEach(function(k){
+    if(allow.has(k))safeSet(k,String(data[k]));
+  });
+}
+function mergeChatRecords(data){
+  Object.keys(data||{}).forEach(function(room){
+    if(!room)return;
+    const inc=data[room]||{};
+    let cur={messages:[],readIds:[]};
+    try{cur=JSON.parse(safeGet(WT_CHAT_PREFIX+room,""))||cur;}catch(e){}
+    const map={};
+    (cur.messages||[]).forEach(function(m){if(m&&m.msgId)map[m.msgId]=m;});
+    (inc.messages||[]).forEach(function(m){if(m&&m.msgId&&!map[m.msgId])map[m.msgId]=m;});
+    const msgs=Object.keys(map).map(k=>map[k]).sort((a,b)=>(a.ts||0)-(b.ts||0)||String(a.msgId).localeCompare(String(b.msgId))).slice(-WT_MSG_MAX);
+    const reads=Array.from(new Set([].concat(cur.readIds||[],inc.readIds||[]))).slice(-WT_READ_MAX);
+    safeSet(WT_CHAT_PREFIX+room,JSON.stringify({messages:msgs,readIds:reads}));
+  });
+}
+function bkClearStore(db,name){
+  return new Promise(function(res,rej){
+    let tx;
+    try{tx=db.transaction(name,"readwrite");}catch(e){rej(e);return;}
+    tx.objectStore(name).clear();
+    tx.oncomplete=function(){res();};
+    tx.onerror=function(){rej(tx.error);};
+    tx.onabort=function(){rej(tx.error);};
+  });
+}
+function bkPutBatch(db,name,rows){
+  return new Promise(function(res,rej){
+    let tx;
+    try{tx=db.transaction(name,"readwrite");}catch(e){rej(e);return;}
+    const st=tx.objectStore(name);
+    rows.forEach(function(r){try{st.put(r);}catch(e){}});
+    tx.oncomplete=function(){res();};
+    tx.onerror=function(){rej(tx.error);};
+    tx.onabort=function(){rej(tx.error);};
+  });
+}
+async function restoreIndexedDB(data,onStage){
+  let db;
+  try{db=await idxOpen();}catch(e){return["__indexeddb_unavailable__"];}
+  const names=Array.from(db.objectStoreNames||[]);
+  const missing=[];
+  for(const name of Object.keys(data||{})){
+    if(!names.includes(name)){missing.push(name);continue;}
+    const rows=Array.isArray(data[name])?data[name]:[];
+    try{
+      await bkClearStore(db,name);
+      for(let i=0;i<rows.length;i+=200){
+        await bkPutBatch(db,name,rows.slice(i,i+200));
+        if(onStage)onStage("恢复索引 "+name,Math.min(i+200,rows.length),rows.length);
+      }
+    }catch(e){missing.push(name);}
+  }
+  try{db.close();}catch(e){}
+  return missing;
+}
+
+/* ---------- 导出 / 导入 ---------- */
+function bkFileStamp(){
+  const d=new Date();
+  const p=n=>String(n).padStart(2,"0");
+  return d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+"-"+p(d.getHours())+p(d.getMinutes());
+}
+function bkDownload(bytes){
+  const blob=new Blob([bytes],{type:"application/octet-stream"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;a.download="tvbox-backup-"+bkFileStamp()+".tvcbak";
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  setTimeout(function(){URL.revokeObjectURL(url);},10000);
+}
+async function exportAllData(password,onStage){
+  const payload=await collectBackupPayload(onStage);
+  if(onStage)onStage("GZIP 压缩并加密…",0.55);
+  const bytes=await encryptBackup(payload,password);
+  if(onStage)onStage("校验备份完整性…",0.85);
+  const check=await decryptBackup(bytes,password);
+  if(!check||!check.meta||check.meta.app!=="tvbox-center")throw new Error("VERIFY_FAIL");
+  if(onStage)onStage("生成备份文件…",0.95);
+  bkDownload(bytes);
+  return true;
+}
+async function importAllData(arrayBuffer,password,onStage){
+  if(onStage)onStage("解密并校验备份…",0.1);
+  const payload=await decryptBackup(arrayBuffer,password);
+  if(!bkValidPayload(payload))throw new Error("BAD_STRUCT");
+  const ok=await wtConfirm(
+    "确认导入备份",
+    "将覆盖当前项目相关的收藏、设置、历史、头像、昵称与一起看开关；聊天记录将合并去重；全库索引将按备份内容恢复。不影响无关站点数据，建议先导出当前数据再导入。",
+    "开始导入"
+  );
+  if(!ok)return{ok:false,cancelled:true};
+  if(onStage)onStage("恢复本地数据…",0.3);
+  await new Promise(r=>setTimeout(r,0));
+  restoreLocalStorage(payload.localStorage);
+  if(onStage)onStage("合并聊天记录…",0.45);
+  mergeChatRecords(payload.chatRecords);
+  await new Promise(r=>setTimeout(r,0));
+  if(onStage)onStage("恢复全库索引…",0.55);
+  const missing=await restoreIndexedDB(payload.indexedDB,onStage);
+  if(onStage)onStage("导入完成",1);
+  return{ok:true,missing:missing};
+}
+
+/* ---------- 备份 UI ---------- */
+function bkSetProgress(label,ratio){
+  const box=document.getElementById("bkProgress"),bar=document.getElementById("bkBar"),stage=document.getElementById("bkStage");
+  if(box)box.style.display="";
+  if(bar)bar.style.width=Math.max(0,Math.min(100,Math.round((ratio||0)*100)))+"%";
+  if(stage)stage.textContent=label||"处理中…";
+}
+function bkEnterProgress(title){
+  const t=document.getElementById("bkTitle"),d=document.getElementById("bkDesc"),k=document.getElementById("bkKey"),k2=document.getElementById("bkKey2"),h=document.getElementById("bkHint"),ok=document.getElementById("bkOk"),cancel=document.getElementById("bkCancel");
+  if(t)t.textContent=title;
+  if(d)d.textContent="请稍候，处理过程中请勿关闭页面。";
+  if(k)k.style.display="none";
+  if(k2)k2.style.display="none";
+  if(h){h.style.display="none";h.textContent="";}
+  if(ok)ok.style.display="none";
+  if(cancel)cancel.style.display="none";
+  bkSetProgress("准备中…",0);
+}
+function bkShowError(title,message,okText){
+  const t=document.getElementById("bkTitle"),d=document.getElementById("bkDesc"),k=document.getElementById("bkKey"),k2=document.getElementById("bkKey2"),h=document.getElementById("bkHint"),ok=document.getElementById("bkOk"),cancel=document.getElementById("bkCancel"),box=document.getElementById("bkProgress");
+  if(t)t.textContent=title;
+  if(d)d.textContent=message;
+  if(k)k.style.display="none";
+  if(k2)k2.style.display="none";
+  if(h)h.style.display="none";
+  if(box)box.style.display="none";
+  if(ok){ok.style.display="";ok.textContent=okText||"关闭";}
+  if(cancel)cancel.style.display="none";
+}
+function bkResetModal(){
+  const t=document.getElementById("bkTitle"),d=document.getElementById("bkDesc"),k=document.getElementById("bkKey"),k2=document.getElementById("bkKey2"),h=document.getElementById("bkHint"),ok=document.getElementById("bkOk"),cancel=document.getElementById("bkCancel"),box=document.getElementById("bkProgress");
+  if(t)t.textContent=bkMode==="export"?"导出数据":"导入备份数据";
+  if(d)d.textContent=bkMode==="export"?"请输入导出密钥并再次确认。密钥仅用于本次导出，不会保存或上传。":"请输入导出时使用的密钥。密钥不会保存或上传。";
+  if(k){k.style.display="";k.type="password";k.value="";}
+  if(k2){k2.style.display=bkMode==="export"?"":"none";k2.value="";}
+  if(h){h.style.display="";h.textContent="备份文件包含隐私数据，请妥善保管密钥和文件。";}
+  if(box)box.style.display="none";
+  if(ok){ok.style.display="";ok.textContent=bkMode==="export"?"开始导出":"开始导入";}
+  if(cancel){cancel.style.display="";cancel.textContent="取消";}
+}
+function bkOpen(mode){
+  bkMode=mode;
+  bkResetModal();
+  const m=document.getElementById("bkModal");if(m)m.classList.add("show");
+  const k=document.getElementById("bkKey");if(k)setTimeout(()=>k.focus(),60);
+}
+function bkClose(){
+  const m=document.getElementById("bkModal");if(m)m.classList.remove("show");
+  const box=document.getElementById("bkProgress");if(box)box.style.display="none";
+  if(bkResolve){const r=bkResolve;bkResolve=null;r(null);}
+}
+function bkSubmitKey(){
+  const k=document.getElementById("bkKey"),k2=document.getElementById("bkKey2"),h=document.getElementById("bkHint");
+  const v=k?k.value:"";
+  if(!v){if(h)h.textContent="请输入密钥";return;}
+  if(bkMode==="export"){
+    const v2=k2?k2.value:"";
+    if(v!==v2){if(h)h.textContent="两次输入的密钥不一致";return;}
+    if(v.length<8){if(h)h.textContent="密钥强度较弱，建议至少 8 位（仍可继续导出）";toast("密钥强度较弱，建议至少 8 位");}
+    if(k)k.value="";if(k2)k2.value="";
+    if(bkResolve){const r=bkResolve;bkResolve=null;bkEnterProgress("正在导出");setTimeout(()=>r(v),30);}
+  }else{
+    if(k)k.value="";
+    if(bkResolve){const r=bkResolve;bkResolve=null;bkEnterProgress("正在导入");setTimeout(()=>r(v),30);}
+  }
+}
+function bkAskKey(mode){
+  return new Promise(function(resolve){
+    bkResolve=resolve;bkOpen(mode);
+  });
+}
+function bkErrText(e,mode){
+  const msg=String(e&&e.message||e||"");
+  if(msg==="NO_GZIP_COMPRESS")return"当前浏览器不支持 GZIP 压缩，无法导出备份";
+  if(msg==="NO_GZIP_DECOMPRESS")return"当前浏览器不支持 GZIP 解压，无法导入备份";
+  if(msg==="NO_GZIP_FLAG")return"不支持的备份格式：缺少 GZIP 压缩";
+  if(msg==="NO_CRYPTO")return"当前环境不支持加密备份（需要 HTTPS）";
+  if(msg==="VERIFY_FAIL")return"备份校验失败，未生成文件";
+  if(mode==="export")return"导出失败，请重试";
+  return"密钥错误或备份文件损坏";
+}
+async function bkDoExport(password){
+  if(bkBusy)return;bkBusy=true;
+  try{
+    await exportAllData(password,bkSetProgress);
+    bkClose();toast("导出成功");
+  }catch(e){bkShowError("导出失败",bkErrText(e,"export"),"关闭");}
+  finally{bkBusy=false;}
+}
+async function bkDoImport(file,password){
+  if(bkBusy)return;bkBusy=true;
+  try{
+    const buf=await file.arrayBuffer();
+    const res=await importAllData(buf,password,bkSetProgress);
+    if(res&&res.cancelled){bkClose();return;}
+    bkClose();
+    const more=res&&res.missing&&res.missing.length?"（部分索引存储已跳过：仅恢复存在的存储）":"";
+    const refresh=await wtConfirm("导入完成","部分数据需刷新页面后生效。"+more,"立即刷新");
+    if(refresh)location.reload();
+  }catch(e){
+    bkShowError("导入失败",bkErrText(e,"import"),"关闭");
+  }finally{bkBusy=false;}
+}
+function bkInit(){
+  const ex=document.getElementById("btnBackupExport");
+  if(ex)ex.addEventListener("click",async function(){
+    if(bkBusy)return;
+    const pwd=await bkAskKey("export");
+    if(pwd)await bkDoExport(pwd);
+  });
+  const im=document.getElementById("btnBackupImport");
+  const file=document.getElementById("bkFile");
+  if(im&&file)im.addEventListener("click",function(){if(!bkBusy)file.click();});
+  if(file)file.addEventListener("change",async function(){
+    const f=file.files&&file.files[0];file.value="";
+    if(!f)return;
+    if(!/\.tvcbak$/i.test(f.name)&&f.name.indexOf("tvbox-backup")!==0){toast("请选择 .tvcbak 备份文件");return;}
+    const pwd=await bkAskKey("import");
+    if(pwd)await bkDoImport(f,pwd);
+  });
+  const ok=document.getElementById("bkOk");
+  if(ok)ok.addEventListener("click",function(){
+    if(bkResolve)bkSubmitKey();
+    else bkClose();
+  });
+  const cancel=document.getElementById("bkCancel");
+  if(cancel)cancel.addEventListener("click",bkClose);
+  const m=document.getElementById("bkModal");
+  if(m)m.addEventListener("click",function(e){if(e.target===m&&!bkBusy)bkClose();});
+  const keys=["bkKey","bkKey2"];
+  keys.forEach(function(id){const el=document.getElementById(id);if(el)el.addEventListener("keydown",function(e){if(e.key==="Enter"){e.preventDefault();bkSubmitKey();}});});
+}
+
+loadStorage();applyTheme(currentTheme);initSearch();initMiniDrag();renderHome();updSrcCount();setupCast();idxInit();wtInit();bkInit();
 if(window.matchMedia){window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{applyTheme(currentTheme);});}
 </script>
 </body>

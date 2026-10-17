@@ -49,6 +49,9 @@
 | 投屏（Chromecast / AirPlay） | — | 支持 |
 | 历史保留条数设置 | — | 支持 |
 | 本地全库索引（IndexedDB，仿 SQL 表） | — | 支持 |
+| 一起看（MQTT 实时聊天 / 在线人数 / 未读红点） | — | 支持 |
+| 一起看分享（TVC1 分享串 / 剪贴板与搜索框识别） | — | 支持 |
+| 加密数据备份（.tvcbak 导出 / 导入） | — | 支持 |
 | 主题换肤（4 色 + 深浅色） | 支持 | 支持 |
 | MiSans 字体 | — | 支持 |
 
@@ -105,6 +108,45 @@ Fork 本仓库 → `Settings` → `Pages` → Source 选择 `Deploy from a branc
 
 ---
 
+## 一起看（Watch Together）
+
+全屏播放控件右侧的「一起看」按钮可打开聊天侧栏。房间按影视隔离：`sourceKey + "::" + vodId` 哈希成 `roomHash`，同一影片的不同采集源不会合并，不同剧集 / 线路共用同一个房间。
+
+- **连接**：默认使用公共 Broker `wss://broker.emqx.io:8084/mqtt`，无需账号；首次点击「一起看」时创建 Web Worker（Blob URL），后续复用。
+- **自建 Broker**：修改 `index.html` 顶部的 `MQTT_CONFIG`（`url` / `username` / `password` / `clientIdPrefix` / `topicPrefix`）。Topic 形如 `tvbox-center/v1/chat/{roomHash}`。
+- **状态**：绿点「已连接」、黄点「正在连接」、红点「连接失败」；断线自动重连。聊天服务不可用时只影响侧栏，不阻塞播放。
+- **在线人数**：点击右上角人数可展开在线用户列表（自己置顶并标注「我」，同一用户多标签只计一人）。
+- **未读红点**：关闭侧栏后仍可在后台接收当前影视消息（可在设置中关闭），「一起看」按钮右上角显示未读数字。
+- **已读同步**：只有其他客户端打开侧栏并渲染消息后才回 ACK；重连后按当前房间做一次增量同步（最多 200 条）。
+- **限制**：单条消息最多 500 字，发送间隔 1.2 秒；每个影视本地保留最近 200 条。公共 Broker 上的消息对任何知道 Topic 的人可见，**请勿发送敏感信息**。
+
+### 分享与加入
+
+侧栏左下角「分享」会生成 `TVC1:` 开头的分享串（JSON → deflate-raw → base64url），并写入剪贴板。对方打开本项目后：
+
+- 页面加载 / 窗口重新聚焦时自动检查剪贴板第一条；
+- 粘贴到搜索框时提示「检测到一起看分享，按回车加入」，回车才解析；
+- 在页面其他位置粘贴、或设置页点「从剪贴板打开一起看」也可以加入。
+
+分享会切换到对应数据源、加载影视详情、定位线路与集数、跳转分享时的播放进度、进入全屏并打开侧栏。若当前正在播放其他内容，会先确认再切换。
+
+## 数据备份（加密导出 / 导入）
+
+设置页 →「数据备份」：
+
+- **一键导出所有数据**：输入密钥并再次确认，生成 `tvbox-backup-YYYYMMDD-HHmm.tvcbak`。
+- **导入备份数据**：选择 `.tvcbak` 文件并输入导出时的密钥；确认后恢复。
+
+备份覆盖收藏、设置、历史、播放位置、头像、昵称、一起看开关、聊天记录与全库索引。文件格式：
+
+```text
+magic(8) "TVCBAK1\0" | version(1) | flags(1) | salt(16) | iv(12) | AES-GCM ciphertext
+```
+
+加密流程：JSON → UTF-8 → **GZIP** → XOR → RC4 → **AES-GCM-256**。密钥经 PBKDF2-SHA256（200000 次）派生 64 字节，分别用作 AES / RC4 / XOR 密钥；AES-GCM 的 additionalData 绑定文件头，防篡改。
+
+> 密钥不会保存、不会上传，也不会写入日志。密钥丢失将无法恢复备份。备份文件包含聊天记录与个人资料，请妥善保管。
+
 ## 数据源
 
 数据源为公开的苹果 CMS（MacCMS v10）标准 JSON 采集接口，请求参数：
@@ -129,13 +171,13 @@ const DEFAULT_SOURCES = [
 
 ## 组件库 tvbox-center.js（含 Pro 全部功能）
 
-`dist/tvbox-center.js` 由 Pro 版重构而来，是**自包含组件库**：包含 Pro 的全部功能——多源搜索、HLS 播放器、投屏（Chromecast / AirPlay）、选集与线路切换、倍速、画质画幅、主题换肤、历史、收藏、设置、键盘快捷键等。样式已作用域限定在容器内，不会污染宿主页面。引入后调用 `TVBox.mount(target, options)` 即可在任意页面挂载完整影视中心。
+`dist/tvbox-center.js` 由 Pro 版重构而来，是**自包含组件库**：包含 Pro 的全部功能——多源搜索、HLS 播放器、一起看、加密备份、投屏（Chromecast / AirPlay）、选集与线路切换、倍速、画质画幅、主题换肤、历史、收藏、设置、键盘快捷键等。样式已作用域限定在容器内，不会污染宿主页面。引入后调用 `TVBox.mount(target, options)` 即可在任意页面挂载完整影视中心。
 
 ### 标准 CDN 引入
 
 ```html
 <!-- jsDelivr · 锁定版本（生产环境推荐） -->
-<script src="https://cdn.jsdelivr.net/gh/silverbullet-liang/tvbox-center@v1.2.0/dist/tvbox-center.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/silverbullet-liang/tvbox-center@v1.8.0/dist/tvbox-center.min.js"></script>
 
 <!-- jsDelivr · 跟随 main（始终最新） -->
 <script src="https://cdn.jsdelivr.net/gh/silverbullet-liang/tvbox-center@main/dist/tvbox-center.min.js"></script>
@@ -165,13 +207,34 @@ const DEFAULT_SOURCES = [
 ```
 
 > - 容器需要有高度（例如 `height:100vh`）；全屏播放器会覆盖整个视口。
-> - 组件会自动按需加载 hls.js、Iconify 图标、MiSans 字体与 Cast SDK。
+> - 组件库已内置 hls.js 1.7.3 与 mqtt.js 5.15.1；只有 Iconify 图标、MiSans 字体与 Cast SDK 会按需从 CDN 加载。
 > - 同一页面建议只挂载一个实例。
+
+### 内置第三方库（TVBoxCenter 命名空间）
+
+聚合文件已把 mqtt.js 与 hls.js 以 IIFE 合并进同一文件，不产生额外 vendor 文件，并显式暴露到统一命名空间：
+
+```js
+// 主线程 / Worker 均可直接使用（需先加载/importScripts 聚合文件）
+const mqtt = TVBoxCenter.mqtt;   // mqtt.js 5.15.1
+const Hls  = TVBoxCenter.hls;    // hls.js 1.7.3
+```
+
+在 Web Worker 中复用的方式：
+
+```js
+const worker = new Worker(URL.createObjectURL(new Blob([`
+  importScripts('https://cdn.jsdelivr.net/gh/silverbullet-liang/tvbox-center@v1.8.0/dist/tvbox-center.js');
+  const client = TVBoxCenter.mqtt.connect('wss://broker.emqx.io:8084/mqtt');
+`], { type: 'application/javascript' })));
+```
+
+> 聚合文件在 `document` 不存在（Worker）时只装载 `TVBoxCenter.mqtt` / `TVBoxCenter.hls`，不会执行组件库 UI。
 
 ### 直接下载
 
-- [tvbox-center.js](dist/tvbox-center.js) — 源码版（约 132 KB）
-- [tvbox-center.min.js](dist/tvbox-center.min.js) — 压缩版（约 127 KB，jsDelivr 会再 gzip）
+- [tvbox-center.js](dist/tvbox-center.js) — 源码版（约 1.2 MB，含 mqtt / hls）
+- [tvbox-center.min.js](dist/tvbox-center.min.js) — 压缩版（约 1.16 MB，jsDelivr 会再 gzip）
 
 ---
 
