@@ -2,6 +2,14 @@
 
 本项目遵循 [语义化版本](https://semver.org/lang/zh-CN/) 与 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/) 规范。
 
+## [1.8.7] - 2026-10-17
+
+### 修复
+
+- **Pro 版 · 一起看**：移除竖屏侧栏多余的 `order` 反转，修复聊天面板上下颠倒；头部恢复在视觉顶部（关闭按钮在右上角），输入框在底部，视频仍让出 320px。
+
+[1.8.7]: https://github.com/silverbullet-liang/tvbox-center/releases/tag/v1.8.7
+
 ## [1.8.6] - 2026-10-17
 
 ### 修复

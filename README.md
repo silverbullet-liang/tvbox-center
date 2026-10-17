@@ -185,7 +185,7 @@ const DEFAULT_SOURCES = [
 
 ```html
 <!-- jsDelivr · 锁定版本（生产环境推荐） -->
-<script src="https://cdn.jsdelivr.net/gh/silverbullet-liang/tvbox-center@v1.8.6/dist/tvbox-center.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/silverbullet-liang/tvbox-center@v1.8.7/dist/tvbox-center.min.js"></script>
 
 <!-- jsDelivr · 跟随 main（始终最新） -->
 <script src="https://cdn.jsdelivr.net/gh/silverbullet-liang/tvbox-center@main/dist/tvbox-center.min.js"></script>
@@ -232,7 +232,7 @@ const Hls  = TVBoxCenter.hls;    // hls.js 1.7.3
 
 ```js
 const worker = new Worker(URL.createObjectURL(new Blob([`
-  importScripts('https://cdn.jsdelivr.net/gh/silverbullet-liang/tvbox-center@v1.8.6/dist/tvbox-center.js');
+  importScripts('https://cdn.jsdelivr.net/gh/silverbullet-liang/tvbox-center@v1.8.7/dist/tvbox-center.js');
   const client = TVBoxCenter.mqtt.connect('wss://broker.emqx.io:8084/mqtt');
 `], { type: 'application/javascript' })));
 ```
