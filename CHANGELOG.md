@@ -2,6 +2,15 @@
 
 本项目遵循 [语义化版本](https://semver.org/lang/zh-CN/) 与 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/) 规范。
 
+## [1.9.1-beta] - 2026-10-27
+
+### 修复
+
+- **Pro · 设置页**：修复「跳广告 Beta」设置项插入时覆盖「手势控制」项，导致 `swGesture` 不存在、脚本初始化中断、所有按钮无响应的问题。
+- 恢复「手势控制」开关，跳广告 Beta 追加在其后。
+
+[1.9.1-beta]: https://github.com/silverbullet-liang/tvbox-center/releases/tag/v1.9.1-beta
+
 ## [1.9.0-beta] - 2026-10-27
 
 ### 新增
