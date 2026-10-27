@@ -53,6 +53,7 @@ License: `AGPL-3.0-or-later`
 | Watch Together (MQTT chat / online users / unread badge) | — | Yes |
 | Watch Together shares (`TVC1:` / clipboard & search) | — | Yes |
 | Encrypted backup (`.tvcbak` export / import) | — | Yes |
+| Ad skip Beta (Worker pre-check / range hint / cancel) | — | Experimental |
 | Themes (4 colors + dark/light) | Yes | Yes |
 | MiSans font | — | Yes |
 
@@ -129,6 +130,20 @@ Rooms are isolated per title using `sourceKey::vodId` — different sources for 
 ### Share links
 
 The **Share** button builds a `TVC1:` string (JSON → deflate-raw → base64url) and copies it to the clipboard. The app recognizes it from the clipboard on load/focus, when pasted into the search box (press Enter), from a global paste, or via Settings → "Open from clipboard". Joining switches to the matching source, loads the title, selects the line/episode, seeks to the shared position, enters fullscreen and opens the sidebar.
+
+## Ad skip Beta (experimental)
+
+For fixed-template ads inserted into the video stream, three local signals are combined:
+
+- **Central three-color buttons**: blue / yellow / green pixel ratios, weight 0.40;
+- **Audio fingerprint**: 40-band log energy compared with a built-in template by cosine, weight 0.40;
+- **Red / gold palette**: full-frame color ratios, weight 0.20.
+
+Pixel-level checks run in a Web Worker; the main thread only samples frames, computes audio features and runs the state machine, so playback is not blocked. When an ad is skipped, the player shows `已跳过广告 00:12.4 → 00:27.4` with a **Cancel** button that seeks back and disables auto-skip for the current episode.
+
+Off by default: **Settings → Playback → Ad skip Beta**.
+
+Limits: only the current template is covered; a redesign requires updating the reference values; casino-themed films may be misdetected; Safari native HLS may fall back to visual-only. See [docs/adskip.md](docs/adskip.md) for the full design, thresholds and template update procedure.
 
 ## Encrypted backup
 

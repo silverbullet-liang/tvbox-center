@@ -183,6 +183,9 @@ iconify-icon{display:inline-block;width:1em;height:1em;flex-shrink:0;vertical-al
 .kbd-key{display:inline-block;padding:3px 8px;border:1px solid var(--ol);border-bottom-width:2px;border-radius:6px;background:var(--sf);color:var(--on-sf);font-family:SFMono-Regular,Consolas,monospace;font-size:11px;font-weight:600;line-height:1;margin-left:4px;white-space:nowrap}
 .toast{position:fixed;top:68px;left:50%;transform:translateX(-50%) translateY(-20px);background:var(--inv-s);color:var(--inv-on-s);padding:10px 20px;border-radius:8px;font-size:13px;z-index:500;opacity:0;transition:all .3s var(--sp);box-shadow:var(--e2);pointer-events:none;max-width:90vw;text-align:center}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.ad-undo{position:fixed;left:50%;bottom:110px;transform:translateX(-50%) translateY(10px);display:flex;align-items:center;gap:12px;padding:9px 10px 9px 16px;border-radius:999px;background:rgba(28,27,31,.92);color:#fff;font-size:13px;z-index:900;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s}
+.ad-undo.show{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto}
+.ad-undo button{border:0;background:var(--p);color:var(--on-p);font:inherit;font-size:13px;padding:5px 14px;border-radius:999px;cursor:pointer}
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:400;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)}
 .modal-overlay.show{display:flex}
 .modal-card{background:var(--sf);border-radius:24px;padding:24px;max-width:360px;width:100%;box-shadow:var(--e3);animation:modalCardIn .25s var(--sp)}
@@ -690,8 +693,8 @@ iconify-icon{display:inline-block;width:1em;height:1em;flex-shrink:0;vertical-al
             <div class="sw" id="swAutoFs"><div class="sw-track"></div><div class="sw-thumb"></div></div>
           </div>
           <div class="st-item">
-            <div class="left"><iconify-icon icon="lucide:hand"></iconify-icon><div><div class="t">手势控制</div><div class="s">左右滑动调进度、上下滑动调音量</div></div></div>
-            <div class="sw" id="swGesture"><div class="sw-track"></div><div class="sw-thumb"></div></div>
+            <div class="left"><iconify-icon icon="lucide:skip-forward"></iconify-icon><div><div class="t">跳广告 Beta</div><div class="s">三色按钮 + 红金配色 + 音频指纹，自动跳过视频内广告</div></div></div>
+            <div class="sw" id="swAdSkip"><div class="sw-track"></div><div class="sw-thumb"></div></div>
           </div>
         </div>
       </div>
@@ -767,7 +770,7 @@ iconify-icon{display:inline-block;width:1em;height:1em;flex-shrink:0;vertical-al
       </div>
       <div class="st-section">
         <div class="st-label">关于</div>
-        <div class="st-card"><div class="st-item"><div class="left"><iconify-icon icon="lucide:info"></iconify-icon><div><div class="t">TVBox Pro 影视资源中心</div><div class="s">v5.8.7-pro · 一起看</div></div></div></div></div>
+        <div class="st-card"><div class="st-item"><div class="left"><iconify-icon icon="lucide:info"></iconify-icon><div><div class="t">TVBox Pro 影视资源中心</div><div class="s">v5.8.8-pro · 跳广告 Beta</div></div></div></div></div>
       </div>
       <div style="height:40px"></div>
     </div>
@@ -1057,7 +1060,7 @@ const THEMES={
 };
 const HIST_LIMIT_DEFAULT=50;
 const HOME_PREVIEW_COUNT=10;
-const DEFAULT_PLAYER_SETTINGS={playMode:"loop",rememberPos:true,longPressSpeed:true,autoFs:false,gesture:true,skipStart:0,skipEnd:0,defSpeed:1,defRatio:"auto"};
+const DEFAULT_PLAYER_SETTINGS={playMode:"loop",rememberPos:true,longPressSpeed:true,autoFs:false,gesture:true,skipStart:0,skipEnd:0,defSpeed:1,defRatio:"auto",adSkip:false};
 let sources=[],favorites=[],history=[],currentPage="home",currentTheme="purple";
 let histLimit=HIST_LIMIT_DEFAULT;
 let playerSettings={...DEFAULT_PLAYER_SETTINGS};
@@ -1371,6 +1374,7 @@ function renderSettings(){
   setSw(document.getElementById("swLongPress"),playerSettings.longPressSpeed);
   setSw(document.getElementById("swAutoFs"),playerSettings.autoFs);
   setSw(document.getElementById("swGesture"),playerSettings.gesture);
+  setSw(document.getElementById("swAdSkip"),playerSettings.adSkip);
   document.querySelectorAll(".theme-option").forEach(el=>{el.classList.toggle("active",el.dataset.theme===currentTheme);el.onclick=()=>{applyTheme(el.dataset.theme);saveTheme();toast("主题已切换");renderSettings();};});
   const list=document.getElementById("sourceList");list.innerHTML="";
   sources.forEach((src,idx)=>{const item=document.createElement("div");item.className="st-item";const noProxyTag=src.noProxy?`<span class="tag-inline">免代理</span>`:"";item.innerHTML=`<div class="left" style="flex:1;min-width:0">${iconTag('rss',22)}<div style="flex:1;min-width:0;overflow:hidden"><div class="t" style="display:flex;align-items:center;flex-wrap:wrap">${esc(src.name)}${noProxyTag}</div><div class="s" style="font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(src.api)}</div></div></div><div class="sw ${src.enabled?'on':''}" data-idx="${idx}"><div class="sw-track"></div><div class="sw-thumb"></div></div>`;list.appendChild(item);});
@@ -1383,6 +1387,7 @@ document.getElementById("swRememberPos").addEventListener("click",()=>{playerSet
 document.getElementById("swLongPress").addEventListener("click",()=>{playerSettings.longPressSpeed=!playerSettings.longPressSpeed;savePlayerSettings();renderSettings();toast(playerSettings.longPressSpeed?"已开启长按倍速":"已关闭长按倍速");});
 document.getElementById("swAutoFs").addEventListener("click",()=>{playerSettings.autoFs=!playerSettings.autoFs;savePlayerSettings();renderSettings();toast(playerSettings.autoFs?"已开启打开自动全屏":"已关闭打开自动全屏");});
 document.getElementById("swGesture").addEventListener("click",()=>{playerSettings.gesture=!playerSettings.gesture;savePlayerSettings();renderSettings();toast(playerSettings.gesture?"已开启手势控制":"已关闭手势控制");});
+document.getElementById("swAdSkip").addEventListener("click",()=>{playerSettings.adSkip=!playerSettings.adSkip;savePlayerSettings();renderSettings();if(playerSettings.adSkip){adSkipStart();toast("已开启跳广告 Beta");}else{adSkipStop();toast("已关闭跳广告 Beta");}});
 function updSrcCount(){const en=sources.filter(s=>s.enabled).length;document.getElementById("srcCount").textContent=`${en}/${sources.length}`;}
 /* ===== 本地全库索引（IndexedDB；结构仿 SQL：database=tvbox_center / table=works / index=idx_name） ===== */
 const IDX_DB="tvbox_center",IDX_TABLE="works",IDX_VER=1;
@@ -1493,7 +1498,7 @@ function renderEps(){const grid=document.getElementById("episodeGrid");grid.inne
 function playEp(idx){
   const eps=playerSources[playerSrc]||[];
   if(!eps[idx]||!eps[idx].url){toast("该集暂无播放链接");return}
-  savePosition();playerEp=idx;videoEl._skipEnding=false;
+  adSkipReset();savePosition();playerEp=idx;videoEl._skipEnding=false;
   document.querySelectorAll(".ep-btn").forEach((b,i)=>b.classList.toggle("active",i===idx));
   const url=eps[idx].url;
   if(hlsInst){hlsInst.destroy();hlsInst=null}
@@ -1507,6 +1512,209 @@ function playEp(idx){
   else{videoEl.src=url;videoEl.oncanplay=canPlay;videoEl.onerror=()=>{stopLoading();toast("播放失败，请尝试切换源")};videoEl.play().catch(()=>{});document.getElementById("btnQuality").style.display="none";}
   isPlaying=true;updPlayBtn();videoEl.playbackRate=vidSpeed;updateFsEpName();
 }
+/* ===== 跳广告 Beta：三色按钮 / 红金配色 / 音频指纹 ===== */
+const AD_BETA={
+  btnRef:{blue:.210,yellow:.156,green:.191},
+  colorRef:{red:.563,gold:.244},
+  audioRef:[1.35629,1.35629,1.37592,1.37592,0.94406,0.94406,0.89338,0.89338,0.88605,1.10420,1.28443,1.31082,1.07120,1.00868,0.94033,0.46180,0.38233,0.24627,0.06926,0.16969,-0.03769,-0.15653,-0.22108,-0.49261,-0.39619,-0.64213,-0.79143,-0.93498,-0.89506,-0.93163,-1.05381,-0.97525,-1.11524,-0.95748,-1.30602,-1.33459,-1.40212,-1.48051,-1.41964,-1.53038],
+  roi:{x:.22917,y:.61111,w:.57292,h:.21296},
+  sampleMs:500,warmupMs:3000,enterScore:.85,enterHits:2,
+  btnGate:.90,audioGate:.85,jumpSec:15,maxJumps:4,cooldownMs:3000
+};
+/* Worker 内只做逐像素视觉判定，主线程负责音频与状态机 */
+const AD_WORKER_SRC=[
+'var REF={btnRef:{blue:.210,yellow:.156,green:.191},colorRef:{red:.563,gold:.244},roi:{x:.22917,y:.61111,w:.57292,h:.21296}};',
+'function H(r,g,b){var mx=Math.max(r,g,b),mn=Math.min(r,g,b),d=mx-mn,h=0;if(d){if(mx===r)h=((g-b)/d)%6;else if(mx===g)h=(b-r)/d+2;else h=(r-g)/d+4;h*=60;if(h<0)h+=360}return[h,mx?d/mx:0,mx/255]}',
+'function G(x,r,s){return Math.exp(-Math.pow((x-r)/s,2))}',
+'onmessage=function(e){var m=e.data;',
+'if(m.type==="init"){REF={btnRef:m.btnRef,colorRef:m.colorRef,roi:m.roi};return}',
+'if(m.type!=="frame")return;',
+'var d=new Uint8ClampedArray(m.buf),w=m.w,h=m.h,roi=REF.roi;',
+'var x0=Math.round(roi.x*w),y0=Math.round(roi.y*h),x1=Math.round((roi.x+roi.w)*w),y1=Math.round((roi.y+roi.h)*h);',
+'var cb=0,cy=0,cg=0,cn=0;',
+'for(var y=y0;y<y1;y++)for(var x=x0;x<x1;x++){var p=(y*w+x)*4,hs=H(d[p],d[p+1],d[p+2]),hh=hs[0],ss=hs[1],vv=hs[2];if(ss>.353&&vv>.275){if(hh>=190&&hh<=260)cb++;else if(hh>=40&&hh<=68)cy++;else if(hh>=80&&hh<=170)cg++}cn++}',
+'var btn=(G(cb/cn,REF.btnRef.blue,.06)+G(cy/cn,REF.btnRef.yellow,.06)+G(cg/cn,REF.btnRef.green,.06))/3;',
+'var red=0,gold=0,tot=0;',
+'for(y=0;y<h;y+=2)for(x=0;x<w;x+=2){p=(y*w+x)*4;hs=H(d[p],d[p+1],d[p+2]);hh=hs[0];ss=hs[1];vv=hs[2];if(ss>.275&&vv>.157&&(hh<=24||hh>=336))red++;if(hh>=26&&hh<=70&&ss>.275&&vv>.353)gold++;tot++}',
+'var col=.5*G(red/tot,REF.colorRef.red,.15)+.5*G(gold/tot,REF.colorRef.gold,.15);',
+'postMessage({btn:btn,col:col});};'
+].join("\n");
+const AD_BANDS=(function(){var a=[];for(var i=0;i<=40;i++)a.push(60*Math.pow(7600/60,i/40));return a})();
+const adS={on:false,timer:null,warm:0,hits:0,cool:0,start:0,lastSkip:0,lastFrom:0,jumps:0,audio:0,audioOk:false,
+  audioTimer:null,audioBuf:[],silent:0,canvas:null,ctx:null,actx:null,analyser:null,srcNode:null,
+  worker:null,workerUrl:null,busy:false,workerFail:false,
+  disabledEp:-1,resumeBound:false};
+var adUndoTimer=null;
+
+function adGauss(x,ref,s){return Math.exp(-Math.pow((x-ref)/s,2))}
+function adHSV(r,g,b){
+  var mx=Math.max(r,g,b),mn=Math.min(r,g,b),d=mx-mn,h=0;
+  if(d){if(mx===r)h=((g-b)/d)%6;else if(mx===g)h=(b-r)/d+2;else h=(r-g)/d+4;h*=60;if(h<0)h+=360;}
+  return [h,mx?d/mx:0,mx/255];
+}
+function adFmt(t){
+  t=Math.max(0,t||0);
+  var m=Math.floor(t/60),s=t-m*60;
+  return (m<10?"0":"")+m+":"+(s<10?"0":"")+s.toFixed(1);
+}
+
+/* ---------- 音频指纹 ---------- */
+function adAudioStart(){
+  if(adS.actx){if(!adS.audioTimer)adS.audioTimer=setInterval(adAudioTick,100);return;}
+  try{
+    var AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
+    var ac=new AC();
+    var src=ac.createMediaElementSource(videoEl);
+    var an=ac.createAnalyser();an.fftSize=2048;an.smoothingTimeConstant=0;
+    src.connect(an);an.connect(ac.destination);
+    adS.actx=ac;adS.analyser=an;adS.srcNode=src;adS.audioOk=true;
+    adS.audioTimer=setInterval(adAudioTick,100);
+    if(!adS.resumeBound){adS.resumeBound=true;videoEl.addEventListener("play",function(){if(adS.actx&&adS.actx.state==="suspended")adS.actx.resume().catch(function(){});});}
+    if(ac.state==="suspended")ac.resume().catch(function(){});
+  }catch(e){adS.audioOk=false;}
+}
+function adAudioTick(){
+  var an=adS.analyser;if(!an)return;
+  var buf=new Float32Array(an.frequencyBinCount);an.getFloatFrequencyData(buf);
+  var mx=-999;for(var i=0;i<buf.length;i++)if(buf[i]>mx)mx=buf[i];
+  if(mx<-90){adS.silent++;if(adS.silent>30){adS.audioOk=false;return;}}else adS.silent=0;
+  var sr=adS.actx.sampleRate,n=an.fftSize,half=n/2,v=new Float64Array(40);
+  for(var j=0;j<40;j++){
+    var a=Math.max(1,Math.min(half-1,Math.round(AD_BANDS[j]/sr*n)));
+    var b=Math.max(a+1,Math.min(half,Math.round(AD_BANDS[j+1]/sr*n)));
+    var sum=0;for(var k=a;k<b;k++)sum+=Math.pow(10,buf[k]/20);
+    v[j]=Math.log1p(sum/(b-a)*100);
+  }
+  var m=0;for(j=0;j<40;j++)m+=v[j];m/=40;
+  var sd=0;for(j=0;j<40;j++)sd+=Math.pow(v[j]-m,2);sd=Math.sqrt(sd/40)||1;
+  var z=new Float64Array(40);for(j=0;j<40;j++)z[j]=(v[j]-m)/sd;
+  adS.audioBuf.push(z);if(adS.audioBuf.length>10)adS.audioBuf.shift();
+  if(adS.audioBuf.length===10){
+    var avg=new Float64Array(40);
+    for(var q=0;q<10;q++){var arr=adS.audioBuf[q];for(j=0;j<40;j++)avg[j]+=arr[j]/10;}
+    var dot=0,nr=0,nq=0;
+    for(j=0;j<40;j++){dot+=avg[j]*AD_BETA.audioRef[j];nr+=AD_BETA.audioRef[j]*AD_BETA.audioRef[j];nq+=avg[j]*avg[j];}
+    adS.audio=Math.max(0,Math.min(1,dot/(Math.sqrt(nr*nq)||1)));
+  }
+}
+
+/* ---------- 视觉：Worker 优先，失败降级主线程 ---------- */
+function adWorkerInit(){
+  if(adS.worker||adS.workerFail)return;
+  try{
+    var url=URL.createObjectURL(new Blob([AD_WORKER_SRC],{type:"text/javascript"}));
+    var w=new Worker(url);
+    w.onmessage=function(e){adOnVision(e.data.btn,e.data.col)};
+    w.onerror=function(){try{w.terminate()}catch(e){}adS.worker=null;adS.workerFail=true;adS.busy=false;};
+    w.postMessage({type:"init",btnRef:AD_BETA.btnRef,colorRef:AD_BETA.colorRef,roi:AD_BETA.roi});
+    adS.worker=w;adS.workerUrl=url;
+  }catch(e){adS.workerFail=true;}
+}
+function adVisionLocal(d,w,h){
+  var roi=AD_BETA.roi;
+  var x0=Math.round(roi.x*w),y0=Math.round(roi.y*h),x1=Math.round((roi.x+roi.w)*w),y1=Math.round((roi.y+roi.h)*h);
+  var cb=0,cy=0,cg=0,cn=0;
+  for(var y=y0;y<y1;y++)for(var x=x0;x<x1;x++){
+    var p=(y*w+x)*4,hs=adHSV(d[p],d[p+1],d[p+2]),hh=hs[0],ss=hs[1],vv=hs[2];
+    if(ss>.353&&vv>.275){if(hh>=190&&hh<=260)cb++;else if(hh>=40&&hh<=68)cy++;else if(hh>=80&&hh<=170)cg++;}
+    cn++;
+  }
+  var btn=(adGauss(cb/cn,.210,.06)+adGauss(cy/cn,.156,.06)+adGauss(cg/cn,.191,.06))/3;
+  var red=0,gold=0,tot=0;
+  for(y=0;y<h;y+=2)for(x=0;x<w;x+=2){
+    p=(y*w+x)*4;hs=adHSV(d[p],d[p+1],d[p+2]);hh=hs[0];ss=hs[1];vv=hs[2];
+    if(ss>.275&&vv>.157&&(hh<=24||hh>=336))red++;
+    if(hh>=26&&hh<=70&&ss>.275&&vv>.353)gold++;
+    tot++;
+  }
+  var col=.5*adGauss(red/tot,.563,.15)+.5*adGauss(gold/tot,.244,.15);
+  return {btn:btn,col:col};
+}
+function adSample(){
+  if(!adS.on||adS.busy||videoEl.paused||videoEl.readyState<2)return;
+  var now=performance.now();
+  if(now<adS.warm||now<adS.cool)return;
+  if(!adS.canvas){
+    adS.canvas=document.createElement("canvas");adS.canvas.width=480;adS.canvas.height=270;
+    adS.ctx=adS.canvas.getContext("2d",{willReadFrequently:true});
+  }
+  var g=adS.ctx;g.drawImage(videoEl,0,0,480,270);
+  var img=g.getImageData(0,0,480,270);
+  if(adS.worker){
+    adS.busy=true;
+    adS.worker.postMessage({type:"frame",buf:img.data.buffer,w:480,h:270},[img.data.buffer]);
+  }else{
+    var v=adVisionLocal(img.data,480,270);
+    adOnVision(v.btn,v.col);
+  }
+}
+function adOnVision(btn,col){
+  adS.busy=false;
+  if(!adS.on)return;
+  var score,gate;
+  if(adS.audioOk&&adS.audio>0){
+    score=.40*btn+.40*adS.audio+.20*col;
+    gate=btn>=AD_BETA.btnGate&&adS.audio>=AD_BETA.audioGate;
+  }else{
+    score=.60*btn+.40*col;
+    gate=btn>=.95&&col>=.85;
+  }
+  adS.hits=(score>=AD_BETA.enterScore||gate)?adS.hits+1:0;
+  if(adS.hits>=AD_BETA.enterHits||gate)adSkipNow();
+}
+
+/* ---------- 跳过与撤销 ---------- */
+function adSkipNow(){
+  if(adS.disabledEp===playerEp)return;
+  var now=performance.now();
+  if(now-adS.lastSkip>10000)adS.start=0;
+  var t=videoEl.currentTime;
+  if(!adS.start||t<adS.start)adS.start=t;
+  var dur=videoEl.duration||0;
+  var target=Math.min(dur>0?dur-1:1e9,t+AD_BETA.jumpSec);
+  if(target<=t+1)return;
+  var from=t,to=target;
+  adS.lastSkip=now;adS.lastFrom=from;adS.jumps++;adS.hits=0;adS.cool=now+AD_BETA.cooldownMs;
+  try{videoEl.currentTime=target;}catch(e){}
+  adShowUndo(from,to);
+  if(adS.jumps>=AD_BETA.maxJumps){adS.cool=now+600000;toast("连续跳过多次，已暂停 10 分钟");}
+}
+function adShowUndo(from,to){
+  var el=document.getElementById("adUndo"),txt=document.getElementById("adUndoText");
+  if(!el)return;
+  if(txt)txt.textContent="已跳过广告 "+adFmt(from)+" → "+adFmt(to);
+  el.classList.add("show");clearTimeout(adUndoTimer);
+  adUndoTimer=setTimeout(function(){el.classList.remove("show")},8000);
+}
+
+/* ---------- 生命周期 ---------- */
+function adSkipStart(){
+  if(adS.on)return;
+  adS.on=true;adS.warm=performance.now()+AD_BETA.warmupMs;adS.hits=0;adS.jumps=0;adS.start=0;adS.lastFrom=0;
+  adWorkerInit();
+  adAudioStart();
+  clearInterval(adS.timer);adS.timer=setInterval(adSample,AD_BETA.sampleMs);
+}
+function adSkipStop(){
+  adS.on=false;clearInterval(adS.timer);adS.timer=null;adS.busy=false;
+  clearInterval(adS.audioTimer);adS.audioTimer=null;
+  if(adS.worker){try{adS.worker.terminate()}catch(e){}adS.worker=null;}
+  if(adS.workerUrl){try{URL.revokeObjectURL(adS.workerUrl)}catch(e){}adS.workerUrl=null;}
+  var el=document.getElementById("adUndo");if(el)el.classList.remove("show");
+}
+function adSkipReset(){adS.hits=0;adS.cool=0;adS.start=0;adS.jumps=0;adS.lastFrom=0;adS.busy=false;adS.disabledEp=-1;if(adS.on)adS.warm=performance.now()+AD_BETA.warmupMs;}
+function adSkipInit(){
+  var btn=document.getElementById("adUndoBtn");
+  if(btn&&!btn._bound){btn._bound=true;btn.addEventListener("click",function(){
+    if(adS.lastFrom>0){try{videoEl.currentTime=adS.lastFrom;}catch(e){}}
+    adS.disabledEp=playerEp;adS.hits=0;
+    document.getElementById("adUndo").classList.remove("show");
+    toast("已取消，本集不再自动跳过");
+  });}
+  if(playerSettings.adSkip)adSkipStart();
+  window.adSkip={start:adSkipStart,stop:adSkipStop,state:adS};
+}
+
 function handleEpisodeEnd(){
   const mode=playerSettings.playMode;const eps=playerSources[playerSrc]||[];if(!eps.length)return;
   if(mode==="repeat-one"){try{videoEl.currentTime=0;videoEl.play().catch(()=>{});}catch(e){}toast("单集循环");return;}
@@ -2999,8 +3207,9 @@ function bkInit(){
   keys.forEach(function(id){const el=document.getElementById(id);if(el)el.addEventListener("keydown",function(e){if(e.key==="Enter"){e.preventDefault();bkSubmitKey();}});});
 }
 
-loadStorage();applyTheme(currentTheme);initSearch();initMiniDrag();renderHome();updSrcCount();setupCast();idxInit();wtInit();bkInit();
+loadStorage();applyTheme(currentTheme);initSearch();initMiniDrag();renderHome();updSrcCount();setupCast();idxInit();wtInit();bkInit();adSkipInit();
 if(window.matchMedia){window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{applyTheme(currentTheme);});}
 </script>
+<div class="ad-undo" id="adUndo"><span id="adUndoText">已跳过广告</span><button type="button" id="adUndoBtn">取消</button></div>
 </body>
 </html>
